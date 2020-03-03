@@ -1,0 +1,36 @@
+{
+    "fields" : [
+        {
+            "fieldName":"profileid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"tranid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"trantype",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "isPrimary": true,
+                "maxLen": 10
+            }
+        }
+        ,
+        {
+            "fieldName":"tranDate",
+            "dataType":"java.util.Date"
+        }
+        ,
+        {
+            "fieldName":"amount",
+            "dataType":"float"
+        }
+    ]
+}

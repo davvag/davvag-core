@@ -1,0 +1,64 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"invid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"profileId",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"itemid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"purchaseddate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"price",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"catogory",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 40
+            }
+        },
+        {
+            "fieldName":"uom",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 40
+            }
+        },
+        {
+            "fieldName":"qty",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        }        
+    ]
+}

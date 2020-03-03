@@ -1,0 +1,28 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"addressline1",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"addressline2",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"locationid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"gpspoint",
+            "dataType":"java.lang.String"
+        }
+    ]
+}

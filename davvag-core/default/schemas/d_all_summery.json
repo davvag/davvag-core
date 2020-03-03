@@ -1,0 +1,65 @@
+{
+    
+    "fields" : [
+        {
+            "fieldName":"code",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100,
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"summery",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 600,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"title",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"keywords",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"imgname",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"imgStorageLocation",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"application",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"id",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        }
+    ]
+}

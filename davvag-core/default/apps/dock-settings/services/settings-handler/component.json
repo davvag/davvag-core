@@ -1,0 +1,48 @@
+{
+    "name" : "product-handler",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ]
+    },
+    "transformers": {
+        "allUsers": {
+            "method": "GET",
+            "route": "/allusers",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/users",
+            "destHeaders" : ["host: sys.sossgrid.com"]
+        },
+        "createUser": {
+            "method": "POST",
+            "route": "/createUser",
+            "destMethod": "POST",
+            "destUrl" : "http://localhost:9000/createuser/",
+            "bodyTemplate" : "@@body@@"
+        },
+        "updateUser": {
+            "method": "POST",
+            "route": "/updateUser",
+            "destMethod": "PUT",
+            "destUrl" : "http://localhost:9000/data/users",
+            "bodyTemplate" : "{\"object\":@@body@@}",
+            "destHeaders" : ["host: sys.sossgrid.com"]
+        },
+        "getUserById": {
+            "method": "GET",
+            "route": "/userbyid/@userid",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/users?query=userid:@userid",
+            "destHeaders" : ["host: sys.sossgrid.com"]
+        }
+        
+    }
+    
+}

@@ -1,0 +1,15 @@
+<div>
+<h2 v-if="!appData.icon"><i class="fa fa-code"></i> {{appData.title}} 
+    <!-- <span>Subtitle goes here...</span> -->
+</h2>
+<h2 v-if="appData.icon"><img :src="'assets/' + appKey + '/' + appData.icon" class="navigation-appitem"/> {{appData.title}} 
+    <!-- <span>Subtitle goes here...</span> -->
+</h2>
+<div class="breadcrumb-wrapper">
+    <span class="label">You are here:</span>
+    <ol class="breadcrumb">
+    <li><a>{{appData.title}}</a></li>
+    <!-- <li class="active">Dashboard</li> -->
+    </ol>
+</div>
+</div>

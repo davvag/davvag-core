@@ -1,0 +1,20 @@
+{
+    
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"userid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "isPrimary": true,
+                "maxLen": 150
+            }
+        }
+    ]
+}

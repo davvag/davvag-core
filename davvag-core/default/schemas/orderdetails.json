@@ -1,0 +1,60 @@
+{
+    "fields" : [
+        {
+            "fieldName":"invoiceNo",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"itemid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"tid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tenant",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"transactionid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"uom",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"qty",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"price",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"total",
+            "dataType":"float"
+        }
+    ]
+}

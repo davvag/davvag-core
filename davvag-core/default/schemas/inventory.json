@@ -1,0 +1,23 @@
+{
+    "fields" : [
+        {
+            "fieldName":"productid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"qty",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"locationid",
+            "dataType":"int"
+        }
+    ]
+}

@@ -1,0 +1,44 @@
+{
+    "rawquery" : {
+        "type":"sql",
+        "parameters" : ["size","keywords","id"],
+        "query": "SELECT *, MATCH(title, summery,keywords) AGAINST('$keywords') AS score FROM d_all_summery WHERE id not in($id) and MATCH(title, summery,keywords) AGAINST('$keywords') ORDER BY score DESC LIMIT $size"
+    },
+    "fields" : [
+        {
+            "fieldName":"code",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"summery",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"title",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"keywords",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"imgname",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"imgStorageLocation",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"application",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"id",
+            "dataType":"java.lang.String"
+        },{
+            "fieldName":"score",
+            "dataType":"float"
+        }
+    ]
+}

@@ -1,0 +1,181 @@
+{
+    "fields" : [
+        {
+            "fieldName":"itemid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"tid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tenant",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"caption",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 2000
+            }
+        },
+        {
+            "fieldName":"keywords",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"price",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"currencycode",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 4
+            }
+        },
+        {
+            "fieldName":"imgurl",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"monday",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"tuesday",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"wednesday",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"thursday",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"friday",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"saturday",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"sunday",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"timeFrom",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"timeTo",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"estimateddeliverytime",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"qty",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"catogory",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 40
+            }
+        },
+        {
+            "fieldName":"uom",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"publishedByID",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"publishedBy",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"lon",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"lat",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"deliveryrangekm",
+            "dataType":"float"
+        }
+
+    ]
+}

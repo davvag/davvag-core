@@ -1,0 +1,67 @@
+{
+    "name" : "soss-routes-vue",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "dependencies" : {
+    },
+    "resources": {
+        "js" : [
+            {
+                "tag": "bootstrap",
+                "version" : "latest",
+                "location":"js/bootstrap.min.js"
+            },
+            {
+                "tag": "jquery-migrate-1.2.1.min.js",
+                "version" : "latest",
+                "location":"js/jquery-migrate-1.2.1.min.js"
+            },
+            {
+                "tag": "jquery-ui-1.10.3.min.js",
+                "version" : "latest",
+                "location":"js/jquery-ui-1.10.3.min.js"
+            },
+            {
+                "tag": "jquery.sparkline.min.js",
+                "version" : "latest",
+                "location":"js/jquery.sparkline.min.js"
+            },
+            {
+                "tag": "modernizr.min.js",
+                "version" : "latest",
+                "location":"js/modernizr.min.js"
+            },
+            {
+                "tag": "raphael-2.1.0.min.js",
+                "version" : "latest",
+                "location":"js/raphael-2.1.0.min.js"
+            },
+            {
+                "tag": "retina.min.js",
+                "version" : "latest",
+                "location":"js/retina.min.js"
+            },
+            {
+                "tag": "toggles.min.js",
+                "version" : "latest",
+                "location":"js/toggles.min.js"
+            },
+            {
+                "tag": "custom.js",
+                "version" : "latest",
+                "location":"js/custom.js"
+            },
+            {
+                "tag":"notify.js",
+                "version" : "latest",
+                "location":"js/notify.js"
+            }
+
+        ],
+        "css" : [
+
+        ]
+    }
+}

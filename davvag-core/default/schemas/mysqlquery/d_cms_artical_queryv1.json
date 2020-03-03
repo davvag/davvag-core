@@ -1,0 +1,26 @@
+{
+    "DataContainer":"d_cms_artical_v1",
+    "Link":{"Inner":{"DataContainers":["d_cms_artical_v1.id","d_cms_artical_imagev1.articalid"]}},
+
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "datamapping":"d_cms_artical_v1.id"
+        },
+        {
+            "fieldName":"imagename",
+            "dataType":"java.lang.String",
+            "datamapping":"d_cms_artical_imagev1.name"
+        }
+    ],
+    "Filter":[
+        {"Column":"d_cms_artical_v1.id","Condition":"IN","Params":"@para1"},
+        {"Column":"d_cms_artical_v1.createdate","Condition":"Between","Params":["@para2","@para3"]
+        
+        }
+    ],
+    "Order":[
+        {"d_cms_artical_v1.id":"ASC"}
+    ]
+}

@@ -1,0 +1,35 @@
+{
+    
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"summery",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"title",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"imgname",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        }
+    ]
+}

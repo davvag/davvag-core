@@ -1,0 +1,28 @@
+{
+    "connector": "mysql",
+    "connectorSettings" : {
+        "host": "localhost",
+        "username": "",
+        "password" : ""
+    },
+    "rawquery" : {
+        "type":"procedure",
+        "parameters" : ["name"],
+        "query": "call helloproc6(\"$name\")"
+    },
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":
+            {
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String"
+        }
+    ]
+}

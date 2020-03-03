@@ -1,0 +1,42 @@
+{
+    "fields" : [
+        {
+            "fieldName":"ChapterCode",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10,
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"BookName",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 5000,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"version",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 3
+            }
+        },
+        {
+            "fieldName":"cat",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"BookOrder",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"NumberOfChapter",
+            "dataType":"int"
+        }
+    ]
+}

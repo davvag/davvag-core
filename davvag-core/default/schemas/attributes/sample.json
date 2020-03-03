@@ -1,0 +1,26 @@
+[{
+    "type": "text",
+    "label": "Test",
+    "name": "temp",
+    "req": 1
+}, {
+    "type": "textarea",
+    "label": "123456789",
+    "name": "temp",
+    "req": 0
+}, {
+    "type": "select",
+    "label": "example",
+    "req": 0,
+    "name": "temp",
+    "choices": [{
+        "label": "1",
+        "sel": 0
+    }, {
+        "label": "2",
+        "sel": 0
+    }, {
+        "label": "3",
+        "sel": 0
+    }]
+}]

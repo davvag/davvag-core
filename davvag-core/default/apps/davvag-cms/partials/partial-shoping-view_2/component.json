@@ -1,0 +1,37 @@
+{
+    "name" : "partial-shoping-view",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.2",
+    "gitUrl" : "",
+    "resources": {
+        "css":[
+            {
+                "type" : "css",
+                "location" : "style.css"
+            }
+        ],
+        "js":[
+            {
+                "tag": "markedmin",
+                "version" : "latest",
+                "location":"marked.min.js"
+            }
+        ],
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            },
+            {
+                "type" : "mainView",
+                "location" : "partial.html"
+            },
+            {
+                "type" : "css2",
+                "location" : "style.css"
+            }
+        ]
+        
+    }
+}

@@ -1,0 +1,107 @@
+{
+    "components": {
+        "dependencies": {
+            "type":"shell",
+            "location":""
+        },
+        "soss-routes": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-data": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "dynamic-attributes": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-routes-vue": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-validator": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-uploader": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "auth-handler": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "left-menu": {
+            "type":"component",
+            "location":"components"
+        },
+        "navigation-title": {
+            "type":"component",
+            "location":"components"
+        },
+        "headerbar": {
+            "type":"component",
+            "location":"components"
+        },
+        "partial-home": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-404": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-app": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-account": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-profile": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-help": {
+            "type":"partial",
+            "location":"partials"
+        },"userapp":{
+            "type":"component",
+            "location":"components"
+        },"bible":{
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "DAAVG Dock",
+        "author":"Daavg",
+        "version":"0.1",
+        "icon":""
+    },
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "product",
+            "onLoad": ["dependencies", "soss-routes","dynamic-attributes","soss-routes-vue", "soss-uploader","soss-validator", "auth-handler","soss-data"],
+            "firewall" : {
+                "guest" : [],
+                "admin": []
+            },
+            "routes":{
+                "home" : "/home",
+                "notFound": "/notFound",
+                "partials" : {
+                    "/" : "partial-home",
+                    "/app/@appName/*appRoute" : "partial-app",
+                    "/home" : "partial-home",
+                    "/notFound": "partial-404",
+                    "/account": "partial-account",
+                    "/profile": "partial-profile",
+                    "/help": "partial-help"
+                }
+            }
+        }
+    }
+}

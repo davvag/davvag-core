@@ -1,0 +1,68 @@
+
+.blog-item {
+    background: #fcfcfc;
+    margin-bottom: 20px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -moz-box-shadow: 0 3px 0 rgba(12,12,12,0.03);
+    -webkit-box-shadow: 0 3px 0 rgba(12,12,12,0.03);
+    box-shadow: 0 3px 0 rgba(12,12,12,0.03);
+    position: relative;
+}
+.contentpanel {
+    padding: 20px;
+    position: relative;
+}
+.contentpanel::after {
+    clear: both;
+    display: block;
+    content: '';
+}
+.row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+.blog-quote .quote-primary a {
+    background-color: #428BCA;
+}
+.blog-quote .quote a {
+    padding: 15px;
+    background: #1d2939;
+    color: #dadfe6;
+    display: block;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    text-align: center;
+}
+a.btn-card {
+    text-decoration: none;
+    color: #428BCA;
+}
+
+.blog-details {
+    padding: 15px;
+}
+
+.blog-img img {
+    -moz-border-radius: 3px 3px 0 0;
+    -webkit-border-radius: 3px 3px 0 0;
+    border-radius: 3px 3px 0 0;
+}
+
+
+/* The hero image */
+.hero-image {
+    /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("banner.jpg");
+
+    /* Set a specific height */
+    height: 100%;
+
+    /* Position and center the image to scale nicely on all screens */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}

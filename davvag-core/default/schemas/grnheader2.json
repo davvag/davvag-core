@@ -1,0 +1,36 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"grndate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"profileid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"transactionid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"addressid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"locationid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String"
+        }
+    ]
+}

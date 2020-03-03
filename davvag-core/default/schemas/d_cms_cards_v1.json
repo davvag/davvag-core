@@ -1,0 +1,91 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"sortorder",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"title",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"subtitle",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"caption",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1000,
+                "encoding":"utf8"
+            }
+        }
+        ,
+        {
+            "fieldName":"url",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"class",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"icon",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"other",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"createdate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"userid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"Status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 8
+            }
+        },
+        {
+            "fieldName":"parentButtonid",
+            "dataType":"int"
+        }
+    ]
+}

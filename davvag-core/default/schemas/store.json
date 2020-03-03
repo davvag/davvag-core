@@ -1,0 +1,53 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"address",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"phone",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"location",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"email",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"storetenant",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"latitude",
+            "dataType":"decimal",
+            "annotations":{
+                "decimalPoints": "10,8"
+            }
+        },
+        {
+            "fieldName":"longitude",
+            "dataType":"decimal",
+            "annotations":{
+                "decimalPoints": "11,8"
+            }
+        }
+    ]
+}

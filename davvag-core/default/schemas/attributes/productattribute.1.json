@@ -1,0 +1,45 @@
+[{
+    "type": "select",
+    "label": "Wine Type",
+    "req": 0,
+    "name": "winetype",
+    "choices": [{
+        "label": "red wine",
+        "sel": "red wine"
+    }, {
+        "label": "white wine",
+        "sel": "white wine"
+    }, {
+        "label": "other",
+        "sel": "other"
+    }]
+},
+{
+    "type": "text",
+    "label": "Brand",
+    "name": "brand",
+    "req": 1
+},
+{
+    "type": "text",
+    "label": "Grapes",
+    "name": "grapes",
+    "req": 1
+},
+{
+    "type": "text",
+    "label": "Regions",
+    "name": "regions",
+    "req": 1
+},
+{
+    "type": "text",
+    "label": "Countries",
+    "name": "countries",
+    "req": 1
+}, {
+    "type": "textarea",
+    "label": "Foodparing",
+    "name": "foodparing",
+    "req": 0
+} ]

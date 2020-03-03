@@ -1,0 +1,18 @@
+{
+    "fields" : [
+        {
+            "fieldName":"storeid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"productid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        }
+    ]
+}

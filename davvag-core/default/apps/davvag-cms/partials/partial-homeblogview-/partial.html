@@ -1,0 +1,49 @@
+<header class="masthead">
+    <div class="hero-image">
+      <div class="mx-auto text-center">
+        <br/><br/><br/><br/>
+        <h1 class="mx-auto my-0 text-white text-uppercase">Hope Lanka International</h1>
+        <h2 class="text-white-50 mx-auto mt-2 mb-5"> Is a ministry providing biblical hope and practical help for everyday problems. </h2>
+        <a href="#about" class="btn btn-primary js-scroll-trigger">Get Involed</a>
+        <br/><br/><br/><br/>
+      </div>
+    </div>
+</header>
+
+
+<section class="details-card">
+        <h1 class="text-center"></h1>
+
+        <div class="contentpanel">
+        
+            <div id="bloglist" class="row" style="position: relative; height: 1901.59px;" >
+            <!--style="position: absolute; left: 0px; top: 0px;"-->
+            <div class="col-xs-6 col-sm-4 col-md-3"   v-for="item in Articals">
+                <div class="blog-item">
+                <a :href="'#/app/davvag-cms-generalapps/a?id='+item.id" class="blog-img"><img :src="'components/dock/soss-uploader/service/get/d_cms_artical/'+item.id+'-'+item.imgname" class="img-responsive" alt=""></a>
+                <div class="blog-details">
+                    <h4 class="blog-title"><a :href="'#/app/davvag-cms-generalapps/a?id='+item.id">{{ item.title }}</a></h4>
+                    <p>{{ item.createdate | dateformate }}</p>
+                    <div class="blog-summary">
+                    <p v-html="marked(unescape(item.summery))"></p>
+                    <a :href="'#/app/davvag-cms-generalapps/a?id='+item.id" class="btn-card">Read</a>
+                    
+                    </div>
+                </div>
+                </div><!-- blog-item -->
+            </div><!-- col-xs-6 -->
+            
+            
+            
+            </div><!-- row -->
+            
+        </div>
+</section>
+<!-- details card section starts from here -->
+
+
+
+
+
+
+

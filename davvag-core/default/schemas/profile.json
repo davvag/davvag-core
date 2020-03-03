@@ -1,0 +1,157 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"tid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tenant",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"contactno",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 20
+            }
+        },
+        {
+            "fieldName":"email",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"gender",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"organization",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"address",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 255,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"city",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"country",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"catogory",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"title",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 20
+            }
+        },
+        {
+            "fieldName":"maritalStatus",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 8
+            }
+        },
+        {
+            "fieldName":"occupation",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"id_number",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30
+            }
+        },
+        {
+            "fieldName":"passportno",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30
+            }
+        },
+        {
+            "fieldName":"dateofbirth",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"createdate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"userid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"linkeduserid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"Status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 8
+            }
+        }
+
+    ]
+}

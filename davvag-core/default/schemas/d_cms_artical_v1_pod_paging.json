@@ -1,0 +1,87 @@
+{
+    "rawquery" : {
+        "type":"sql",
+        "parameters" : ["page","size","boost"],
+        "query": "select * from d_cms_artical_v1 where boost='$boost' limit $page,$size"
+    },
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"catid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"content",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"summery",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"title",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"tags",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"uricode",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"createdate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"userid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"Status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 8
+            }
+        },
+        {
+            "fieldName":"boost",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },{
+            "fieldName":"showpics",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"imgname",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        }
+    ]
+}
