@@ -1,0 +1,21 @@
+@keyframes fadein {
+  from { opacity: 0}
+  to   { opacity: 1}
+}
+
+img.left-menu-appitem {
+  width:16px;
+  height:16px;
+  margin-right:10px;
+}
+
+img.navigation-appitem {
+  width:42px;
+  height:42px;
+  margin-right:5px;
+}
+
+
+.dock-link {
+  cursor:pointer;
+}

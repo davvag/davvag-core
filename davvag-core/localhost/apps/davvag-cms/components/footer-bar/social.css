@@ -1,0 +1,29 @@
+ 
+#id-social-table{
+  margin-top: 50px;
+}
+  
+  body .fax {
+    font-size: 3em;
+    width: 2em;
+    height: 1.5em;
+    text-align: center;
+  }
+
+  .social-icon{
+    background-color: aliceblue;
+  }
+
+  .page-footer{
+    margin-top: 10px;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .page-footer{
+      margin-top: 50px;
+      margin-bottom: 55px;
+    }
+}
+ 
+
+  

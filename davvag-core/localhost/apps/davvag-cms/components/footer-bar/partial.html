@@ -1,0 +1,42 @@
+<!-- Footer -->
+<footer class="page-footer bg-primary">
+    <!-- Footer Elements -->
+    <div class="container">
+            <!-- Grid row-->
+            <div class="row">
+                  <!--
+                  <table id="id-social-table">
+                    <tr>
+                      <td  align="center"  v-for="sbutton in SocailButtons" class="social-icons">
+                          <a class="id-copyright-link" :href="sbutton.url"><i style="color: white;" :class="sbutton.other"></i>{{ sbutton.Caption }}</a>
+                      </td>
+                      
+                    </tr>
+                  </table>-->
+                <!--<div class="col-xs-12 text-center">-->
+                    <table id="id-social-table">
+                            <tr>
+                          <td align="center" v-for="sbutton in SocailButtons" class="social-icons">
+                              <a :data-original-title="sbutton.Name" rel="tooltip" :class="sbutton.other"  :href="sbutton.url" >
+                                      {{ sbutton.Caption }}</a>
+                                    </td>
+                      
+                                </tr>
+                              </table>
+                  <!--</div>-->
+                 
+                  
+                  
+              </div>
+          
+        </div>
+    
+    <!-- Footer Elements -->
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2018 Copyright:
+      <a class="id-copyright-link" href="http://www.davvag.com"> Davvag </a> Powered by <a href="http://www.davvag.com" class="id-copyright-link"> Davvag CMS Engine 1.0v</a>
+    </div>
+    <!-- Copyright -->
+
+  </footer>
+  <!-- Footer -->

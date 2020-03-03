@@ -1,0 +1,40 @@
+<!-- Footer -->
+<footer class="page-footer  font-small cyan darken-3">
+    <!-- Footer Elements -->
+    <div class="container">
+      <!-- Grid row-->
+      <div class="row">
+        <table id="id-social-table">
+          <tr>
+            <td v-if="facebook" align="center" class="social-icons">
+                <a :href="facebook"><i style="color: #c9d4d9;" class="fa fa-facebook-square fa-2x social white-social"></i></a>
+            </td>
+            <td v-if="twitter" align="center" class="social-icons">
+                <a  :href="twitter" ><i style="color: #c9d4d9;" class="fa fa-twitter-square fa-2x social white-social"></i></a>
+            </td>
+            <td v-if="gpluse" align="center" class="social-icons">
+                <a  :href="gpluse"><i style="color: #c9d4d9;" class="fa fa-google-plus-square fa-2x social white-social"></i></a>
+            </td>
+            <td v-if="instergram" align="center" class="social-icons">
+                <a  :href="instergram"><i style="color: #c9d4d9;" class="fa fa-instagram-square fa-2x social white-social"></i></a>
+            </td> 
+            <td v-if="youtube" align="center" align="center" class="social-icons">
+                <a :href="youtube"><i style="color: #c9d4d9;" class="fa fa-youtube-square fa-2x social white-social"></i></a>
+            </td>
+            <td v-if="contact" align="center" align="center" class="social-icons">
+                <a class="id-copyright-link" :href="'tel:'+contact"><i style="color: #c9d4d9;" class="fa fa-phone-square fa-2x social white-social"></i>{{ contact }}</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!-- Grid row-->
+    </div>
+    <!-- Footer Elements -->
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2018 Copyright:
+      <a class="id-copyright-link" href="http://www.hopelankainternational.org"> Hope Lanka International</a> Powered by <a href="http://www.davvag.com" class="id-copyright-link"> Davvag CMS Engine 1.0v</a>
+    </div>
+    <!-- Copyright -->
+
+  </footer>
+  <!-- Footer -->

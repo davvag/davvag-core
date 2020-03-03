@@ -1,0 +1,125 @@
+{
+    "fields" : [
+        {
+            "fieldName":"itemid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"tid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tenant",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"caption",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"keywords",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"price",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"cost",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"discountper",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"currencycode",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 4
+            }
+        },
+        {
+            "fieldName":"imgurl",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"showonstore",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"recordtype",
+            "dataType":"int",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"catogory",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 40
+            }
+        },
+        {
+            "fieldName":"uom",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"invType",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"collectedByID",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"collectedBy",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        }        
+    ]
+}

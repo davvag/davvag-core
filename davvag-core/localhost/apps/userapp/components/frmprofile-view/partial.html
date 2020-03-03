@@ -1,0 +1,113 @@
+<div class="container">
+  <div class="row profile">
+  <div class="col-md-3">
+    <div class="profile-sidebar">
+      <!-- SIDEBAR USERPIC -->
+      <div class="profile-userpic">
+        <img :src="image" class="img-responsive" alt="">
+      </div>
+      <!-- END SIDEBAR USERPIC -->
+      <!-- SIDEBAR USER TITLE -->
+      <div class="profile-usertitle">
+        <div class="profile-usertitle-name">
+          {{ item.name }}
+        </div>
+        <div class="profile-usertitle-job">
+          {{ item.email }}
+        </div>
+      </div>
+      <!-- END SIDEBAR USER TITLE -->
+      <!-- SIDEBAR BUTTONS -->
+      <div class="profile-userbuttons">
+        <button type="button" class="btn btn-success btn-sm">Edit</button>
+        <button type="button" class="btn btn-success btn-sm">Chang Password</button>
+        
+      </div>
+      <div class="profile-userbuttons">
+        <button type="button" class="btn btn-danger btn-sm">Logout</button>
+      </div>
+      <!-- END SIDEBAR BUTTONS -->
+      <!-- SIDEBAR MENU -->
+      <div class="profile-usermenu">
+        <ul class="nav">
+            <li class="active"><a href="#tran" data-toggle="tab"><strong>Trasaction History</strong></a>|</li>
+            <li><a href="#events" data-toggle="tab"><strong> Orders</strong></a> </li>
+        </ul>
+      </div>
+      <!-- END MENU -->
+    </div>
+  </div>
+  <div class="col-md-9">
+          <div class="profile-content">
+            <!-- Tab panes -->
+            <div class="tab-content">
+              
+              <div class="tab-pane active" id="tran">
+                <h1>Tranaction History</h1>
+                <table class="table mb30">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>#</th>
+                      <th>Date</th>
+                      <th>Amout</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="t in Transaction">
+                      <td>{{ t.trantype }}</td>
+                      <td>{{ t.tranid }}</td>
+                      <td>{{ t.tranDate }}</td>
+                      <td>{{ t.amount | currency }}</td>
+                      <td><button class="btn btn-success btn-sm"v-on:click="navigatepage(t.trantype,t.tranid);">View</button></td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>{{ Summary.outstanding | currency }}</td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tab-pane" id="events">
+                <div class="events">
+                  <h1>Orders </h1>
+                  <h5 class="subtitle">Order Pending</h5>
+                  <div class="row">
+                    <div class="col-sm-6" v-for="itm in items">
+                      <div class="media">
+                       
+                        <img class="pull-left media-object" :src="'components/dock/soss-uploader/service/get/products/'+itm.itemid" alt="100x120" width="0" height="0" style="width: 100px; height: 120px;">
+                        
+                        <div class="media-body event-body">
+                          <h4 class="event-title">{{ itm.name }}</h4>
+                          <small class="text-muted"><i class="fa fa-shield"></i> {{ itm.catogory }}</small>
+                          <small class="text-muted"><i class="fa fa-calendar"></i> {{ itm.purchaseddate }}</small>
+                          <p><strong>Unit Of Mesure: </strong>{{ itm.uom }} | <strong>Quantity: </strong>{{ itm.qty }} | <strong>Total Charged: </strong>{{ itm.price }}</p>
+                          
+                          
+                          <span :class="'pull-right label label-'+status(itm.status)">{{ itm.status }}</span>
+                        </div>
+                      </div><!-- media -->
+                    </div><!-- col-sm-6 -->
+                    
+                    
+                  </div>
+                  
+                  <br>
+                  
+                  <h5 class="subtitle">Orders Completed</h5>
+                  <div class="row">
+        
+                  </div>
+                  
+                </div><!-- events -->
+              </div>
+            </div><!-- tab-content -->
+          </div>
+  </div>
+</div>
+</div>

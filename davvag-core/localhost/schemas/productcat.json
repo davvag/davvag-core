@@ -1,0 +1,16 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String"
+        }
+    ]
+}

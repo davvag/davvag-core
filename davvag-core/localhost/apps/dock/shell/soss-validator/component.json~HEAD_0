@@ -1,0 +1,15 @@
+{
+    "name" : "soss-routes",
+    "description":"WEBDOCK Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "validator.js"
+            }
+        ]
+    }
+}

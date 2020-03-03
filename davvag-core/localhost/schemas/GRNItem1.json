@@ -1,0 +1,40 @@
+{
+    "fields" : [
+        {
+            "fieldName":"grnid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"transactionid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"productid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"productname",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"datemfd",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"dateexp",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"qty",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"uom",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"unitprice",
+            "dataType":"float"
+        }
+    ]
+}

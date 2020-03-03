@@ -1,0 +1,91 @@
+{
+    "fields" : [
+        {
+            "fieldName":"packageid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"riderid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tenant",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"lon",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"lat",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"contactno",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30
+            }
+        },
+        {
+            "fieldName":"remarks",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 300
+            }
+        },
+
+        {
+            "fieldName":"packageDate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"completedDate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"deliverypersonemail",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"TotalAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"CollectedAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"ReceivedAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"preparedByID",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"preparedBy",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        }
+    ]
+}

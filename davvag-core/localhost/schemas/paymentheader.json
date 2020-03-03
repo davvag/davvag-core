@@ -1,0 +1,121 @@
+{
+    "fields" : [
+        {
+            "fieldName":"receiptNo",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"tid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tenant",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"paymentType",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 255
+            }
+        },
+        {
+            "fieldName":"profileId",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"email",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"city",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"address",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 255,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"country",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"receiptDate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"detailsString",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"paymentAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"outstandingAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"balanceAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"remarks",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 255
+            }
+        },
+        {
+            "fieldName":"collectedByID",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"collectedBy",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        }
+    ]
+}

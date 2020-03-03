@@ -1,0 +1,31 @@
+{
+    "fields" : [
+{
+    "fieldName":"profileid",
+    "dataType":"int",
+    "annotations":{
+        "isPrimary": true
+    }
+},
+{
+    "fieldName":"outstanding",
+    "dataType":"float"
+},
+{
+    "fieldName":"totalInvoicedAmount",
+    "dataType":"float"
+},
+{
+    "fieldName":"totalPaidAmount",
+    "dataType":"float"
+},
+{
+    "fieldName":"totalGRNAmount",
+    "dataType":"float"
+},
+{
+    "fieldName":"totalPaymentAmount",
+    "dataType":"float"
+}
+
+]}

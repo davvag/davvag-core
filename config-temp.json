@@ -1,0 +1,11 @@
+{
+    "variables":{
+        "RESOURCE_LOCATION":"D:\\xampp\\htdocs\\sossgrid.js\\sosscomponents",
+        "MEDIA_FOLDER":"D:\\media",
+        "OS_URL":"http://localhost:9000/data",
+        "AUTH_URL" : "http://localhost:9000"
+    },
+    "alias":{
+        "localhost":["127.0.0.1"]
+    }
+}

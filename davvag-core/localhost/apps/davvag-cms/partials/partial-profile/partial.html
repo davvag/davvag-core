@@ -1,0 +1,140 @@
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class="panel-btns">
+                <a href="" class="panel-close">×</a>
+                <a href="" class="minimize">−</a>
+              </div>
+              <h4 class="panel-title">Basic Wizard</h4>
+              <p>This basic wizard have no form validation and allows you to skip to another step by clicking on the tab.</p>
+            </div>
+            <div class="panel-body panel-body-nopadding">
+              
+              <!-- BASIC WIZARD -->
+              <div id="basicWizard" class="basic-wizard">
+                
+                <ul class="nav nav-pills nav-justified">
+                  <li class=""><a href="#tab1" data-toggle="tab"><span>Step 1:</span> Basic Info</a></li>
+                  <li class="active"><a href="#tab2" data-toggle="tab"><span>Step 2:</span> Product Info</a></li>
+                  <li class=""><a href="#tab3" data-toggle="tab"><span>Step 3:</span> Payment</a></li>
+                </ul>
+                
+                <div class="tab-content">
+                  <div class="tab-pane" id="tab1">
+                    <form class="form">
+                      <div class="form-group">
+                        <label class="col-sm-4">Firstname</label>
+                        <div class="col-sm-8">
+                          <input name="firstname" class="form-control" type="text">
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label class="col-sm-4">Lastname</label>
+                        <div class="col-sm-8">
+                          <input name="lastname" class="form-control" type="text">
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label class="col-sm-4">Gender</label>
+                        <div class="col-sm-8">
+                          <div class="rdio rdio-primary">
+                            <input checked="checked" id="male" value="m" name="radio" type="radio">
+                            <label for="male">Male</label>
+                          </div>
+                          <div class="rdio rdio-primary">
+                            <input value="f" id="female" name="radio" type="radio">
+                            <label for="female">Female</label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </form>
+                  </div>
+                  <div class="tab-pane active" id="tab2">
+                    <form class="form">
+                      <div class="form-group">
+                        <label class="col-sm-4">Product ID</label>
+                        <div class="col-sm-5">
+                          <input name="product_id" class="form-control" type="text">
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label class="col-sm-4">Product Name</label>
+                        <div class="col-sm-8">
+                          <input name="product_name" class="form-control" type="text">
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label class="col-sm-4">Category</label>
+                        <div class="col-sm-4">
+                          <div class="select2-container select2" id="s2id_autogen1" style="width: 100%;"><a href="javascript:void(0)" class="select2-choice select2-default" tabindex="-1">   <span class="select2-chosen" id="select2-chosen-2">Choose One</span><abbr class="select2-search-choice-close"></abbr>   <span class="select2-arrow" role="presentation"><b role="presentation"></b></span></a><label for="s2id_autogen2" class="select2-offscreen"></label><input class="select2-focusser select2-offscreen" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-2" id="s2id_autogen2" type="text"><div class="select2-drop select2-display-none">   <div class="select2-search select2-search-hidden select2-offscreen">       <label for="s2id_autogen2_search" class="select2-offscreen"></label>       <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-2" id="s2id_autogen2_search" placeholder="" type="text">   </div>   <ul class="select2-results" role="listbox" id="select2-results-2">   </ul></div></div><select class="select2 select2-offscreen" data-placeholder="Choose One" tabindex="-1" title="">
+                            <option value=""></option>
+                            <option value="">3D Animation</option>
+                            <option value="">Web Design</option>
+                            <option value="">Software Engineering</option>
+                          </select>
+                        </div>
+                      </div>
+                      
+                    </form>
+                  </div>
+                  <div class="tab-pane" id="tab3">
+                    <form class="form">
+                      <div class="form-group">
+                        <label class="col-sm-4">Card No</label>
+                        <div class="col-sm-8">
+                          <input name="cardno" class="form-control" type="text">
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label class="col-sm-4">Expiration</label>
+                        <div class="col-sm-4">
+                          <div class="select2-container select2" id="s2id_autogen3" style="width: 100%;"><a href="javascript:void(0)" class="select2-choice" tabindex="-1">   <span class="select2-chosen" id="select2-chosen-4">Month</span><abbr class="select2-search-choice-close"></abbr>   <span class="select2-arrow" role="presentation"><b role="presentation"></b></span></a><label for="s2id_autogen4" class="select2-offscreen"></label><input class="select2-focusser select2-offscreen" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-4" id="s2id_autogen4" type="text"><div class="select2-drop select2-display-none">   <div class="select2-search select2-search-hidden select2-offscreen">       <label for="s2id_autogen4_search" class="select2-offscreen"></label>       <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-4" id="s2id_autogen4_search" placeholder="" type="text">   </div>   <ul class="select2-results" role="listbox" id="select2-results-4">   </ul></div></div><select class="select2 select2-offscreen" tabindex="-1" title="">
+                            <option value="">Month</option>
+                            <option value="">January</option>
+                            <option value="">February</option>
+                            <option value="">March</option>
+                            <option value="">...</option>
+                          </select>
+                        </div>
+                        
+                        <div class="col-sm-4">
+                          <div class="select2-container select2" id="s2id_autogen5" style="width: 100%;"><a href="javascript:void(0)" class="select2-choice" tabindex="-1">   <span class="select2-chosen" id="select2-chosen-6">Year</span><abbr class="select2-search-choice-close"></abbr>   <span class="select2-arrow" role="presentation"><b role="presentation"></b></span></a><label for="s2id_autogen6" class="select2-offscreen"></label><input class="select2-focusser select2-offscreen" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-6" id="s2id_autogen6" type="text"><div class="select2-drop select2-display-none">   <div class="select2-search select2-search-hidden select2-offscreen">       <label for="s2id_autogen6_search" class="select2-offscreen"></label>       <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-6" id="s2id_autogen6_search" placeholder="" type="text">   </div>   <ul class="select2-results" role="listbox" id="select2-results-6">   </ul></div></div><select class="select2 select2-offscreen" tabindex="-1" title="">
+                            <option value="">Year</option>
+                            <option value="">2013</option>
+                            <option value="">2014</option>
+                            <option value="">2015</option>
+                            <option value="">...</option>
+                          </select>
+                        </div>
+                        
+                      </div>
+                      
+                      <div class="form-group">
+                        <label class="col-sm-4">CSV</label>
+                        <div class="col-sm-4">
+                          <input name="csv" class="form-control" type="text">
+                        </div>
+                      </div>
+                      
+                    </form>
+                  </div>
+                  
+                  
+                </div><!-- tab-content -->
+                
+                <ul class="pager wizard">
+                    <li class="previous"><a href="javascript:void(0)">Previous</a></li>
+                    <li class="next"><a href="javascript:void(0)">Next</a></li>
+                  </ul>
+                
+              </div><!-- #basicWizard -->
+              
+            </div><!-- panel-body -->
+          </div><!-- panel -->
+        

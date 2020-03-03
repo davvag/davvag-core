@@ -1,0 +1,30 @@
+{
+    "name" : "soss-routes-vue",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "dependencies" : {
+        "WEBDOCK" : {
+            "soss-routes":{
+                "tag": "soss-routes",
+                "version" : "latest"
+            }
+        }
+    },
+    "resources": {
+        "js" : [
+            {
+                "tag": "vue.js",
+                "version" : "latest",
+                "location":"vue.min.js"
+            }
+        ],
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "sossrouter-vue.js"
+            }
+        ]
+    }
+}

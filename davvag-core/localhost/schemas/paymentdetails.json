@@ -1,0 +1,46 @@
+{
+    "fields" : [
+        {
+            "fieldName":"receiptNo",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"transactionid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"tranType",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "isPrimary": true,
+                "maxLen": 20
+            }
+        },
+        {
+            "fieldName":"description",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"DueAmount",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"PaidAmout",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"Balance",
+            "dataType":"float"
+        }
+    ]
+}

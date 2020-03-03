@@ -1,0 +1,104 @@
+{
+    "rawquery" : {
+        "type":"procedure",
+        "parameters" : ["page","size","lan","lon","rad","search","cat"],
+        "query": "call getnearproducts($lan,$lon,$cat,$page,$size,'$search',$rad);"
+    },
+    "fields" : [
+        {
+            "fieldName":"itemid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"caption",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"keywords",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"price",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"discountper",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"currencycode",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 4
+            }
+        },
+        {
+            "fieldName":"imgurl",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"catogory",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 40
+            }
+        },
+        {
+            "fieldName":"uom",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"invType",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"collectedByID",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"collectedBy",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"qty",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"collectedBy",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        }           
+    ]
+}

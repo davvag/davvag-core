@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(admin)?$ ./admin.php [QSA,L]
+RewriteRule ^(admin)/(assets)/([A-Za-z0-9-]+)/(.*)/?$ ./sosscomponents/%{HTTP_HOST}/$3/assets/$4 [QSA,L]

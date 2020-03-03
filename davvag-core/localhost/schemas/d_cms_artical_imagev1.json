@@ -1,0 +1,37 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"articalid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"caption",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        },
+        {
+            "fieldName":"default_img",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        }
+    ]
+}

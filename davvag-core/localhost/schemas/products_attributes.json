@@ -1,0 +1,60 @@
+{
+    "fields" : [
+        {
+            "fieldName":"itemid",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"winetype",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 20
+            }
+        },
+        {
+            "fieldName":"brand",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"grapes",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"regions",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"countries",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"winestyles",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"foodparing",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        }    
+    ]
+}

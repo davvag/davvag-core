@@ -1,0 +1,45 @@
+{
+    "rawquery" : {
+        "type":"sql",
+        "parameters" : ["ChapterCode","Chapter"],
+        "query": "SELECT * FROM bible WHERE ChapterCode='$ChapterCode' And Chapter=$Chapter   ORDER BY BookOrder ASC"
+    },
+    "fields" : [
+        {
+            "fieldName":"code",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"ChapterCode",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"version",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"BookOrder",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"Chapter",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"verse",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"topic",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"vText",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"keywords",
+            "dataType":"java.lang.String"
+        }
+    ]
+}

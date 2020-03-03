@@ -1,0 +1,13 @@
+{
+    "rawquery" : {
+        "type":"sql",
+        "parameters" : ["ChapterCode"],
+        "query": "SELECT distinct Chapter,'' as sysversionid FROM bible WHERE ChapterCode='$ChapterCode'  ORDER BY Chapter ASC"
+    },
+    "fields" : [
+        {
+            "fieldName":"Chapter",
+            "dataType":"int"
+        }
+    ]
+}

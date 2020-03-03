@@ -1,0 +1,34 @@
+{
+    "components": {
+        "settings-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "settingspage": {
+            "type":"component",
+            "location":"components"
+        },
+        "user-form": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Web Dock Settings",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "settingspage",
+            "onLoad": ["settings-handler"],
+            "routes":{
+                "partials":{
+                    "/user" : "user-form"
+                }
+            }
+        }
+    }
+}

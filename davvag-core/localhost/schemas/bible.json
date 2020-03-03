@@ -1,0 +1,56 @@
+{
+    "fields" : [
+        {
+            "fieldName":"code",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100,
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"ChapterCode",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"version",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 3
+            }
+        },
+        {
+            "fieldName":"BookOrder",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"Chapter",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"verse",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"topic",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"vText",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"keywords",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 500
+            }
+        }
+    ]
+}

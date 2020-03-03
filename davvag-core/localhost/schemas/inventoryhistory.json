@@ -1,0 +1,36 @@
+{
+    "fields" : [
+        {
+            "fieldName":"invdate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"transactiontype",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"entityid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"transactionid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"productid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"qty",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"uom",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"unitprice",
+            "dataType":"float"
+        }
+    ]
+}

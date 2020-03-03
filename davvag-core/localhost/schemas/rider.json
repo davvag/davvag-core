@@ -1,0 +1,32 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"username",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"phonenumber1",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"phonenumber2",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"address",
+            "dataType":"java.lang.String"
+        }      
+    ]
+}

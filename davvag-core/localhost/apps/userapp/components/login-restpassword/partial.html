@@ -1,0 +1,25 @@
+<div id="logreg-forms">
+    <div class="row">
+                <div class="alert alert-danger" v-if="submitErrors" v-for="error in submitErrors">
+                  <strong>ERROR! </strong> {{error}}
+                </div>
+                <div class="alert alert-info" v-if="submitErrors" v-for="error in submitInfo">
+                    <strong>INFO! </strong> {{error}}
+                  </div>
+    </div>
+  <form class="form-signin">
+        
+      <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Reset Password</h1>
+      
+      <input v-model="loginForm.email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">
+      <input v-model="loginForm.oldpassword" type="password" id="inputPassword" class="form-control" placeholder="Old Password" required="">      
+      <input v-model="loginForm.password" type="password" id="inputPassword" class="form-control" placeholder="New Password" required="">
+      <input v-model="loginForm.confirmpassword" type="password" id="inputPassword" class="form-control" placeholder="Confirm Password" required="">
+      
+      <button class="btn btn-success btn-block" v-on:click="resetpassword()"><i class="fas fa-sign-in-alt"></i> Reset Password</button>
+      <hr>
+      <!-- <p>Don't have an account!</p>  -->
+  </form>
+
+      
+</div>
