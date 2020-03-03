@@ -23,7 +23,7 @@
     }
 
     //Domain Config loading
-    define ("DOMAIN_CONFIG_FILE", $configFolder .'//sosscomponents//'.$_SERVER["HTTP_HOST"]."//config.json");
+    define ("DOMAIN_CONFIG_FILE", $configFolder .'//davvag-core//'.$_SERVER["HTTP_HOST"]."//config.json");
     if (file_exists(DOMAIN_CONFIG_FILE)){
         $configData = json_decode(file_get_contents(DOMAIN_CONFIG_FILE));
         if (isset($configData)){

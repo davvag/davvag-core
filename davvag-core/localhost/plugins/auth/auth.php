@@ -1,6 +1,6 @@
 <?php
 
-require_once (dirname(__FILE__) . "/../../configloader.php");
+//require_once (dirname(__FILE__) . "/../../configloader.php");
 
 class Auth {
     public static function Login ($username, $password){

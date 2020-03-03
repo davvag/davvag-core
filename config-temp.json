@@ -1,6 +1,6 @@
 {
     "variables":{
-        "RESOURCE_LOCATION":"D:\\xampp\\htdocs\\sossgrid.js\\sosscomponents",
+        "RESOURCE_LOCATION":"D:\\xampp\\htdocs\\git\\davvag-core\\davvag-core",
         "MEDIA_FOLDER":"D:\\media",
         "OS_URL":"http://localhost:9000/data",
         "AUTH_URL" : "http://localhost:9000"

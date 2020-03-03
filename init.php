@@ -34,7 +34,7 @@
                                 if (!isset($tenantObj->apps->$startupApp)){
                                     $errorMsg = RESOURCES::$APP_STARTUP_CONFIGURED_NOT_INSTALLED;
                                 }else {
-                                    $fileToServe = TENANT_RESOURCE_LOCATION . "/$startupApp/app.php";
+                                    $fileToServe = TENANT_RESOURCE_LOCATION . "/apps/$startupApp/app.php";
                                 }
                             }else {
                                 $errorMsg = RESOURCES::$APP_STARTUP_INCORRECT_CONFIGURATION;        
