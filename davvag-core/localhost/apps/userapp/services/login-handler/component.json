@@ -19,6 +19,9 @@
             "login" : {
                 "method" : "GET",
                 "parameters": ["email","password","domain"]
+            },"GoogleLogin":{
+                "method" : "GET",
+                "parameters": []
             }, "FacebookLogin" : {
                 "method" : "GET",
                 "parameters": []

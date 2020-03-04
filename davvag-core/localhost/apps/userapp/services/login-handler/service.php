@@ -8,6 +8,20 @@ class LoginService {
         
     } 
 
+    public function getGoogleLogin($req,$res){
+            //App ID
+            require_once (PLUGIN_PATH . "/Google/Client.php");
+            $gClient = new Google_Client();
+            $gClient->setApplicationName('Login to CodexWorld.com');
+            $gClient->setClientId(GOOGLE_ID);
+            $gClient->setClientSecret(GOOGLE_S);
+            $gClient->setRedirectUri('https://'.FBCAPP_DOMAIN.'/components/userapp/login-handler/service/FacebookLoginCallback');
+
+            //$google_oauthV2 = new Google_Oauth2Service($gClient);
+            $loginUrl = $gClient->createAuthUrl();
+            return $loginUrl;
+    }
+
     public function getLoginState($req){
         //$url = "http://localhost:9000/getsession/$_GET[token]";
         
@@ -123,6 +137,7 @@ class LoginService {
                             $outObject->profile = $result->result[0];
                             CacheData::setObjects($outObject->token,"sessions",$outObject);
                             header('Location: '.APPURL.'/userapp');
+                            exit();
                         }else{
                             
                         }
@@ -132,6 +147,7 @@ class LoginService {
                }
               //if($outObject->userid)
               header('Location: '.APPURL.'/userapp/error');
+              exit();
               //header("APPURL");
               //return $outObject;
 
