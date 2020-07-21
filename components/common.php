@@ -1,5 +1,6 @@
 <?php
-
+    $appAccess=null;
+    
     function writeResponse($res, $success, $result){
         $sObj =new stdClass();
         $sObj->success = $success;
@@ -7,7 +8,50 @@
         $res->Set($sObj);
     }
 
+    function filterApp($val){
 
+    }
+
+    function checkAccess($res,$appcode,$type=null,$code=null,$operation=null){
+        if(isset($type) && isset($code) && isset($operation)){
+            $obj=Auth::GetAccess(GROUPID,$appcode,$type,$code,$operation);
+            //var_dump($obj);
+            if(!isset($obj->error)){
+                //echo "sss";
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+
+            getAuthApplications($appcode);
+            //var_dump($GLOBALS["appAccess"]);
+            if(!isset($GLOBALS["appAccess"]->{$appcode}->error)){
+                if(isset($GLOBALS["appAccess"]->{$appcode})){
+                    if(count($GLOBALS["appAccess"]->{$appcode})>0)
+                        return true;
+                    else
+                        return false;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+
+        }
+    }
+
+    function getAuthApplications($appcode){
+        if(!isset($GLOBALS["appAccess"])){
+            $GLOBALS["appAccess"]=new stdClass();
+            
+        }
+        if(!isset($GLOBALS["appAccess"]->{$appcode})){
+            $GLOBALS["appAccess"]->{$appcode}=Auth::GetAccess(GROUPID,$appcode);
+        }
+        return $GLOBALS["appAccess"]->{$appcode};
+    }
 
     function sendRestRequest($url, $method, $body = null, $forwardHeaders = null){
         $ch=curl_init();

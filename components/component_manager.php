@@ -7,9 +7,17 @@
         }
 
         private function getComponentDescriptor($req, $res, $asObject = true, $includeLocation = false){
+            $s=checkAccess($res,$req->Params()->appCode);
+            //echo $req->Params()->appCode;
+            if(!$s){
+                writeResponse($res, false, array("message"=>"UnAutherized call. this user group do not have permision ".GROUPID));
+                return null;
+            }
+            $appacess=$GLOBALS["appAccess"]->{$req->Params()->appCode};
+            //echo json_encode($appacess);
             $componentName = $req->Params()->componentName;
-            $appFile = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/app.json";
-            $outObj;$success=false;;
+            $appFile = TENANT_RESOURCE_LOCATION . "/{$req->Params()->appCode}/app.json";
+            $outObj;$success=false;
 
             if (file_exists($appFile)){
                 $appObj = json_decode(file_get_contents($appFile));
@@ -18,13 +26,13 @@
                     if (isset($appObj->components)){
                       if (isset($appObj->components->$componentName)){
                           $componentType = $appObj->components->$componentName->location;
-                          $componentDescriptor = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/$componentType/$componentName/component.json";
+                          $componentDescriptor = TENANT_RESOURCE_LOCATION . "/{$req->Params()->appCode}/$componentType/$componentName/component.json";
 
                           if (file_exists($componentDescriptor)){
                             if ($asObject){
                                 $componentObj = json_decode(file_get_contents($componentDescriptor));
                                 if ($includeLocation)
-                                $componentObj->location = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/$componentType/$componentName";
+                                $componentObj->location = TENANT_RESOURCE_LOCATION . "/{$req->Params()->appCode}/$componentType/$componentName";
                             }
                             else    
                                 $componentObj = file_get_contents($componentDescriptor);
@@ -89,7 +97,13 @@
         }
 
         public function HandleService($req,$res){
+            $s=checkAccess($res,$req->Params()->appCode,"service",$req->Params()->componentName,$req->Params()->handlerName);
+            if(!$s){
+                writeResponse($res, false, array("message"=>"UnAutherized call. this user group do not have permision ".GROUPID));
+                return null;
+            }
             $descObj = $this->getComponentDescriptor($req,$res, true, true);
+            
             //var_dump($descObj);
 
             if ($descObj){
@@ -217,7 +231,7 @@
         }
 
         public function GetAppIcon($req, $res, $asObject=false){
-            $iconLocation = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/app.png";
+            $iconLocation = TENANT_RESOURCE_LOCATION . "/{$req->Params()->appCode}/app.png";
             $outObj;$success=false;
 
             if (file_exists($iconLocation)){
@@ -234,7 +248,7 @@
 
         public function GetAllApps($req, $res, $asObject=false){
             
-            $descriptorLocation = TENANT_RESOURCE_LOCATION . "/tenant.json" ;
+            $descriptorLocation = TENANT_RESOURCE_LOCATION . "/".GROUPID.".json" ;
             $outObj;$success=false;
 
             if (file_exists($descriptorLocation)){
@@ -244,7 +258,7 @@
 
                 $newApps = new stdClass();
                 foreach ($outObj as $appCode => $appData) {
-                    $appLocation = TENANT_RESOURCE_LOCATION . "/apps/$appCode/app.json" ;
+                    $appLocation = TENANT_RESOURCE_LOCATION . "/$appCode/app.json" ;
                     if (file_exists($appLocation)){
                         $jsonObj = json_decode(file_get_contents($appLocation));
                         if (isset($jsonObj)){
@@ -288,7 +302,7 @@
         }
 
         public function GetAppDescriptor($req, $res, $asObject=false){
-            $appLocation = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/app.json" ;
+            $appLocation = TENANT_RESOURCE_LOCATION . "/{$req->Params()->appCode}/app.json" ;
             $outObj;$success=false;
             
             if (file_exists($appLocation)){

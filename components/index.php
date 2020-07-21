@@ -9,10 +9,18 @@
     require_once (dirname(__FILE__) . "/carbite.php");
     require_once (dirname(__FILE__) . "/component_manager.php");
     require_once (dirname(__FILE__) . "/virtual_firewall.php");
+    require_once (PLUGIN_PATH . "/auth/auth.php");
 
     $componentManager = new ComponentManager();
     $virtualFirewall = new VirtualFirewall();
-
+    $groupid="anonymous";
+            if(isset($_COOKIE["authData"])){
+                $user =json_decode($_COOKIE["authData"]);
+                if(isset($user->group)){
+                    $groupid=$user->group;
+                }
+            }
+    define("GROUPID",$groupid);
     
     Carbite::GET("/object/tenantdescriptor", [$componentManager,"GetTenantDescriptor"]);
     Carbite::GET("/object/apps", [$componentManager,"GetAllApps"]);
