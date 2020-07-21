@@ -31,9 +31,39 @@ class Auth {
         return Auth::getObjectForGetMethod(AUTH_URL . "/getsession/$token");
     }
 
+    public static function GetLogout ($token){
+        return Auth::getObjectForGetMethod(AUTH_URL . "/logout/$token");
+    }
+
+    public static function GetUserGroups (){
+        return Auth::getObjectForGetMethod(AUTH_URL . "/usergroups/");
+    }
+
+    public static function NewUserGroup ($groupid){
+        return Auth::getObjectForGetMethod(AUTH_URL . "/newusergroup/$groupid");
+    }
+
+    public static function GetAccess ($groupid,$app,$type=null,$code=null,$ops=null){
+        if($ops===""){
+            $ops="null";
+        }
+        if(isset($type) && isset($code) && isset($ops))
+            return Auth::getObjectForGetMethod(AUTH_URL . "/getacess/$groupid/$app/$type/$code/$ops/");
+        else
+            return Auth::getObjectForGetMethod(AUTH_URL . "/getacess/$groupid/$app/");
+    }
+
+    
+
+    public static function SetAccess ($uapp){
+        return json_decode(Auth::callRest(AUTH_URL . "/setaccess/","POST",$uapp));
+    }
+
     public static function GetDomainAttributes (){
         return Auth::getObjectForGetMethod(AUTH_URL . "/getdomain/$_SERVER[HTTP_HOST]");
     }
+
+
 
     private static function getObjectForGetMethod($url){
         $output = Auth::callRest($url);
@@ -78,24 +108,22 @@ class Auth {
     private static function callRest($url, $method="GET", $postBody = null, $headerArray=null ,$host = null){
         $ch = curl_init();
         curl_setopt ($ch, CURLOPT_URL, $url);
-        $securityToken ="Not Authurized";
+        $securityToken ="NotAuthurized";
         if (!isset($host))
             $host = $_SERVER["HTTP_HOST"];
         
+        if(isset($_COOKIE["securityToken"]))
+            $securityToken = $_COOKIE["securityToken"];
+        
         if(isset($_COOKIE["sosskey"]))
             $securityToken = $_COOKIE["sosskey"];
-        
-         
-        
+        $ip=$_SERVER["REMOTE_ADDR"];
         if (!isset($headerArray))
-            $headerArray = array("Content-Type: application/json", "Host: $host","sosskey: $securityToken");
-
+            $headerArray = array("Content-Type: application/json", "Host: $host","sosskey: $securityToken","Cookie: sosskey=$securityToken;","X-Forwarded-For: $ip");
+        //echo json_encode($headerArray);
         curl_setopt ($ch, CURLOPT_HTTPHEADER, $headerArray);
-        //if()
-        //curl_setopt($ch,CURLOP_CON)
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_USERAGENT , "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1)");
         if (isset($postBody)){
             //curl_setopt ($ch, CURLOPT_POST, 1);
