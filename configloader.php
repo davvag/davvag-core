@@ -1,6 +1,6 @@
 <?php
     
-    $configFolder = getenv("SOSSCONFIGFOLDER");
+    $configFolder = getenv("DAVVAGCONFIG");
 
     if ($configFolder === FALSE)
         $configFolder = dirname(__FILE__);
@@ -32,9 +32,11 @@
                     define($key,$value);
             }
         }
+    }else{
+        define ("LOCAL_DEV_HOST", "default");
     }
     
-
+    
     if (!isset($configData))
         $configData = new stdClass();
         

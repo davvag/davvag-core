@@ -1,6 +1,6 @@
 <?php
 // a function to receive an write some data into a file
-require_once (dirname(__FILE__) . "/../../configloader.php");
+//require_once (dirname(__FILE__) . "/../../configloader.php");
 
 class CacheData{
     public static function getObjects($lastVersionId,$className){
