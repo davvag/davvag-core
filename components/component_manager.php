@@ -7,6 +7,7 @@
         }
 
         private function getComponentDescriptor($req, $res, $asObject = true, $includeLocation = false){
+            //echo TENANT_RESOURCE_LOCATION;
             $s=checkAccess($res,$req->Params()->appCode);
             //echo $req->Params()->appCode;
             if(!$s){
@@ -16,7 +17,7 @@
             $appacess=$GLOBALS["appAccess"]->{$req->Params()->appCode};
             //echo json_encode($appacess);
             $componentName = $req->Params()->componentName;
-            $appFile = TENANT_RESOURCE_LOCATION . "/{$req->Params()->appCode}/app.json";
+            $appFile = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/app.json";
             $outObj;$success=false;
 
             if (file_exists($appFile)){
@@ -26,13 +27,13 @@
                     if (isset($appObj->components)){
                       if (isset($appObj->components->$componentName)){
                           $componentType = $appObj->components->$componentName->location;
-                          $componentDescriptor = TENANT_RESOURCE_LOCATION . "/{$req->Params()->appCode}/$componentType/$componentName/component.json";
+                          $componentDescriptor = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/$componentType/$componentName/component.json";
 
                           if (file_exists($componentDescriptor)){
                             if ($asObject){
                                 $componentObj = json_decode(file_get_contents($componentDescriptor));
                                 if ($includeLocation)
-                                $componentObj->location = TENANT_RESOURCE_LOCATION . "/{$req->Params()->appCode}/$componentType/$componentName";
+                                $componentObj->location = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/$componentType/$componentName";
                             }
                             else    
                                 $componentObj = file_get_contents($componentDescriptor);
@@ -258,7 +259,7 @@
 
                 $newApps = new stdClass();
                 foreach ($outObj as $appCode => $appData) {
-                    $appLocation = TENANT_RESOURCE_LOCATION . "/$appCode/app.json" ;
+                    $appLocation = TENANT_RESOURCE_LOCATION . "/apps/$appCode/app.json" ;
                     if (file_exists($appLocation)){
                         $jsonObj = json_decode(file_get_contents($appLocation));
                         if (isset($jsonObj)){
@@ -302,7 +303,8 @@
         }
 
         public function GetAppDescriptor($req, $res, $asObject=false){
-            $appLocation = TENANT_RESOURCE_LOCATION . "/{$req->Params()->appCode}/app.json" ;
+            //echo TENANT_RESOURCE_LOCATION;
+            $appLocation = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/app.json" ;
             $outObj;$success=false;
             
             if (file_exists($appLocation)){
