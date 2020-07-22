@@ -15,7 +15,11 @@
                 writeResponse($res, false, array("message"=>"UnAutherized call. this user group do not have permision ".GROUPID));
                 return null;
             }
-            $appacess=$GLOBALS["appAccess"]->{$req->Params()->appCode};
+            if(!BYPASS){
+                $appacess=$GLOBALS["appAccess"]->{$req->Params()->appCode};
+            }else{
+                $appacess=null;
+            }
             //echo json_encode($appacess);
             $componentName = $req->Params()->componentName;
             $appFile = TENANT_RESOURCE_LOCATION . "/apps/{$req->Params()->appCode}/app.json";

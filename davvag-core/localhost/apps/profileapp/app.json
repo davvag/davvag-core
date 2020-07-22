@@ -1,0 +1,65 @@
+{
+    "components": {
+        "profile": {
+            "type":"service",
+            "location":"services"
+        },
+        "frmProfile": {
+            "type":"component",
+            "location":"components"
+        },
+        "frmInvoice": {
+            "type":"component",
+            "location":"components"
+        },
+        "frmPO": {
+            "type":"component",
+            "location":"components"
+        },
+        "frmInvoice-view": {
+            "type":"component",
+            "location":"components"
+        },
+        "frmRecipt": {
+            "type":"component",
+            "location":"components"
+        },
+        "frmRecipt-view": {
+            "type":"component",
+            "location":"components"
+        }
+        ,
+        "frmprofile-view": {
+            "type":"component",
+            "location":"components"
+        },
+        "frmprofile-list": {
+            "type":"component",
+            "location":"components"
+        }
+    },  
+    "description":{
+        "title": "Profile",
+        "author":"Davvag",
+        "version":"0.9",
+        "icon":""
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "frmprofile-list",
+            "onLoad": ["profile"],
+            "routes":{
+                "partials":{
+                    "/view" : "frmprofile-view",
+                    "/edit" : "frmProfile",
+                    "/inv" : "frmInvoice",
+                    "/rpt" : "frmRecipt",
+                    "/po" : "frmPO",
+                    "/receipt" : "frmRecipt-view",
+                    "/invoice":"frmInvoice-view"
+                }
+            }
+        }
+    }
+}

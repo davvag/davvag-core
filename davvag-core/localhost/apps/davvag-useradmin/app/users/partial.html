@@ -1,0 +1,79 @@
+<div style="color:black;">
+    <div>
+        <div class="btn-group" role="group" aria-label="..." style="margin: 10px;">
+          <a class="btn btn-info" v-on:click="navigate(null)">New</a>
+        </div>
+    </div>
+    <br/>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>User Name</th>
+        <th>Full Name</th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in items">
+        <td>{{ item.email }}</td>
+        <td>{{ item.username }}</td>
+        <td>{{ item.name }}</td>
+        <td><a class="btn btn-primary" v-on:click="navigate(item)">Reset Password</a></td>
+        <td><a class="btn btn-primary" v-on:click="navigateGroup(item)">Change Group</a></td>
+        <td><a class="btn btn-warning" v-on:click="navigate(item)">Block</a></td>
+        <td><a class="btn btn-danger" v-on:click="navigate(item)">Delete</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal fade" id="modalImagePopup" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+    
+      <div class="modal-header">
+              <h1>User Creation</h1>
+      </div>
+      <div class="modal-body">
+          <form id="form-signup">
+            <input v-model="item.name" type="text" id="user-name" class="form-control" placeholder="Full name" required="" autofocus="">
+            <input v-model="item.email" type="email" id="user-email" class="form-control" placeholder="Email address" required autofocus="">
+            <input v-model="item.contactno" type="email" id="user-contact" class="form-control" placeholder="Contact No" required autofocus="">
+            <input v-if="!item.userid" v-model="item.password" type="password" id="user-pass" class="form-control" placeholder="Password" required autofocus="">
+            <input v-if="!item.userid" v-model="item.confirmpassword" type="password" id="user-repeatpass" class="form-control" placeholder="Repeat Password" required autofocus="">
+            <select class="form-control" id="textProductCategory" placeholder="User Group" v-model="item.groupid">
+              <option v-for="g in groups" v-bind:value="g.groupid">{{g.groupid}}</option>
+            </select>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button v-on:click="saveUser" class="btn btn-primary btn-block"><i class="fa fa-user"></i> Sign Up</button>
+          <button v-on:click="canceluserForm()" class="btn btn-primary btn-block"><i class="fa fa-close"></i> Close</button>
+        </div>
+    </div>
+  </div>
+  </div>
+  <div class="modal fade" id="modalGroup" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+      
+        <div class="modal-header">
+                <h1>Change Group</h1>
+        </div>
+        <div class="modal-body">
+            <form id="form-signup">
+              <select class="form-control" id="textProductCategory" placeholder="User Group" v-model="item.groupid">
+                <option v-for="g in groups" v-bind:value="g.groupid">{{g.groupid}}</option>
+              </select>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button v-on:click="changeGroup" class="btn btn-primary btn-block"><i class="fa fa-user"></i> Change</button>
+            <button v-on:click="cancelgroupForm()" class="btn btn-primary btn-block"><i class="fa fa-close"></i> Close</button>
+          </div>
+      </div>
+    </div>
+  
+  </div>

@@ -26,14 +26,25 @@ class LoginService {
     }
 
     public function getLogout($req){
-        unset ($_COOKIE["securityToken"]);
-        unset ($_COOKIE["authData"]);
-        setcookie("securityToken", null, -1, "/");
-        setcookie("authData", null, -1, "/");
-        unset($_SESSION["authData"]);
-        session_regenerate_id();
-        $outObject = new stdClass();
-        return $outObject;
+        if(isset($_COOKIE['authData']))
+        {
+            $authdata=json_decode($_COOKIE['authData']);
+            $outObject = Auth::GetLogout($authdata->token);
+                if(!isset($outObject->error)){
+                unset($_SESSION["authData"]);
+                unset($_COOKIE['authData']); 
+                setcookie('authData', null, -1, '/'); 
+                unset($_COOKIE['securityToken']); 
+                setcookie('securityToken', null, -1, '/'); 
+                session_regenerate_id();
+                //$outObject = new stdClass();
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        } 
     }
 
     public function getGetResetToken($req){

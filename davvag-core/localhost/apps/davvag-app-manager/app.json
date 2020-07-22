@@ -1,0 +1,54 @@
+{
+    "components": {
+        "app-handler": {
+            "type":"service",
+            "location":"services"
+        }
+        ,
+        "apps":{
+            "type":"component",
+            "location":"app"
+        }
+    },
+    "description":{
+        "title": "App Manager",
+        "author":"Lasitha Senanayake",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "apps",
+            "onLoad": ["app-handler"],
+            "routes":{
+                "partials":{
+                    "/app" : "apps"
+                }
+            }
+        }
+    },
+    "schemas":{
+        "applications":"application.json",
+        "users":"users.json"
+
+    },
+    "resources": {
+        "js" : [
+            {
+                "tag": "bootstrap-datetimepicker",
+                "version" : "latest",
+                "location":"assets/bootstrap-datetimepicker.min.js"
+            }
+        ],
+        "css":[
+            {
+                "type":"css",
+                "location":"assets/bootstrap-datetimepicker.min.css"
+            },{
+                "type" : "css",
+                "location" : "assets/broadstyle.css"
+            }
+        ]
+    }
+}

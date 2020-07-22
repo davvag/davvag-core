@@ -1,0 +1,12 @@
+{
+	"fields":[
+		{"name":"admin","caption":"nama","type":"input","valuetype":"text"},
+		{"name":"admin","caption":"nama","type":"input","valuetype":"text"}
+	],
+	"dataquery":"",
+	"post":"/lasitha/",
+	"retrive":{
+		"method":"get",
+		"parameters":["a","b","c"]
+	}
+}

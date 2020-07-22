@@ -1,0 +1,128 @@
+<div class="container" >
+    <div  v-if="loading" class="row">            
+        <h2><span class="fa fa-refresh fa-spin" ></span> Loading Content Please wait...</h2>   
+    </div>
+    <div class="row">
+    <div class="blog-post">
+        <div class="row">
+            <h2 class="blog-post-title" v-html="product.title"></h2>
+        </div>
+        <div class="row">
+                <audio v-if="getfiletype(product.imgname)=='audio'"  class="pull-left" controls>
+                        <source :src="'components/dock/soss-uploader/service/get/d_cms_artical/'+product.id+'-'+product.imgname" type="audio/mpeg">
+                        <a :href="'components/dock/soss-uploader/service/get/d_cms_artical/'+product.id+'-'+product.imgname">Please click to download file</a>
+                </audio>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                
+                <img v-if="getfiletype(product.imgname)=='img'" :src="'components/dock/soss-uploader/service/get/d_cms_artical/'+product.id+'-'+product.imgname" alt="post img" width="300" class="pull-left img-responsive postImg img-thumbnail margin10 image-blog-post">
+                <article v-html="compiledMarkdown">
+                </article>      
+                 
+            </div>
+        </div>
+        
+    </div>
+    </div>
+    <div class="row" v-if="product.showpics=='y'">
+        
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-xs-6 thumb" v-for="image in p_image" v-if="product.imgname!=image.name">
+                <a  class="thumbnail" v-on:click="showModal('components/dock/soss-uploader/service/get/d_cms_artical/'+product.id+'-'+image.name)" :src="'components/dock/soss-uploader/service/get/d_cms_artical/'+product.id+'-'+image.name"
+                   data-target="#image-gallery">
+                    <img v-if="getfiletype(image.name)=='img'" class="img-thumbnail"
+                    :src="'components/dock/soss-uploader/service/get/d_cms_artical/'+product.id+'-'+image.name"
+                         :alt="image.caption" >
+                    <audio v-if="getfiletype(image.name)=='audio'" controls>
+                                <source :src="'components/dock/soss-uploader/service/get/d_cms_artical/'+product.id+'-'+image.name" type="audio/mpeg">
+                                
+                    </audio>
+                </a>
+                
+            </div>
+            
+        </div>
+
+
+        <div class="modal fade" id="image-gallery" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="image-gallery-title"></h4>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- <img id="image-gallery-image" class="img-responsive col-md-12" src=""> -->
+                        <img class="img-responsive col-md-12" :src="currentImage">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary float-left" id="show-previous-image"><i class="fa fa-arrow-left"></i>
+                        </button>
+
+                        <button type="button" id="show-next-image" class="btn btn-secondary float-right"><i class="fa fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sharethis" class="row">
+        <div col-12>
+            <h4 style="padding-left: 23px;margin-bottom: 20px;">Share This Article On</h4>
+        </div>
+        
+    </div>
+    <div id="sharebar" class="row" >
+        <div class="col-social">
+            <a  :href="'https://facebook.com/sharer/sharer.php?u='+escape(url)" target="_blank" aria-label="Share on Facebook">
+                <i class="fa fa-facebook-square fa-2x"> </i> 
+            </a>
+        </div>
+        <div class="col-social">
+        <a  :href="'https://twitter.com/intent/tweet/?text='+product.summery+'&url='+escape(url)" target="_blank" aria-label="Share on Twitter">
+            <i class="fa fa-twitter-square fa-2x"></i>
+        </a>
+        </div>
+        <div class="col-social">
+            <a  :href="'whatsapp://send?text='+product.summery+' '+url" target="_blank" aria-label="Share on WhatsApp">                
+                    <i class="fa fa-whatsapp fa-2x"></i>
+                </a>
+        </div>
+        <div class="col-social">
+            <a  :href="'https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title='+product.title+'&amp;caption='+product.summery+'&amp;content='+escape(url)+'&amp;canonicalUrl='+escape(url)+'&amp;shareSource=tumblr_share_button'" target="_blank" aria-label="Share on Tumblr">                                
+                        <i class="fa fa-tumblr-square fa-2x"></i>
+                    </a>
+        </div>
+        <div class="col-social">
+            <a  :href="'https://www.linkedin.com/shareArticle?mini=true&amp;url='+escape(url)+'&amp;title='+product.title+'&amp;summary='+product.summery+'&amp;source='+escape(url)" target="_blank" aria-label="Share on LinkedIn">
+                                
+                        <i class="fa fa-linkedin-square fa-2x"></i>
+                    </a>
+        </div>
+        <div class="col-social">
+            <a  :href="'mailto:?subject='+product.title+'&amp;body='+escape(url)" target="_self" aria-label="Share by E-Mail">                      
+                            <i class="fa fa-envelope fa-2x"></i>
+                        </a>
+            </div>
+        <div class="col-social">
+            <a  :href="'https://pinterest.com/pin/create/button/?url='+escape(url)+'&amp;media='+url+'&amp;description='+product.summery" target="_blank" aria-label="Share on Pinterest">                                      
+                                    <i class="fa fa-pinterest fa-2x"></i>
+                                </a>
+        </div>
+    </div>
+    
+    <div class="row blogCard">
+            <div class="col-sm-4 col-sm-offset-1 blogShortContainer" v-for="item in Articals">
+              <div class="blogShort">
+                <a :href="item.application+'?id='+item.id"><h3 class="articleTitlte">{{ unescape(item.title) }}</h3></a>
+                <article class="articalHight" v-html="marked(unescape(item.summery))"></article>
+                <a class="pull-right marginBottom10 read-more-link" :href="item.application+'?id='+item.id">READ MORE</a> 
+              </div>    
+             </div>
+            
+    </div>
+    
+</div>

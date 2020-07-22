@@ -4,7 +4,7 @@
       <br/><br/><br/><br/>
       <h1 class="mx-auto my-0 text-white text-uppercase" v-html="titlepage.title"></h1>
       <h2 class="text-white-50 mx-auto mt-2 mb-5" v-html="titlepage.caption"> Is a ministry providing biblical hope and practical help for everyday problems. </h2>
-      <a href="#about" class="btn btn-primary js-scroll-trigger">{{ titlepage.buttoncaption }}</a>
+      <a :href="titlepage.buttonuri" class="btn bg-primary-button">{{ titlepage.buttoncaption }}</a>
       <br/><br/><br/><br/>
     </div>
   </div>

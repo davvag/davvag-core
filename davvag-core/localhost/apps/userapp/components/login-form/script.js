@@ -37,10 +37,12 @@ WEBDOCK.component().register(function(exports){
                 });
             },
             toggleSignUp:function(){
+                bindData.submitErrors=[];
                 $('#logreg-forms .form-signin').toggle(); // display:block or none
                 $('#logreg-forms .form-signup').toggle(); // display:block or none
             },
             toggleResetPswd:function(){
+                bindData.submitErrors=[];
                 $('#logreg-forms .form-signin').toggle() // display:block or none
                 $('#logreg-forms .form-reset').toggle() // display:block or none
             },
@@ -48,6 +50,7 @@ WEBDOCK.component().register(function(exports){
                 loginLogic({email: bindData.loginForm.email,password:bindData.loginForm.password}, true);
             },
             resetpassword:function(email){
+                bindData.submitErrors=[];
                 $("#form-reset :input").prop("disabled", true);
 
                 var handler = exports.getComponent("login-handler");
@@ -183,14 +186,19 @@ WEBDOCK.component().register(function(exports){
                      
                 }else {
                     //toastr.error('email and password is incorrect.', 'Security!');    
-                    $("#form-signin :input").prop("disabled", fasle);
+                    $("#form-signin :input").prop("disabled", false);
 
                     bindData.submitErrors=[];
                     bindData.submitErrors.push('email and password is incorrect.');
-                    console.log('email and password is incorrect.', 'Security!');
+                    //console.log('email and password is incorrect.', 'Security!');
                 }
     
             }).error (function(result){
+                $("#form-signin :input").prop("disabled", false);
+
+                bindData.submitErrors=[];
+                bindData.submitErrors.push('email and password is incorrect.');
+                console.log(result);
                 scope.isBusy = false;
             });;
         //}

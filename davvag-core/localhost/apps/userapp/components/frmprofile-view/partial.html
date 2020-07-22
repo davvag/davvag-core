@@ -24,7 +24,10 @@
         
       </div>
       <div class="profile-userbuttons">
-        <button type="button" class="btn btn-danger btn-sm">Logout</button>
+        <button type="button" class="btn btn-success btn-sm" v-on:click="showPay">Pay Online</button>
+      </div>
+      <div class="profile-userbuttons">
+        <button type="button" class="btn btn-danger btn-sm" v-on:click="logout">Logout</button>
       </div>
       <!-- END SIDEBAR BUTTONS -->
       <!-- SIDEBAR MENU -->
@@ -109,5 +112,35 @@
             </div><!-- tab-content -->
           </div>
   </div>
+</div>
+<div class="modal fade" id="modalImagePopup" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+    
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+        <div class="modal-header">
+            Pay Online 
+        </div>
+        <div class="modal-body">
+          <div class="form-group col-md-12">
+            <label for="exampleInputPassword1">Outstanding </label> 
+            <span>{{ Summary.outstanding | currency }} </span> 
+            
+          </div>
+            <div class="form-group col-md-12">
+              <label for="exampleInputPassword1">Amount *</label>
+              <input type="text" class="form-control" v-model="profile.amount">
+            </div>
+            <div class="form-group col-md-12">
+                <label for="exampleInputPassword1">Remarks </label>
+                <textarea class="form-control deliveryAddress" v-model="profile.remarks" style="margin-bottom:10px;"></textarea>
+            </div>
+          </div>
+          
+        <div class="modal-footer">
+          <button class="btn btn-primary" v-on:click="pay">Pay Now</button>
+          <button type="button" class="btn btn-danger" v-on:click="cancelPay">Cancel</button>
+        </div>
+    </div>
+</div>
 </div>
 </div>

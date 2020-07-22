@@ -1,0 +1,112 @@
+<div class="contentpanel">
+      
+  <div class="row">
+    <div class="col-sm-3">
+      <img :src="image" class="thumbnail img-responsive" alt="">
+      
+      <div class="mb30"></div>
+      
+      <h5 class="subtitle">Connect</h5>
+      <ul class="profile-social-list">
+        <li> <a href="">{{ item.email }}</a></li>
+        <li> <a href="">{{ item.contactno }}</a></li>
+      </ul>
+      
+      <div class="mb30"></div>
+      
+      <h5 class="subtitle">Address</h5>
+      <address>
+        {{ item.address }}
+      </address>
+      
+    </div><!-- col-sm-3 -->
+    <div class="col-sm-9">
+      
+      <div class="profile-header">
+        <h2 class="profile-name">{{ item.name }}</h2>
+        <div class="profile-location"><i class="fa fa-map-marker"></i> {{ item.city }}, {{ item.country }}</div>
+        <div class="profile-position"><i class="fa fa-briefcase"></i>  {{ item.organization }}</div>
+        
+        <div class="mb20"></div>
+        
+        <button class="btn btn-success mr5" v-on:click="navigate(item.id)"><i class="fa fa-user" ></i> Edit</button>
+       <!-- <button class="btn btn-white"><i class="fa fa-envelope-o"></i> Message</button>-->
+      </div><!-- profile-header -->
+      
+      <!-- Nav tabs -->
+    <ul class="nav nav-tabs nav-justified nav-profile">
+      <li class="active"><a href="#tran" data-toggle="tab"><strong>Trasaction History</strong></a></li>
+      <li><a href="#events" data-toggle="tab"><strong>Enrolments</strong></a></li>
+    </ul>
+    
+    <!-- Tab panes -->
+    <div class="tab-content">
+      
+      <div class="tab-pane active" id="tran">
+        <table class="table mb30">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>#</th>
+              <th>Date</th>
+              <th>Amout</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="t in Transaction">
+              <td>{{ t.trantype }}</td>
+              <td>{{ t.tranid }}</td>
+              <td>{{ t.tranDate }}</td>
+              <td>{{ t.amount | currency }}</td>
+              <td><button class="btn btn-success btn-sm"v-on:click="navigatepage(t.trantype,t.tranid);">View</button></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{ Summary.outstanding | currency }}</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane" id="events">
+        <div class="events">
+          <h5 class="subtitle">Enrolments</h5>
+          <div class="row">
+            <div class="col-sm-6" v-for="itm in items">
+              <div class="media">
+               
+                <img class="pull-left media-object" :src="'components/dock/soss-uploader/service/get/products/'+itm.itemid" alt="100x120" width="0" height="0" style="width: 100px; height: 120px;">
+                
+                <div class="media-body event-body">
+                  <h4 class="event-title">{{ itm.name }}</h4>
+                  <small class="text-muted"><i class="fa fa-shield"></i> {{ itm.catogory }}</small>
+                  <small class="text-muted"><i class="fa fa-calendar"></i> {{ itm.purchaseddate }}</small>
+                  <p><strong>Unit Of Mesure: </strong>{{ itm.uom }} | <strong>Quantity: </strong>{{ itm.qty }} | <strong>Total Charged: </strong>{{ itm.price }}</p>
+                  
+                  
+                  <span :class="'pull-right label label-'+status(itm.status)">{{ itm.status }}</span>
+                </div>
+              </div><!-- media -->
+            </div><!-- col-sm-6 -->
+            
+            
+          </div>
+          
+          <br>
+          
+          <h5 class="subtitle">Past Enrolments</h5>
+          <div class="row">
+
+          </div>
+          
+        </div><!-- events -->
+      </div>
+    </div><!-- tab-content -->
+      
+    </div><!-- col-sm-9 -->
+  </div><!-- row -->
+  
+</div>

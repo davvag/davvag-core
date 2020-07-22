@@ -75,16 +75,16 @@
             "type":"partial",
             "location":"partials"
         },
-        "partial-homeblog-bg":{
+        "qti-home":{
             "type":"partial",
             "location":"partials"
         }
 
     },
     "description":{
-        "title": "Davvag CMS -Loading......",
+        "title": "Davvag CMS 0.7",
         "author":"Daavg",
-        "version":"0.6",
+        "version":"0.7",
         "icon":""
     },
     "configuration":{
@@ -99,9 +99,9 @@
                 "home" : "/home",
                 "notFound": "/notFound",
                 "partials" : {
-                    "/" : "partial-homeblog-bgs",
+                    "/" : "qti-home",
                     "/app/@appName/*appRoute" : "partial-app",
-                    "/home" : "partial-homeblog-bg",
+                    "/home" : "qti-home",
                     "/donate" : "partial-donation",
                     "/notFound": "partial-404",
                     "/account": "partial-account",

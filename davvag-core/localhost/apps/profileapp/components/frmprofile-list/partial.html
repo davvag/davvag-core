@@ -1,0 +1,67 @@
+<div class="contentpanel">
+  <div class="row row-pad-12">
+    <div class="col-lg-4">
+        <select class="form-control mb15" v-model="SearchColumn">
+            <option>id</option>
+            <option>name</option>
+            <option>email</option>
+            <option>contactno</option>
+            <option>organization</option>
+            <option>catogory</option>
+            <option>id_number</option>
+            <option>passportno</option>
+        </select>
+    </div>
+    <div class="col-lg-8">
+        <div class="input-group mb15">
+            
+            <div >
+              <input type="text" class="form-control" placeholder="Search"  v-model="SearchItem"/>
+            </div>
+            
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target=".bs-example-modal-lg" v-on:click="searchItems(SearchColumn,SearchItem);">Search</button>
+                <button class="btn btn-default" v-on:click="navigate('edit',null)">New Profile</button>
+              </span>
+        </div>
+    </div>
+    
+</div>
+  <div class="mb30"></div>
+  
+  <div class="people-list">
+    <div class="row">
+        <h1><center>{{ Message }}</center></h1>
+    </div>
+    
+    <div class="row">
+      
+      <div class="col-md-6" v-for="profile in items">
+        <div class="people-item">
+          <div class="media">
+            
+            <img alt="" :src="profile.image" class="pull-left thumbnail media-object" v-on:click="navigate('view',profile)">
+            
+            <div class="media-body">
+              <h4 class="person-name" v-on:click="navigate('view',profile)">{{ profile.name }}</h4>
+              <div class="text-muted"><i class="fa fa-map-marker"></i> {{ profile.city }}, {{ profile.country }}</div>
+              <div class="text-muted"><i class="fa fa-briefcase"></i> {{ profile.organization }}</div>
+              <ul class="social-list">
+                <li><button class="btn btn-default btn-xs" v-on:click="navigate('view',profile)">View</button></li>
+                <li><button class="btn btn-default btn-xs" v-on:click="navigate('edit',profile)">Edit</button></li>
+                <li><button class="btn btn-default btn-xs" v-on:click="navigate('inv',profile)">Invoice</button></li>
+                <li><button class="btn btn-default btn-xs" v-on:click="navigate('rpt',profile)">Payment</button></li>
+                <li><button class="btn btn-default btn-xs" v-on:click="navigate('po',profile)">Purchase Order</button></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div><!-- col-md-6 -->
+      <div class="row center" v-if="items">
+        <button class="btn btn-default" v-on:click="clear">Clear History</button>
+      </div>
+      
+    </div><!-- row -->
+  </div><!-- people-list -->
+  
+</div>

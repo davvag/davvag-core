@@ -1,0 +1,236 @@
+<div  class="container" v-show="!invoiceSave">
+    <div class="row clearfix">
+        <div class="col-md-12">
+          <button  class="btn btn-default pull-left" v-on:click="savePreview">Save</button>
+          
+          <button  class="pull-right btn btn-default" v-on:click="navigateBack">Back</button>
+        </div>
+      </div>
+    <div class="row clearfix" style="margin-top:20px">
+        <div class="pull-left col-md-4">
+          <table class="table table-bordered table-hover" id="tab_logic_total">
+            <tbody>
+            <tr>
+              <th>ID</th>
+              <td>{{ i_profile.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ i_profile.name }}</td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td> <textarea class="form-control" rows="4" placeholder="Address" v-model="i_profile.address"></textarea></td>
+            </tr>
+            <tr>
+                <th>City</th>
+                <td> {{ i_profile.city }}</td>
+            </tr>
+            <tr>
+                <th>Country</th>
+                <td> {{ i_profile.country }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pull-right col-md-4">
+            <table class="table table-bordered table-hover" id="tab_logic_total">
+              <tbody>
+              <tr>
+                <th>Invoice Number</th>
+                <td>N/A</td>
+              </tr>
+              <tr>
+                  <th>Date</th>
+                  <td>{{ date }}</td>
+              </tr>
+              <tr>
+                  <th>Due Date</th>
+                  <td>{{ duedate }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+      </div>
+  <div class="row clearfix">
+    <div class="col-md-12">
+      <table class="table table-bordered table-hover" id="tab_logic">
+        <thead>
+          <tr>
+            <th class="text-center"> # </th>
+            <th class="text-center"> Product </th>
+            <th class="text-center"> UOM </th>
+            <th class="text-center"> Qty </th>
+            <th class="text-center"> Price </th>
+            <th class="text-center"> Total </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in InvItems">
+            <td>{{ item.itemid }}</td>
+            <td>
+                <div class="row">
+                    
+                          <select v-model="item.selected" class="form-control mb15" v-on:change="itemselect(item)" >
+                                <option value=""></option >
+                                <option  v-bind:value="p" v-for="p in products">{{ p.name }}</option >
+                                
+                          </select>
+                        
+             
+            
+            </td>
+            <td> {{ item.uom }}</td>
+            <td><input type="number" v-model="item.qty" placeholder='Enter Qty' class="form-control qty" step="0" min="0" v-on:change="itemsQtyChange(item)"/></td>
+            <td><input type="number" v-model="item.price" placeholder='Enter Unit Price' class="form-control price" step="0.00" min="0"/></td>
+            <td><input type="number" v-model="item.total" placeholder='0.00' class="form-control total" readonly/></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="row clearfix" style="margin-top:20px">
+    <div class="pull-right col-md-4">
+      <table class="table table-bordered table-hover" id="tab_logic_total">
+        <tbody>
+          <tr>
+            <th class="text-center">Sub Total</th>
+            <td class="text-center"><input type="number" name='sub_total' placeholder='0.00' class="form-control" id="sub_total" readonly v-model="subtotal"/></td>
+          </tr>
+          <tr>
+            <th class="text-center">Tax</th>
+            <td class="text-center"><div class="input-group mb-2 mb-sm-0">
+                <input type="number" class="form-control" id="tax" placeholder="0" v-model="tax" v-on:change="taxChange">
+                <div class="input-group-addon">%</div>
+              </div></td>
+          </tr>
+          <tr>
+            <th class="text-center">Tax Amount</th>
+            <td class="text-center"><input type="number" name='tax_amount' id="tax_amount" placeholder='0.00' class="form-control" readonly  v-model="taxamount"/></td>
+          </tr>
+          <tr>
+            <th class="text-center">Grand Total</th>
+            <td class="text-center"><input type="number" name='total_amount' id="total_amount" placeholder='0.00' class="form-control" readonly  v-model="total"/></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div  class="container" v-show="invoiceSave">
+    <div class="row clearfix">
+        <div class="col-md-12">
+          <button id="send" class="btn btn-default pull-left" v-on:click="save" :disabled="InvoiceToSave.invoiceNo != 0 ? true : false">Confirm To Save</button>
+          <button  class="pull-right btn btn-default" v-on:click="savePreviewCancel" :disabled="InvoiceToSave.invoiceNo != 0 ? true : false">Cancel</button>
+          <button  class="pull-right btn btn-default" v-on:click="navigateBack" v-show="InvoiceToSave.invoiceNo != 0 ? true : false">Back</button>
+          <button  class="pull-right btn btn-default" v-on:click="print" v-show="InvoiceToSave.invoiceNo != 0 ? true : false">Print</button>
+        </div>
+      </div>
+    <div id="printcontent" >
+    <div class="row">
+        <div class="col-xs-12">
+    		<div class="invoice-title">
+    			<h2>Invoice</h2><h3 class="pull-right">Invoice # {{ InvoiceToSave.invoiceNo }}</h3>
+    		</div>
+    		<hr>
+    		<div class="row">
+    			<div class="col-xs-6">
+    				<address>
+            <strong>Billed To:</strong><br>
+            <strong>ID:</strong>{{ InvoiceToSave.profileId }}<br>
+    					{{ InvoiceToSave.name }}<br>
+    					{{ InvoiceToSave.address }}<br>
+    					{{ InvoiceToSave.city }}<br>
+    					{{ InvoiceToSave.country }}
+    				</address>
+    			</div>
+    			<div class="col-xs-6 text-right">
+            
+    				<address>
+        			<strong>Invoiced By:</strong><br>
+    					Lanka Bible College<br>
+    					Christopher Road,<br>
+    					Peradeneya<br>
+    					Sri Lanka
+    				</address>
+    			</div>
+    		</div>
+    		<div class="row">
+    			<div class="col-xs-6">
+    				<address>
+    					<strong>Conatct Details:</strong><br>
+    					{{ InvoiceToSave.contactno }}<br>
+              {{ InvoiceToSave.email }}<br>
+              <img :src="'https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=pfl'+InvoiceToSave.profileId+'&choe=UTF-8'" v-show="InvoiceToSave.invoiceNo != 0 ? true : false"/>
+    				</address>
+    			</div>
+    			<div class="col-xs-6 text-right">
+    				<address>
+    					<strong>Order Date:</strong><br>
+              {{ InvoiceToSave.invoiceDate }}<br>
+              <img :src="'https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=inv'+InvoiceToSave.invoiceNo+'&choe=UTF-8'" v-show="InvoiceToSave.invoiceNo != 0 ? true : false"/>
+              <br>
+    				</address>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+    
+    <div class="row">
+    	<div class="col-md-12">
+    		<div class="panel panel-default">
+    			<div class="panel-heading">
+    				<h3 class="panel-title"><strong>Invoice summary</strong></h3>
+    			</div>
+    			<div class="panel-body">
+    				<div class="table-responsive">
+    					<table class="table table-condensed">
+    						<thead>
+                    <tr>
+        							<td><strong>Item</strong></td>
+                      <td class="text-center"><strong>Price</strong></td>
+                      <td class="text-center"><strong>UOM</strong></td>
+        							<td class="text-center"><strong>Quantity</strong></td>
+        							<td class="text-right"><strong>Totals</strong></td>
+                      </tr>
+    						</thead>
+    						<tbody>
+    							<!-- foreach ($order->lineItems as $line) or some such thing here -->
+    							<tr v-for="invoiceitem in InvoiceToSave.InvoiceItems">
+    								<td>{{ invoiceitem.name }}</td>
+    								<td class="text-center">{{ invoiceitem.price }}</td>
+                    <td class="text-center">{{ invoiceitem.uom }}</td>
+                    <td class="text-center">{{ invoiceitem.qty }}</td>
+    								<td class="text-right">{{ invoiceitem.total }}</td>
+    							</tr>
+    							<tr>
+    								<td class="thick-line"></td>
+                    <td class="thick-line"></td>
+                    <td class="thick-line"></td>
+    								<td class="thick-line text-left"><strong>Subtotal</strong></td>
+    								<td class="thick-line text-right">{{ InvoiceToSave.subtotal }}</td>
+    							</tr>
+    							<tr>
+    								<td class="no-line"></td>
+                    <td class="no-line"></td>
+                    <td class="no-line"></td>
+    								<td class="no-line text-left"><strong>Tax Amount</strong></td>
+    								<td class="no-line text-right">{{ InvoiceToSave.taxamount }}</td>
+    							</tr>
+    							<tr>
+    								<td class="no-line"></td>
+                    <td class="no-line"></td>
+                    <td class="no-line"></td>
+    								<td class="no-line text-left"><strong>Total</strong></td>
+    								<td class="no-line text-right">{{ InvoiceToSave.total }}</td>
+    							</tr>
+    						</tbody>
+    					</table>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+  </div>
+</div>

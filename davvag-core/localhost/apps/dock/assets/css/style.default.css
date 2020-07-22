@@ -1,64 +1,3 @@
-/*
- *  Created: @themepixels
- *  Website: http://themepixels.com/
- * 
- *  ---------------------------------------
- *  ---------- TABLE OF CONTENTS ----------
- *  ---------------------------------------
- *  
- *  1.  FILE IMPORTS
- *  2.  RESET STYLES
- *  3.  HEADER PANEL
- *          3.1     HEADER LEFT
- *          3.2     HEADER RIGHT
- *  4.  LEFT PANEL
- *          4.1     NAVIGATION STYLES
- *          4.2     INFO SUMMARY
- *  5.  MAIN PANEL
- *          5.1     DASHBOARD
- *  6.  FORM STYLES
- *          6.1     FORM WIZARD STYLES
- *  7.  UI ELEMENTS
- *  8.  EMAIL
- *  9.  TABLES
- *  10. PAGES
- *          10.1    CALENDAR
- *          10.2    MEDIA MANAGER
- *          10.3    PROFILE
- *          10.4    BLOG LIST
- *          10.5    BLOG SINGLE
- *          10.6    PEOPLE DIRECTORY
- *          10.7    NOT FOUND PAGE
- *          10.8    SEARCH RESULTS
- *          10.9    INVOICE
- *          10.10   TIMELINE
- *          10.11   LOCKED SCREEN
- *          10.12   SIGN IN
- *          10.13   SIGN UP
- *  11. LEFT PANEL COLLAPSED
- *  12. RIGHT PANEL STYLES
- *  13. HORIZONTAL MENU
- *  14. FIXED WIDTH
- *  15. MODALS
- *  16. BUG TRACKER
- *  17. ADDITIONAL STYLES
- *          17.1    DROPDOWN
- *          17.2    ICON
- *          17.3    TIME PICKER
- *          17.4    COLOR PICKER
- *          17.5    STICKY HEADER
- *          17.6    CUSTOM STYLES
- *  18. MEDIA QUERIES
- *  
- */
-
-
-
-
-
-/********** 1. FILE IMPORTS **********/
-/*************************************/
-
 @import url('bootstrap.min.css');
 @import url('bootstrap-override.css');
 @import url('weather-icons.min.css');
@@ -78,7 +17,7 @@
 body {
     background: #1d2939;
     font-family: 'LatoRegular', 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, sans-serif !important;
-    line-height: 21px;
+    /* line-height: 21px; */
     color: #636e7b;
 }
 
@@ -489,6 +428,9 @@ strong {
 
 .leftpanelinner {
     padding: 5px 15px;
+    padding: 5px 15px;
+    max-height: 650px;
+    overflow: auto;
 }
 
 .leftpanel .searchform {
@@ -760,7 +702,7 @@ strong {
 .mainpanel {
     margin-left: 240px;
     background: #e4e7ea;
-    min-height: 1000px;
+    max-height: 800px;
 }
 
 .pageheader {
@@ -867,12 +809,15 @@ strong {
 .contentpanel {
     padding: 20px;
     position: relative;
+    height: 600px;
+    overflow: auto;
 }
 
 .contentpanel::after {
     clear: both;
     display: block;
     content: '';
+    
 }
 
 form .form-group:last-child {

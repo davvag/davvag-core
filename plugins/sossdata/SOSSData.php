@@ -1,12 +1,12 @@
 <?php
 
-require_once (dirname(__FILE__) . "/../../configloader.php");
+//require_once (dirname(__FILE__) . "/../../configloader.php");
 
 class SOSSData {
 
     public static function ExecuteRaw ($className, $saveObj, $lastVersionId = null, $tenantId = null){
         if ($tenantId == null)
-            $tenantId = $_SERVER["HTTP_HOST"];
+            $tenantId = DATASTORE_DOMAIN;
 
         $wrapper = new stdClass();
         $wrapper->object = $saveObj;
@@ -18,7 +18,7 @@ class SOSSData {
 
     public static function Insert ($className, $saveObj, $tenantId = null){
         if ($tenantId == null)
-            $tenantId = $_SERVER["HTTP_HOST"];
+            $tenantId = DATASTORE_DOMAIN;
 
         $wrapper = new stdClass();
         $wrapper->object = $saveObj;
@@ -31,7 +31,7 @@ class SOSSData {
 
     public static function Update ($className, $saveObj, $tenantId = null){
         if ($tenantId == null)
-            $tenantId = $_SERVER["HTTP_HOST"];
+            $tenantId = DATASTORE_DOMAIN;
 
         $wrapper = new stdClass();
         $wrapper->object = $saveObj;
@@ -42,7 +42,7 @@ class SOSSData {
 
     public static function Delete ($className, $saveObj, $tenantId = null){
         if ($tenantId == null)
-            $tenantId = $_SERVER["HTTP_HOST"];
+            $tenantId = DATASTORE_DOMAIN;
         
         
         if(is_array($saveObj)){
@@ -65,7 +65,7 @@ class SOSSData {
 
     public static function Query($className, $query, $lastVersionId = null, $tenantId = null){
         if ($tenantId == null)
-            $tenantId = $_SERVER["HTTP_HOST"];
+            $tenantId = DATASTORE_DOMAIN;
 
         $className = isset($query) ?  "$className?query=$query" : $className;
         $className = isset($query) ?  "$className&lastversionid=$lastVersionId" : "$className?lastversionid=$lastVersionId";
@@ -75,7 +75,7 @@ class SOSSData {
 
     public static function PostQuery($className, $query, $lastVersionId = null, $tenantId = null){
         if ($tenantId == null)
-            $tenantId = $_SERVER["HTTP_HOST"];
+            $tenantId = DATASTORE_DOMAIN;
 
         $wrapper = new stdClass();
         $wrapper->queryParams = $query;

@@ -1,0 +1,94 @@
+{
+    "components": {
+        "cms-gapp-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "Artical-all": {
+            "type":"component",
+            "location":"components"
+        },"Artical-view": {
+            "type":"component",
+            "location":"components"
+        },
+        "Artical-form": {
+            "type":"component",
+            "location":"components"
+        },
+        "Button-form": {
+            "type":"component",
+            "location":"components"
+        },
+        "Button-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "cards-form": {
+            "type":"component",
+            "location":"components"
+        },
+        "cards-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "catogory-form": {
+            "type":"component",
+            "location":"components"
+        },
+        "catogory-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "cms-settings": {
+            "type":"component",
+            "location":"components"
+        },
+        "menu": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "CMS",
+        "author":"Davvag",
+        "version":"1.3",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "menu",
+            "onLoad": ["cms-gapp-handler"],
+            "subApps":{
+                "Articles" : {
+                    "route" : "/artical",
+                    "icon" : "appicon.png"
+                },
+                "All Buttons" : {
+                    "route" : "/buttonsall",
+                    "icon" : "appicon.png"
+                }
+            },
+            "routes":{
+                "partials":{
+                    "/artical" : "Artical-form",
+                    "/articalall" : "Artical-all",
+                    "/buttons":"Button-form",
+                    "/buttonsall":"Button-all",
+                    "/cards":"cards-form",
+                    "/cardsall":"cards-all",
+                    "/cat":"catogory-form",
+                    "/catall":"catogory-all",
+                    "/a" : "Artical-view",
+                    "/settings":"cms-settings"
+                }
+            }
+        },"dock":{
+            "subapps":[
+                {"name":"All Articals","path":"articalall"},{"name":"New Artical","path":"artical"},{"name":"Buttons","path":"buttonsall"}
+                ,{"name":"New Button","path":"buttons"},{"name":"Cards","path":"cardsall"},{"name":"New Card","path":"cards"},{"name":"Catogories","path":"catall"}
+                ,{"name":"New Catogory","path":"cat"},{"name":"Settings","path":"settings"}
+            ]
+        }
+    }
+}

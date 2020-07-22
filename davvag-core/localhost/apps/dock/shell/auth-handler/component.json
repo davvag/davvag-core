@@ -20,7 +20,7 @@
                 "method" : "GET",
                 "parameters": ["email","password","domain"]
             },
-            "logout" : {
+            "Logout" : {
                 "method" : "GET"
             },
             "Session":{

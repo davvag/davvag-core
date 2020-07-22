@@ -1,0 +1,19 @@
+{
+    "name" : "frmprofile-list",
+    "description":"",
+    "author":"Laistha Senanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            },
+            {
+                "type" : "mainView",
+                "location" : "partial.html"
+            }
+        ]
+    }
+}

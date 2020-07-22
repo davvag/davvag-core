@@ -1,0 +1,32 @@
+{
+    "name" : "frmProfile",
+    "description":"",
+    "author":"Laistha Senanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            },
+            {
+                "type" : "mainView",
+                "location" : "partial.html"
+            }
+        ],
+        "js" : [
+            {
+                "tag": "bootstrap-datetimepicker",
+                "version" : "latest",
+                "location":"bootstrap-datepicker.js"
+            }
+        ],
+        "css":[
+            {
+                "type":"css",
+                "location":"datepicker.css"
+            }
+        ]
+    }
+}

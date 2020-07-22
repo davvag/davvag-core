@@ -49,10 +49,18 @@
         define ("HOST_NAME", $_SERVER["HTTP_HOST"]);
     }
     
+    if (!defined("DATASTORE_DOMAIN")){
+        define ("DATASTORE_DOMAIN", $_SERVER["HTTP_HOST"]);
+    }
+
+    if (!defined("AUTH_DOMAIN")){
+        define ("AUTH_DOMAIN", $_SERVER["HTTP_HOST"]);
+    }
     define ("TENANT_RESOURCE_LOCATION", RESOURCE_LOCATION . "/" . HOST_NAME);
     
     define ("BASE_PATH", dirname(__FILE__));
     define ("COMPONENT_PATH", dirname(__FILE__) . "/components");
-    define ("PLUGIN_PATH", dirname(__FILE__) . "/davvag-core/".HOST_NAME."/plugins");
+    define ("PLUGIN_PATH", dirname(__FILE__) ."/plugins");
+    define ("PLUGIN_PATH_LOCAL", dirname(__FILE__) . "/davvag-core/".HOST_NAME."/plugins");
     define ("SCHEMA_PATH", TENANT_RESOURCE_LOCATION . "/schemas");
 ?>

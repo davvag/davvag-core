@@ -28,7 +28,7 @@
     "description":{
         "title": "User App",
         "author":"Davvag",
-        "version":"0.4",
+        "version":"0.5",
         "icon":"appicon.png"
     },
     "tags":["showindock"],

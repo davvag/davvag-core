@@ -1,0 +1,34 @@
+{
+    "components": {
+        "category-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "category-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "category-form": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Product Categories",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "category-all",
+            "onLoad": ["category-handler"],
+            "routes":{
+                "partials":{
+                    "/category" : "category-form"
+                }
+            }
+        }
+    }
+}

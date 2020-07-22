@@ -1,0 +1,20 @@
+{
+    "name" : "cms-settings",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Lasitha Senanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+                {
+                    "type" : "mainScript",
+                    "location" : "script.js"
+                },
+                {
+                    "type" : "mainView",
+                    "location" : "partial.html"
+                }
+    
+            ]
+    }
+}

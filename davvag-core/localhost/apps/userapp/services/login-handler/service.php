@@ -176,9 +176,19 @@ class LoginService {
             if(!isset($bodyReguser->catogory)){
                 $bodyReguser->catogory="User";
             }
-            $result = SOSSData::Insert ("profile", $bodyReguser,$tenantId = null);
-            $bodyReguser->id= $result->result->generatedId;
-            return $bodyReguser;
+
+            $result = SOSSData::Query ("profile", urlencode("email:".$bodyReguser->email.""));
+            if(count($result->result)==0 && $result->success){
+                $result = SOSSData::Insert ("profile", $bodyReguser,$tenantId = null);
+                $bodyReguser->id= $result->result->generatedId;
+                return $bodyReguser;
+            }else{
+                $profile = $result->result[0];
+                $profile->userid=$outObject->userid;
+                $profile->linkeduserid=$outObject->userid;
+                $result = SOSSData::Update("profile", $profile,$tenantId = null);
+                return $bodyReguser;
+            }
         }else{
             //$res->SetError ("User Was not registered");
             return $outObject;
@@ -202,7 +212,7 @@ class LoginService {
         
         $_SESSION["authData"] = json_encode($outObject);
         setcookie("authData", json_encode($outObject), time() + (86400 * 1), "/"); // 86400 = 1 day
-        
+        setcookie("securityToken", $outObject->token, time() + (86400 * 1), "/");
         require_once (PLUGIN_PATH . "/sossdata/SOSSData.php");
         if(isset($outObject->email)){
             $result = SOSSData::Query ("profile", urlencode("email:".$outObject->email.""));
@@ -219,10 +229,25 @@ class LoginService {
     }
 
     public function getLogout($req){
-        unset($_SESSION["authData"]);
-        session_regenerate_id();
-        $outObject = new stdClass();
-        return $outObject;
+        if(isset($_COOKIE['authData']))
+        {
+            $authdata=json_decode($_COOKIE['authData']);
+            $outObject = Auth::GetLogout($authdata->token);
+                if(!isset($outObject->error)){
+                unset($_SESSION["authData"]);
+                unset($_COOKIE['authData']); 
+                setcookie('authData', null, -1, '/'); 
+                unset($_COOKIE['securityToken']); 
+                setcookie('securityToken', null, -1, '/'); 
+                session_regenerate_id();
+                //$outObject = new stdClass();
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 
     public function getResetToken($req){

@@ -23,14 +23,14 @@ WEBDOCK.component().register(function(exports){
                 //scope.isBusy=false;
                 location.href=unescape(routeData.u);
             }else{
-                
-                pInstance.appNavigate("/profile");
+                location.href="#/app/userapp/profile";
+                //pInstance.appNavigate("/profile");
 
             }
         }else{
             var handler = exports.getComponent("login-handler");
             handler.services.LoginState().then(function(result){
-                if (result.result.token){
+                if (result.result){
                     //setCookie("authData", JSON.stringify(result),1);
                     // var passhash = CryptoJS.MD5(result.email);
                     // self.profileimage = "https://www.gravatar.com/avatar/" + passhash+"?s=200&r=pg&d=mm";
@@ -42,14 +42,21 @@ WEBDOCK.component().register(function(exports){
                         location.href=unescape(routeData.u);
                     }else{
                         
-                        pInstance.appNavigate("/profile");
+                        location.href="#/app/userapp/profile";
         
                     }
                 }else{
-                    pInstance.appNavigate("/login");
+                    if(routeData.u)
+                        sessionStorage.redirecturl=routeData.u;
+
+                    location.href="#/app/userapp/login";
                 }
             }).error(function(result){
-                pInstance.appNavigate("/login");
+                if(routeData.u)
+                        sessionStorage.redirecturl=routeData.u;
+                        
+                location.href="#/app/userapp/login";
+                //pInstance.appNavigate("/login");
             });
         }
     }

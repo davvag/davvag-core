@@ -1,0 +1,62 @@
+{
+    "components": {
+        "productsvr": {
+            "type":"service",
+            "location":"services"
+        },
+        "frmproduct-list": {
+            "type":"component",
+            "location":"components"
+        },
+        "frmproduct": {
+            "type":"component",
+            "location":"components"
+        },
+        "newproduct": {
+            "type":"component",
+            "location":"components"
+        },
+        "partial-cart":{
+            "type":"component",
+            "location":"components"
+        },
+        "partial-cart-checkout":{
+            "type":"component",
+            "location":"components"
+        },
+        "frmprofile-view":{
+            "type":"component",
+            "location":"components"
+        },
+        "donate-check-out":{
+            "type":"component",
+            "location":"components"
+        },
+        "donate-complete":{
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Student Market Place",
+        "author":"Davvag",
+        "version":"0.9",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "frmproduct-list",
+            "onLoad": ["productsvr"],
+            "routes":{
+                "partials":{
+                    "/checkout" : "partial-cart",
+                    "/checkout-complete" : "partial-cart-checkout",
+                    "/profile":"frmprofile-view",
+                    "/donate":"donate-check-out",
+                    "/payment-varification":"donate-complete"
+                }
+            }
+        }
+    }
+}

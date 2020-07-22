@@ -1,10 +1,28 @@
 :root {
-  --backcolor: #2d4373;
+  --backcolor: #b51f1f;
+  --backtextcolor:#ffffff;
+  --backtexthovercolor:#5040af;
   --blue: #4679bd;
   --grey: #ddd;
+  --textColor:#ddd;
+  --ToolBar:#ffffff;
+  --SocialButton:rgb(5, 2, 150);
+  --FooterColor:var(--backcolor);
+  --FooterTextxColor:var(--backtextcolor);
+  --FooterLinkColor:#ffffff;
+  --FooterLinkhoverColor:rgb(55, 4, 104);
   --W200: 200px;
   --Lft: left;
 }
+
+a {
+  color:var(--backcolor);
+}
+
+a:hover{
+  color:var(--backtexthovercolor);
+}
+
 .video-container {
   position: relative;
   padding-bottom: 56.25%;
@@ -30,7 +48,7 @@
   }
 
   a#id-social-table{
-    color: aliceblue;
+    color:var(--SocialButton);
   }
   
   #id-headerbar{
@@ -39,13 +57,16 @@
       top: 0; /* Position the navbar at the top of the page */
       width: 100%;
   }
-
+  .page-footer{
+    background-color:var(--FooterColor);
+    color: var(--FooterTextxColor);
+  }
   .page-footer a{
-    color: aliceblue;
+    color:var(--FooterLinkColor);
   }
 
  .page-footer a:hover{
-    color: aliceblue;
+    color: var(--FooterLinkhoverColor);
   }
 
   .col-social{
@@ -57,14 +78,23 @@
 
   .bg-primary{
     background-color: var(--backcolor)!important;
-    color: white;
+    color:var(--backtextcolor)!important;
     opacity: 8;
 
   }
 
-  a.bg-primary{
-    color: white;
+  .bg-primary-button{
+    background-color: var(--backcolor)!important;
+    color:var(--backtextcolor)!important;
+    opacity: 8;
+
   }
+
+  .bg-primary-button a:hover{
+    background-color: var(--backtexthovercolor)!important;
+    color:var(--backtextcolor)!important;
+  }
+
 
   #sharebar{
     padding-bottom: 100px;
@@ -75,7 +105,7 @@
       position: fixed;
       z-index:99999;
       bottom: 0;
-      background-color: #ffffff;
+      background-color:var(--ToolBar);
       padding-bottom: 10px;
       padding-top: 10px;
       width: 100%;
@@ -123,7 +153,7 @@
   
   .resp-sharing-button__link {
     text-decoration: none;
-    color: #fff;
+    color:var(--SocialButton);
     margin: 0.5em
   }
   
@@ -148,15 +178,15 @@
   
   /* Non solid icons get a stroke */
   .resp-sharing-button__icon {
-    stroke: #fff;
+    stroke:var(--SocialButton);
     fill: none
   }
   
   /* Solid icons get a fill */
   .resp-sharing-button__icon--solid,
   .resp-sharing-button__icon--solidcircle {
-    fill: #fff;
-    stroke: none
+    fill: var(--SocialButton);
+    stroke: nones
   }
   
   .resp-sharing-button--twitter {

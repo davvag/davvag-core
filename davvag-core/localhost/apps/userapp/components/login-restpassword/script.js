@@ -29,6 +29,7 @@ WEBDOCK.component().register(function(exports){
                 bindData.submitErrors-[];
                 bindData.submitInfo-[];
                 scope.isBusy = true;
+                $("#form-signin :input").prop("disabled", true);
                 handler.services.resetPassword({email: bindData.loginForm.email,token: bindData.resetToken,password: bindData.loginForm.password}).then(function(result){
                     console.log(result);
                     if(result.result.success){
@@ -37,9 +38,11 @@ WEBDOCK.component().register(function(exports){
                         pInstance.appNavigate("../login");
                     }else{
                         bindData.submitErrors.push(result.result.message);
+                        $("#form-signin :input").prop("disabled", false);
                     }
                 }).error(function(result){
                     bindData.submitErrors.push(result.result.message);
+                    $("#form-signin :input").prop("disabled", false);
                     scope.isBusy = false;
                 });
             }

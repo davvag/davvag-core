@@ -1,0 +1,49 @@
+{
+    "components": {
+        "user-handler": {
+            "type":"service",
+            "location":"services"
+        }
+        ,
+        "users":{
+            "type":"component",
+            "location":"app"
+        }
+    },
+    "description":{
+        "title": "Users",
+        "author":"Lasitha Senanayake",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "users",
+            "onLoad": ["user-handler"],
+            "routes":{
+                "partials":{
+                    "/keyword" : "users"
+                }
+            }
+        }
+    },
+    "resources": {
+        "js" : [
+            {
+                "tag": "bootstrap-datetimepicker",
+                "version" : "latest",
+                "location":"assets/bootstrap-datetimepicker.min.js"
+            }
+        ],
+        "css":[
+            {
+                "type":"css",
+                "location":"assets/bootstrap-datetimepicker.min.css"
+            },{
+                "type" : "css",
+                "location" : "assets/broadstyle.css"
+            }
+        ]
+    }
+}

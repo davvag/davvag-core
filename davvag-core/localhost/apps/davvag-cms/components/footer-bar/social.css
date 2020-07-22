@@ -11,7 +11,7 @@
   }
 
   .social-icon{
-    background-color: aliceblue;
+    background-color:var( --SocialButton);
   }
 
   .page-footer{

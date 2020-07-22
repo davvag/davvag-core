@@ -32,7 +32,7 @@
                 "method" : "GET",
                 "parameters": []
             },
-            "logout" : {
+            "Logout" : {
                 "method" : "GET"
             },
             "getSession":{

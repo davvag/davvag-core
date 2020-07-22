@@ -1,10 +1,10 @@
 <?php
 
-require_once (dirname(__FILE__) . "/../../configloader.php");
+//require_once (dirname(__FILE__) . "/../../configloader.php");
 
 class Auth {
     public static function Login ($username, $password){
-        return Auth::getObjectForGetMethod(AUTH_URL . "/login/$username/$password/$_SERVER[HTTP_HOST]");
+        return Auth::getObjectForGetMethod(AUTH_URL . "/login/$username/$password/".AUTH_DOMAIN);
     }
 
     public static function SocialLogin ($app, $code,$create){
@@ -60,7 +60,7 @@ class Auth {
     }
 
     public static function GetDomainAttributes (){
-        return Auth::getObjectForGetMethod(AUTH_URL . "/getdomain/$_SERVER[HTTP_HOST]");
+        return Auth::getObjectForGetMethod(AUTH_URL . "/getdomain/".AUTH_DOMAIN);
     }
 
 
@@ -91,7 +91,7 @@ class Auth {
             $securityToken = $s->token;
         }
         
-        return json_decode(Auth::callRest($url,$method,$data,array("Content-Type: application/json", "rhost:".HOST_NAME,"sosskey: $securityToken")));
+        return json_decode(Auth::callRest($url,$method,$data,array("Content-Type: application/json", "rhost:".AUTH_DOMAIN,"sosskey: $securityToken")));
     }
 
     public static function AutendicateDomain($tname,$securityToken,$appname,$operation){
@@ -110,7 +110,7 @@ class Auth {
         curl_setopt ($ch, CURLOPT_URL, $url);
         $securityToken ="NotAuthurized";
         if (!isset($host))
-            $host = $_SERVER["HTTP_HOST"];
+            $host = AUTH_DOMAIN;
         
         if(isset($_COOKIE["securityToken"]))
             $securityToken = $_COOKIE["securityToken"];

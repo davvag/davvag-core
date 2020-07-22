@@ -17,6 +17,33 @@ WEBDOCK.component().register(function(exports){
         },
         data:bindData,
         methods: {
+            pay:function(){
+
+            },
+            cancelPay:function(){
+                $('#modalImagePopup').modal('toggle');
+            },
+            showPay:function(){
+                $('#modalImagePopup').modal('show');
+            },
+            logout:function(){
+                userHandler = exports.getComponent("login-handler");
+                userHandler.services.Logout().then(function(result){
+                    if(result.result){
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        pInstance = exports.getShellComponent("soss-routes");
+                        pInstance.appNavigate("../login");
+                    }else{
+
+                    }
+                }).error(function(result){
+                    //$("#form-reset :input").prop("disabled", false);
+
+                    bindData.submitErrors.push(result.result.message);
+                    scope.isBusy = false;
+                });
+            },
             getProfilebyID:getProfilebyID,
             navigate: function(id){
                 handler = exports.getShellComponent("soss-routes");

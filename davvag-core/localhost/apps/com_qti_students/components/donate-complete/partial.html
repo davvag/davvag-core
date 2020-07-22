@@ -1,0 +1,45 @@
+<div v-if="isBusy" class="container">
+  <h1>Please wait....</h1>
+</div>
+<div v-if="!isBusy" class="container">
+  <div class="row profile">
+  <div class="col-md-3">
+    <div class="profile-sidebar">
+      <!-- SIDEBAR USERPIC -->
+      <div class="profile-userpic">
+        <img :src="image" class="img-responsive" alt="">
+      </div>
+      <!-- END SIDEBAR USERPIC -->
+      <!-- SIDEBAR USER TITLE -->
+      <div class="profile-usertitle">
+        <div class="profile-usertitle-name">
+          {{ item.name }}
+        </div>
+        <div class="profile-usertitle-job">
+         Thank you for pleging me for sum of {{ paymetRequest.paymentAmount | formatMoney }} for my higher Eductaion.
+         
+        </div>
+      </div>
+      <!-- END SIDEBAR USER TITLE -->
+      <!-- SIDEBAR BUTTONS -->
+      <div class="profile-userbuttons">
+        <h3>Thank You very much :)</h3>
+      </div>
+      <!-- END SIDEBAR BUTTONS -->
+      <!-- SIDEBAR MENU -->
+      <!-- END MENU -->
+    </div>
+  </div>
+  <div class="col-md-6">
+          <div class="profile-content">
+            <form>
+              <h4>You have pleged to help a student</h4>
+              <div class="form-group col-md-12">
+                <button type="button" class="btn btn-success btn-sm" v-on:click="submitPurchase" :disabled="isBusy" v-if="!isCompleted" value ="Proceed to Payment">Pay Now {{ paymetRequest.paymentAmount  }}</button>
+                <button type="button" class="btn btn-danger btn-sm" v-on:click="navBack" :disabled="isBusy" v-if="!isCompleted">Cancel Request</button>
+              </div>
+          </form>
+          </div>
+  </div>
+</div>
+</div>

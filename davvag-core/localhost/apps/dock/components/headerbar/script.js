@@ -20,11 +20,18 @@ WEBDOCK.component().register(function(exports){
 
     function signout(){
         var handler  = exports.getComponent("auth-handler");
-        handler.services.logout()
-        .then(function(result){
-            window.location = window.location.href.split('#')[0];
-        })
-        .error(function(){
+        handler.services.Logout().then(function(result){
+            if(result.result){  
+                localStorage.clear();
+                sessionStorage.clear();
+                pInstance = exports.getShellComponent("soss-routes");
+                window.location = window.location.href.split('#')[0];
+            }else{
+                alert ("error");
+            }
+        }).error(function(result){
+            //$("#form-reset :input").prop("disabled", false);
+
             alert ("error");
         });
     }

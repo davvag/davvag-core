@@ -1,0 +1,210 @@
+<div class="container">
+
+    <div class="row checkout-top-margin-row">
+
+    </div>
+
+    <div v-if="items.length ==0" class="row">
+    <!--a href="#/home"><div class="fabButton showMobile" style="background-image: url('assets/raha/img/gograb.png');"></div></a-->
+        <div class="col-sm-8 col-md-8 col-md-offset-1">
+            <div class="row text-center whiteText">
+                <h2>You don't have any items in the shopping cart</h2>
+                <h3><a href="#/app/davvag-shop" class="">Go To Home</a></h3>
+            </div>
+            <div class="row text-center">
+                <a type="button" class="btn btn-success pull-center hideMobile" href="#/app/davvag-shop">
+                    Continue Shopping <span class="glyphicon glyphicon-play"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div v-if="items.length !=0" class="row">
+        <!--a v-if="!hasOrder" v-on:click="checkout(true)" style="cursor:pointer;"><div class="fabButton showMobile" style="background-image: url('assets/raha/img/gograb.png');"></div></a>
+        <a v-if="hasOrder" v-on:click="checkout(false)" style="cursor:pointer;"><div class="fabButton showMobile" style="background-image: url('assets/raha/img/grabnextday.png');"></div></a-->
+        
+        <div class="col-sm-8 col-md-8 col-md-offset-1 showMobileCollapse">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width:50%">Product</th>
+                        <th class="text-center" style="width:22%">Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in items">
+                            
+                        <td>
+                                <div class="col-md-3">
+                                        <div class="card gedf-card">
+                                            <div class="card-body">
+                                                <h5 class="card-title" v-html="item.name">Card title</h5>
+                                                <div class="thumbnail" style="margin-right:20px;"> <img class="media-object" :src="'components/dock/soss-uploader/service/get/products/'+item.itemid+'-'+item.imgurl" alt="" style="width: 72px; height: 72px;"> </div>
+                                                <table class="card-text">
+                                                        <tr style="height:34px;">
+                                                            <td style="width:40%">In Stock</td>
+                                                            <td style="width:40%">{{ item.isOrder ? 'No' : 'Yes' }}</td>
+                                                            <td style="width:20%"></td>
+                                                        </tr>
+                                                        <tr style="height:34px;">
+                                                            <td>Unit Price</td>
+                                                            <td>Rs.{{ item.price }}</td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Qty</td>
+                                                            <td style="padding-right:10px">
+                                                                <input type="email" class="form-control" id="exampleInputEmail1" v-model="item.qty">
+                                                            </td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-danger" v-on:click="removeItem(item)">
+                                                                    <span class="fa fa-remove"></span>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                            </div>
+                                        </div>
+                                   
+                                    </div>
+                            
+                        </td>
+                        <td style="vertical-align:middle; text-align:center;">
+                            <div>
+                                <strong>Rs.{{ item.price*item.qty }}</strong>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td><h5>Subtotal</h5></td>
+                        <td class="text-right"><h5><strong>Rs.{{ total }}</strong></h5></td>
+                    </tr>
+                    <tr>
+                        <td><h5>Estimated shipping</h5></td>
+                        <td class="text-right"><h5><strong>Rs.0.00</strong></h5></td>
+                    </tr>
+                    <tr>
+                        <td><h3>Total</h3></td>
+                        <td class="text-right"><h3><strong>Rs.{{ total }}</strong></h3></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <!-- <input type="button" class="btn btn-success pull-right" v-on:click="checkout(false)" value="Deliver Tomorrow"/> -->
+                        </td>
+                        <td class="text-right">
+                            <input type="button" class="btn btn-success" :disabled="hasOrder" v-on:click="checkout(true)" value="Checkout"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>   
+        <div class="col-sm-8 col-md-8 col-md-offset-1 collapseMobile" id="idLargeTable">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width:50%">Product</th>
+                        <th style="width:8%">Quantity</th>
+                        <th class="text-center"  style="width:10%">Price</th>
+                        <th class="text-center"  style="width:22%">Total</th>
+                        <th style="width:10%"> </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in items">
+                        <td class="col-sm-8 col-md-6">
+                        <div class="media">
+                            <div class="thumbnail pull-left"> <img class="media-object" :src="'components/raha/soss-uploader/service/get/products/' +item.itemid+'-'+item.imgurl" alt="" style="width: 72px; height: 72px;"> </div>
+                            <div class="media-body checkoutItem">
+                                <h4 class="media-heading">{{ item.name }}</h4>
+                                <label class="media-heading">In Stock : {{ item.isOrder ? 'No' : 'Yes' }}</label>
+                            </div>
+                        </div></td>
+                        <td class="col-sm-1 col-md-1" style="text-align: center">
+                        <input type="email" class="form-control" id="exampleInputEmail1" v-model="item.qty">
+                        </td>
+                        <td class="col-sm-1 col-md-1 text-center"><strong>Rs.{{ item.price }}</strong></td>
+                        <td class="col-sm-1 col-md-1 text-center"><strong>Rs.{{ item.price*item.qty }}</strong></td>
+                        <td class="col-sm-1 col-md-1">
+                        <button type="button" class="btn btn-danger" v-on:click="removeItem(item)">
+                            <span class="glyphicon glyphicon-remove"></span> Remove
+                        </button></td>
+                    </tr>
+                    
+                    <tr>
+                        <td>   </td>
+                        <td>   </td>
+                        <td>   </td>
+                        <td><h5>Subtotal</h5></td>
+                        <td class="text-right"><h5><strong>Rs.{{ total }}</strong></h5></td>
+                    </tr>
+                    <tr>
+                        <td>   </td>
+                        <td>   </td>
+                        <td>   </td>
+                        <td><h3>Total</h3></td>
+                        <td class="text-right"><h3><strong>Rs.{{ total }}</strong></h3></td>
+                    </tr>
+                    <tr>
+                        <td>   </td>
+                        <td>   </td>
+                        <td>   </td>
+                        <td>
+                            <a class="btn btn-default" href="#/home" >
+                                <span class="glyphicon glyphicon-shopping-cart"></span> Continue Shopping
+                            </a>
+                        </td>
+                        <!-- <td>
+                            <input type="button" class="btn btn-success" v-on:click="checkout(false)" value="Deliver Tomorrow"/>
+                        </td> -->
+                        <td>
+                            <input type="button" class="btn btn-success"  v-on:click="checkout(true)" value="Deliver Today"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="idCartLogin" role="dialog"  style="overflow-x: auto;overflow-y: auto;width:100%;color:black;">
+    <div class="modal-dialog">
+        <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Please Login to Purchase Items</h4>
+            </div>
+            <div class="modal-body">
+                <div class="main-login main-center" style="margin-bottom:20px;">             
+                    <center><h5>Login first to Grab and Eat!!!</h5></center>
+                </div>
+                <div class="form-group">
+                    <label for="name" class="cols-sm-2 control-label">Email</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i></span>
+                            <input type="email" class="form-control" name="name" id="name"  placeholder="Enter your Email" v-model="user.email"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="cols-sm-2 control-label">Password</label>
+                    <div class="cols-sm-10">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock" aria-hidden="true"></i></span>
+                            <input type="password" class="form-control" name="email" id="email"  placeholder="Enter your Password" v-model="user.password"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top:30px;">
+                    <button type="button" class="btn btn-primary btn-lg btn-block login-button" v-on:click="login">Login</button>
+                </div>
+                <div class="form-group" style="margin-top:10px;">
+                    <h5>New to raha.lk? <a v-on:click="registerNow" style="cursor:pointer;">Register now</a> to grab and eat!!!</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

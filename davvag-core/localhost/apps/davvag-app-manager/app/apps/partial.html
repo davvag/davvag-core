@@ -1,0 +1,62 @@
+<div style="color:black;">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            
+        </div>
+      <h4 class="panel-title">Application Permission </h4>
+      <p v-if="submitErrors" v-for="error in submitErrors" class = "alert alert-danger"> {{error}} </p>
+    </div>
+    <div class="panel-body panel-body-nopadding">
+      <form id="form-signup">
+        <select class="form-control" id="textProductCategory" placeholder="User Group" v-model="Group" v-on:change="loadAccess">
+          <option v-for="g in groups" v-bind:value="g.groupid">{{g.groupid}}</option>
+        </select>
+        <ul class="tree" id="tree1">
+                <li v-for="item in items"><span><img :src="'assets/'+item.appCode+'/'+item.Icon" class="left-menu-appitem"> <span>{{ item.Name }}</span></span>
+                  <ul>
+                    <li>Services
+                        <ul>
+                            <div v-for="s in item.Services">                         
+                              <li ><b>{{ s.Code }}</b> |  {{ s.Name }} </li>
+                              <ul>
+                                <li v-for="a in s.methods"><input type="checkbox" v-model="a.selected" v-on:change="check(a)"> <b>{{ a.name }}</b></li>
+                              </ul>
+                            </div>
+
+                        </ul>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li>Apps
+                        <ul>
+                            <li v-for="s in item.Apps"><input type="checkbox"  v-model="s.selected"> <b>{{ s.Code }}</b> |  {{ s.Name }} </li>
+                        </ul>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li>Schemas
+                        <ul>
+                            <li v-for="s in item.Schemas"><input type="checkbox"  v-model="s.selected"><b>{{ s.Code }}</b> |  {{ s.Name }} </li>
+                        </ul>
+                    </li>
+                  </ul>
+                </li>
+        </ul>
+      </form>
+    </div>
+    <div class="panel-footer">
+      <div class="row">
+       <div class="col-sm-6 col-sm-offset-3">
+         <button id="send" class="btn btn-primary" v-on:click="saveAccess" >Save</button>&nbsp;
+         <button class="btn btn-default">Cancel</button>
+       </div>
+      </div>
+     </div><!-- panel-footer -->
+  </div>
+
+  
+  
+  
+  </div>
+  

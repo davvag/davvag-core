@@ -1,0 +1,35 @@
+{
+    "name" : "Users",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Lasitha Senanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "css":[
+            {
+                "type" : "css",
+                "location" : "autocompete.css"
+            },
+            {
+                "type" : "css",
+                "location" : "users.css"
+            }
+        ],"js" : [
+            {
+                "tag": "auticompete",
+                "version" : "latest",
+                "location":"auticompete.js"
+            }
+        ],
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            },
+            {
+                "type" : "mainView",
+                "location" : "partial.html"
+            }
+        ]
+    }
+}

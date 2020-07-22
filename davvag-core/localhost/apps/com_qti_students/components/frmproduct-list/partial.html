@@ -1,0 +1,85 @@
+<div class="container" @scroll="handleScroll($event)">
+    <div class="row">
+        <div class="container text-center">
+           <h3> Following list of students are registered with us and seeking for financial aid to start their higher studies. We at QTI guarantee that given information are true and once course of study is started we will provide you periodic student performance report.</h3>
+        </div>
+          
+    </div>
+    <section class="details-card">
+        <div class="container">
+            
+        <div class="row" >
+            <div class="col-md-4" v-for="item in products">
+                <div class="card-content">
+                    <div class="card-img">
+                        <img :src="'components/davvag-cms/soss-uploader/service/get/profile/'+item.id" alt="">
+                        <span><h4>Donation</h4></span>
+                    </div>
+                    <div class="card-desc">
+                        <h3>{{ item.name }}</h3>
+                        <p>
+                            <table>
+                                <tr>
+                                    <th>Course of study :</th>
+                                    <td>{{ item.course  }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Academic Year :</th>
+                                    <td>{{ item.academic_year }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Scholarship looking for :</th>
+                                    <td>{{ item.scholarship }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Course Fee (USD):</th>
+                                    <td>{{ item.totalInvoicedAmount | formatMoney }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Course Fee Collected (USD):</th>
+                                    <td>{{ item.totalPaidAmount | formatMoney }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Course Fee Balance (USD):</th>
+                                    <td>{{ item.outstanding | formatMoney }}</td>
+                                </tr>
+                            </table>   
+
+                        </p>
+                        <button class="form-control btn bg-primary-button" v-on:click="navProfile(item.id)">Details</button>
+                        <button class="form-control btn bg-primary-button" v-on:click="navDonate(item.id)">Donate</button>
+                             
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+</div>
+<div v-if="loading" class="row" >    
+    <div class="col-md-4 col-sm-6">
+           
+    </div>
+    <div class="col-md-4 col-sm-6">
+            <div id="custom-search-input">
+                <h2><span class="fa fa-refresh fa-spin" ></span> Loading Please wait...</h2>
+            </div>
+    </div>
+    <div class="col-md-4 col-sm-6">
+            
+    </div>
+           
+</div>
+<div v-if="noproducts" class="row" >
+        <div class="col-md-4 col-sm-6">
+           
+            </div>    
+        
+        <div class="col-md-4 col-sm-6">
+                <h1> No Results for Search Query "{{ q }}" </h1>
+            </div>
+            <div class="col-md-4 col-sm-6">
+           
+                </div>
+</div>

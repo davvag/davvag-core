@@ -1,0 +1,179 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a v-on:click="navigateBack()" class="panel-close">×</a>
+        </div>
+      <h4 class="panel-title">Product </h4>
+      <p v-if="submitErrors" v-for="error in submitErrors" class = "alert alert-danger"> {{error}} </p>
+    </div>
+    <div class="panel-body panel-body-nopadding">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#settings-users" data-toggle="tab"><strong>Information</strong></a></li>
+            <li class=""><a href="#settings-apps" data-toggle="tab"><strong>Attributes</strong></a></li>
+            <li class=""><a href="#settings-apps" data-toggle="tab"><strong>Other Products</strong></a></li>
+            <li class=""><a href="#settings-logo-title" data-toggle="tab"><strong>Images & Documents</strong></a></li>
+          </ul>
+        
+          <div class="tab-content mb30">
+            <div class="tab-pane active" id="settings-users">
+                <form class="form-horizontal form-bordered">
+            
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">Item ID</label>
+                      <div class="col-sm-6">
+                          <input type="number" class="form-control" v-model="product.itemid"  disabled="disabled">
+                      </div>
+                      
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">Product Name</label>
+                      <div class="col-sm-6">
+                          <input type="text" class="form-control" v-model="product.name">
+                      </div>
+                      
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">Product Caption</label>
+                      <div class="col-sm-6">
+                          <textarea class="form-control" v-model="product.caption" rows="5"></textarea>
+                      </div>
+                      
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">Keywords</label>
+                      <div class="col-sm-6">
+                          <textarea class="form-control" v-model="product.keywords" rows="5"></textarea>
+                      </div>
+                      
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">Unit of Measure</label>
+                      <div class="col-sm-6">
+                        <select class="form-control" id="textProductCategory" v-model="product.uom">
+                          <option v-for="uom in uoms" v-bind:value="uom">{{uom}}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label  class="col-sm-3 control-label">Type </label>
+                      <div class="col-sm-6">
+                      <select class="form-control" id="textProductCategory" v-model="product.invType">
+                        <option>Service</option>
+                        <option>Inventry</option>
+                        <option>Other</option>
+                      </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-3 control-label">Currency </label>
+                        <div class="col-sm-6">
+                        <select class="form-control" id="textProductCategory" v-model="product.currencycode">
+                          <option>Rs.</option>
+                          <option>USD</option>
+                          <option>CHF</option>
+                        </select>
+                        </div>
+                      </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Cost </label>
+                        <div class="col-sm-6">
+                          <input type="number" class="form-control" v-model="product.cost">
+                        </div>
+                      </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">Product Price</label>
+                      <div class="col-sm-6">
+                        <input type="number" class="form-control" v-model="product.price">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">Discount </label>
+                      <div class="col-sm-6">
+                        <input type="number" class="form-control" v-model="product.discountper"><span>%</span>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">Product Category</label>
+                      <div class="col-sm-6">
+                          <select class="form-control" id="textProductCategory" v-model="product.catogory">
+                              <option v-for="category in categories" v-bind:value="category">{{category}}</option>
+                            </select>
+                      </div>
+                      
+                    </div>
+                    <div class="form-group">
+                      <label  class="col-sm-3 control-label">Show On Store </label>
+                      <div class="col-sm-6">
+                      <select class="form-control" id="textProductCategory" v-model="product.showonstore">
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                      </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">Product Image</label>
+                      <div class="col-sm-6">
+                          <div v-if="image">
+                            <img :src="image" style="max-height: 100px;max-width:300px; "/>
+                            </div>
+                           
+                          </div>
+                      </div>
+                    </form>
+            </div>
+            <div class="tab-pane" id="settings-apps">
+                
+                <form class="form-horizontal form-bordered" id="AttributeText"></form>
+            </div>
+            <div class="tab-pane" id="settings-logo-title">
+                <div class="form-group">
+                    <div class="form-group files">
+                      <label>Upload Your File </label>
+                      <input type="file" class="form-control" multiple="" @change="onFileMultiChange" v-model="files">
+                    </div>
+                    <div>
+                        <div class="row">
+                            <div class="col-md-3" v-for="(image,index) in p_image">
+                              <figure class="imghvr-fade">
+                                <img :src="image.scr" class="img-responsive">
+                                <figcaption>
+                                  <div class="form-group">
+                                      <label for="exampleInputPassword1">SNAP CODE</label>
+                                      <input type="text" class="form-control" :value="'![alt text](components/dock/soss-uploader/service/get/products/'+product.id+'-'+image.name+')'">
+                                  </div>
+                                  <div class="form-group">
+                                      <label for="exampleInputPassword1">Caption</label>
+                                      <textarea class="form-control" v-model="image.caption"></textarea>
+                                      
+                                    </div>
+                                  <label class="radio-inline" for="gender">
+                                    <input type="radio" name="gender" v-model="product.imgurl" :value="image.name"> 
+                                      Default Image
+                                    </label> 
+                                  <br/>
+                                <div class="btn-group">
+                                  
+                                  <button @click="removeImage(index)" class="btn btn-default">Remove image</button>
+                                </div>
+                                </figcaption>
+                              </figure>
+                            </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+         </div>
+      
+    </div><!-- panel-body -->
+    
+    <div class="panel-footer">
+   <div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+      <button id="send" class="btn btn-primary" v-on:click="submit">Submit</button>&nbsp;
+      <button class="btn btn-default">Cancel</button>
+    </div>
+   </div>
+  </div><!-- panel-footer -->
+    
+  </div>
+  

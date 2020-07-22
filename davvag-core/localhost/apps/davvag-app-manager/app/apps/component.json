@@ -1,0 +1,36 @@
+{
+    "name" : "Applications",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Lasitha Senanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "css":[
+            {
+                "tag": "tree",
+                "type" : "css",
+                "location" : "tree.css"
+            },
+            {
+                "type" : "css",
+                "location" : "users.css"
+            }
+        ],"js" : [
+            {
+                "tag": "tree",
+                "version" : "latest",
+                "location":"tree.js"
+            }
+        ],
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            },
+            {
+                "type" : "mainView",
+                "location" : "partial.html"
+            }
+        ]
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "name" : "User Creation Service",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ]
+    },
+    "serviceHandler" : {
+        "file": "service.php",
+        "class": "BroadcastService",
+        "methods" : {
+            "allusers" : {
+                "method" : "GET"
+            },"UserGroups" : {
+                "method" : "GET"
+            },"NewUserGroup" : {
+                "method" : "GET",
+                "parameters":["groupid"]
+            },"ChangeGroup" : {
+                "method" : "GET",
+                "parameters":["userid","groupid"]
+            },"RegisterUser":{
+                "method":"POST"
+            },
+            "DeleteItem":{
+                "method":"POST"
+            }
+        }
+    },
+    "transformers": {
+        
+    }
+    
+}
