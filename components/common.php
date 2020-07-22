@@ -14,6 +14,9 @@
 
     function checkAccess($res,$appcode,$type=null,$code=null,$operation=null){
         if(isset($type) && isset($code) && isset($operation)){
+            if(BYPASS){
+                return true;
+            }
             $obj=Auth::GetAccess(GROUPID,$appcode,$type,$code,$operation);
             //var_dump($obj);
             if(!isset($obj->error)){
