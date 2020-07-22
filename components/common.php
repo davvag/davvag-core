@@ -1,6 +1,6 @@
 <?php
     $appAccess=null;
-    
+    define("BYPASS",true);
     function writeResponse($res, $success, $result){
         $sObj =new stdClass();
         $sObj->success = $success;
