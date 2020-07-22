@@ -11,6 +11,7 @@
             $s=checkAccess($res,$req->Params()->appCode);
             //echo $req->Params()->appCode;
             if(!$s){
+                echo "heree";
                 writeResponse($res, false, array("message"=>"UnAutherized call. this user group do not have permision ".GROUPID));
                 return null;
             }
