@@ -1,0 +1,24 @@
+{
+    "fields" : [
+        {
+            "fieldName":"uid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "isPrimary": true,
+                "maxLen": 50
+            }
+        },
+        {
+            "fieldName":"id",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tag",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 255,
+                "encoding":"utf8"
+            }
+        }
+    ]
+}

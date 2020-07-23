@@ -1,0 +1,50 @@
+{
+    "fields" : [
+        {
+            "fieldName":"msgid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100,
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"psid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100,
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"pageid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"message",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"replymsgid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 300
+            }
+        },
+        {
+            "fieldName":"msgDate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"replyDate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"replymessage",
+            "dataType":"java.lang.String"
+        }
+    ]
+}

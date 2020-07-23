@@ -1,0 +1,199 @@
+{
+    "rawquery" : {
+        "type":"sql",
+        "parameters" : ["page","size","lan","lon","rad","search","cat"],
+        "query": "SELECT * FROM profile p,profilestatus s,profile_attributes x where p.id=x.id and p.id=s.profileid and s.outstanding>0 limit $page,$size;"
+    },
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tenant",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"contactno",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 20
+            }
+        },
+        {
+            "fieldName":"email",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"gender",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 1
+            }
+        },
+        {
+            "fieldName":"organization",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"address",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 255,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"city",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"country",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"catogory",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 10
+            }
+        },
+        {
+            "fieldName":"title",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 20
+            }
+        },
+        {
+            "fieldName":"maritalStatus",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 8
+            }
+        },
+        {
+            "fieldName":"occupation",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"id_number",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30
+            }
+        },
+        {
+            "fieldName":"passportno",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 30
+            }
+        },
+        {
+            "fieldName":"dateofbirth",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"createdate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"userid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"linkeduserid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"Status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 8
+            }
+        },{
+            "fieldName":"outstanding",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"totalInvoicedAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"totalPaidAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"totalGRNAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"totalPaymentAmount",
+            "dataType":"float"
+        },
+        {
+            "fieldName":"course",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"academic_year",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 20
+            }
+        },
+        {
+            "fieldName":"scholarship",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 6
+            }
+        }
+
+    ]
+}

@@ -1,0 +1,52 @@
+#subject{Thank you for Selecting @studentname to sponsoring for his Education.}#subject;
+#body{ 
+<!-- HIDDEN PREHEADER TEXT -->
+<div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">You have made a request @companyname.</div>
+<table border="0" width="100%" cellspacing="0" cellpadding="0"><!-- LOGO -->
+<tbody>
+<tr>
+<td align="center" bgcolor="#3CBEB2">&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 0px 10px 0px 10px;" align="center" bgcolor="#cf1146">
+<table style="max-width: 600px;" border="0" width="100%" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;" align="center" valign="top" bgcolor="#ffffff">
+<h1 style="font-size: 48px; font-weight: 400; margin: 2;">Donation Reqest</h1>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding: 0px 10px 0px 10px;" align="center" bgcolor="#cf1146">
+<table style="max-width: 600px;" border="0" width="100%" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" align="left" bgcolor="#ffffff">
+<p style="margin: 0;">Dear @name,</p>
+<p style="margin: 0;"><br />Thank you for taking steps to be a guardian for &nbsp;@studentname by sponsoring @amount.This will light up the future of @studentname. Please click the below link to complete the payment and complete the transaction.</p>
+<p style="margin: 0;"><br /><a title="Pay Now" href="@url/#/app/com_qti_students/payment-varification?id=@id">Proceed to payment</a></p>
+</td>
+</tr>
+<tr>
+<td style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" align="left" bgcolor="#ffffff">
+<p style="margin: 0;">Thank you,<br />@sign</p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding: 30px 10px 0px 10px;" align="center" bgcolor="#f4f4f4">&nbsp;</td>
+</tr>
+<tr>
+<td style="padding: 0px 10px 0px 10px;" align="center" bgcolor="#f4f4f4">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+}#body;

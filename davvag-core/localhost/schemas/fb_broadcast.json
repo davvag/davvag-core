@@ -1,0 +1,41 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"createdate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"scheduled_date",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"content",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"query",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen":"10"
+            }
+        }
+    ]
+}

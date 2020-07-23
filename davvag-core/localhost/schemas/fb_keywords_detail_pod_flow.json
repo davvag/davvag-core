@@ -1,0 +1,28 @@
+{
+    "rawquery" : {
+        "type":"sql",
+        "parameters" : ["keyword"],
+        "query": "SELECT * FROM fb_keywords_detail where keyword='$keyword' and filter='is' UNION SELECT * FROM fb_keywords_detail where '$keyword' like concat('%',concat(keyword, '%'))   and filter='contains' UNION SELECT * FROM fb_keywords_detail where '$keyword' like concat('%',keyword)   and filter='begins-with'"
+    },
+    "fields" : [
+        {
+            "fieldName":"keywordid",
+            "dataType":"java.lang.String"
+        },{
+            "fieldName":"id",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"keyword",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"filter",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"davvagflow",
+            "dataType":"java.lang.String"
+        }
+    ]
+}

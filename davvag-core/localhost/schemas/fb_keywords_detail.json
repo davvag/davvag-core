@@ -1,0 +1,34 @@
+{
+    "fields" : [
+        {
+            "fieldName":"keywordid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 40,
+                "isPrimary": true
+            }
+        },{
+            "fieldName":"id",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"keyword",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 255,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"filter",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 100
+            }
+        },
+        {
+            "fieldName":"davvagflow",
+            "dataType":"java.lang.String"
+        }
+    ]
+}

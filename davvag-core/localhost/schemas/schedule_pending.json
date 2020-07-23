@@ -1,0 +1,69 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true,
+                "autoIncrement": true
+            }
+        },
+        {
+            "fieldName":"recid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen":"100"
+            }
+        },
+        {
+            "fieldName":"createdate",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"scheduled_date",
+            "dataType":"java.util.Date"
+        },
+        {
+            "fieldName":"status",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen":"10"
+            }
+        },
+        {
+            "fieldName":"app",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen":"255"
+            }
+        },
+        {
+            "fieldName":"service",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen":"255"
+            }
+        },
+        {
+            "fieldName":"method",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen":"100"
+            }
+        },
+        {
+            "fieldName":"postMethod",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen":6
+            }
+        },{
+            "fieldName":"body",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "encoding":"utf8"
+            }
+        }
+
+    ]
+}

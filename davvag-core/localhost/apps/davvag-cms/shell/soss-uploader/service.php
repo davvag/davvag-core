@@ -26,7 +26,7 @@ class UploaderService {
             header("Expires: " . date(DATE_RFC822,strtotime("+2 day")));
             $ns = $req->Params()->ns;
             $name = $req->Params()->name;
-            $folder = MEDIA_FOLDER . "/".  $_SERVER["HTTP_HOST"] . "/$ns";
+            $folder = MEDIA_FOLDER . "/".  DATASTORE_DOMAIN . "/$ns";
             //echo "im here";
             //echo "$folder/$name";
             if(!file_exists("$folder/$name")){
@@ -48,7 +48,7 @@ class UploaderService {
         Carbite::POST("/upload/@ns/@name",function($req,$res){
             $ns = $req->Params()->ns;
             $name = $req->Params()->name;
-            $folder = MEDIA_FOLDER . "/".  $_SERVER["HTTP_HOST"] . "/$ns";
+            $folder = MEDIA_FOLDER . "/".  DATASTORE_DOMAIN . "/$ns";
             
             if (!file_exists($folder))
                 mkdir($folder, 0777, true);

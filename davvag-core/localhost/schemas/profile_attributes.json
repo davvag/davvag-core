@@ -1,0 +1,85 @@
+{
+    "fields" : [
+        {
+            "fieldName":"id",
+            "dataType":"int",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"tid",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"tenant",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200
+            }
+        },
+        {
+            "fieldName":"course",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 200,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"academic_year",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 20
+            }
+        },
+        {
+            "fieldName":"scholarship",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 6
+            }
+        },
+        {
+            "fieldName":"gceol",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 400,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"gceal",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 400,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"zscore",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 400,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"ambition",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 600,
+                "encoding":"utf8"
+            }
+        },
+        {
+            "fieldName":"scholarshipdes",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "maxLen": 600,
+                "encoding":"utf8"
+            }
+        }
+
+    ]
+}

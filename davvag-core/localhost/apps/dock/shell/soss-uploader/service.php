@@ -21,10 +21,12 @@ class UploaderService {
         });
 
         Carbite::GET("/get/@ns/@name",function($req,$res){
-            
+            header("Cache-Control: private, max-age=10800, pre-check=10800");
+            header("Pragma: private");
+            header("Expires: " . date(DATE_RFC822,strtotime("+2 day")));
             $ns = $req->Params()->ns;
             $name = $req->Params()->name;
-            $folder = MEDIA_FOLDER . "/".  $_SERVER["HTTP_HOST"] . "/$ns";
+            $folder = MEDIA_FOLDER . "/".  DATASTORE_DOMAIN . "/$ns";
             //echo "im here";
             //echo "$folder/$name";
             if(!file_exists("$folder/$name")){
@@ -35,19 +37,6 @@ class UploaderService {
             if(file_exists("$folder/$name")){
                 $type=mime_content_type("$folder/$name");
                 header("Content-Type: $type");
-                $seconds_to_cache = 3600;
-                $ts = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
-                header("Expires: $ts");
-                header("Pragma: cache");
-                header("Cache-Control: max-age=$seconds_to_cache");
-                header('Content-Disposition: attachment; filename='.basename($name));
-                if($type==="audio/mpeg"){
-                  header('Content-Transfer-Encoding: binary');
-                  header('Content-Length: ' . filesize($folder/$nam));
-                }
-                ob_clean();
-                flush();
-                //readfile($file);
                 echo file_get_contents("$folder/$name");
                 exit();
             }else{
@@ -59,7 +48,7 @@ class UploaderService {
         Carbite::POST("/upload/@ns/@name",function($req,$res){
             $ns = $req->Params()->ns;
             $name = $req->Params()->name;
-            $folder = MEDIA_FOLDER . "/".  $_SERVER["HTTP_HOST"] . "/$ns";
+            $folder = MEDIA_FOLDER . "/".  DATASTORE_DOMAIN . "/$ns";
             
             if (!file_exists($folder))
                 mkdir($folder, 0777, true);

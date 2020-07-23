@@ -33,7 +33,7 @@
             $mail = new PHPMailer();
            //echo self::$emailconfig->username."-".self::$emailconfig->host."-".self::$emailconfig->port."-".self::$emailconfig->password."-";
             $mail->IsSMTP(); // set mailer to use SMTP
-            $mail->SMTPDebug  = 0;
+            $mail->SMTPDebug  = 1;
             $mail->CharSet = 'UTF-8';
             $mail->Host = self::$emailconfig->host; // specify main and backup server
             $mail->SMTPAuth = true; // turn on SMTP authentication

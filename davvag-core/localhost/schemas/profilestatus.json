@@ -26,6 +26,22 @@
 {
     "fieldName":"totalPaymentAmount",
     "dataType":"float"
+},
+{
+    "fieldName":"totalPaidUnrealized",
+    "dataType":"float"
+},
+{
+    "fieldName":"totalInvoiceUnrealized",
+    "dataType":"float"
+},
+{
+    "fieldName":"totalGRNUnrealized",
+    "dataType":"float"
+},
+{
+    "fieldName":"totalPaymentUnrealized",
+    "dataType":"float"
 }
 
 ]}

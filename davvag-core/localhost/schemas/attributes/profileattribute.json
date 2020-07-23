@@ -1,0 +1,79 @@
+[{
+    "type": "select",
+    "label": "Course of study",
+    "req": 0,
+    "name": "course",
+    "choices": [{
+        "label": "Medicine",
+        "sel": "Medicine"
+    }, {
+        "label": "Engineering",
+        "sel": "Engineering"
+    }, {
+        "label": "Business Management",
+        "sel": "Business Management"
+    }, {
+        "label": "Information Technology",
+        "sel": "Information Technology"
+    }, {
+        "label": "Hospitality Management",
+        "sel": "Hospitality Management"
+    }]
+},{
+    "type": "select",
+    "label": "Academic Year",
+    "req": 0,
+    "name": "academic_year",
+    "choices": [{
+        "label": "2020/2021",
+        "sel": "2020/2021"
+    }, {
+        "label": "2021/2022",
+        "sel": "2021/2022"
+    }]
+},{
+    "type": "select",
+    "label": "Scholarship looking for",
+    "req": 0,
+    "name": "scholarship",
+    "choices": [{
+        "label": "Full",
+        "sel": "Full"
+    }, {
+        "label": "Half",
+        "sel": "Half"
+    }, {
+        "label": "Part",
+        "sel": "Part"
+    }]
+},
+{
+    "type": "textarea",
+    "label": "GCE O/L Results & School",
+    "name": "gceol",
+    "req": 1
+},
+{
+    "type": "textarea",
+    "label": "GCE A/L Results & School",
+    "name": "gceal",
+    "req": 1
+},
+{
+    "type": "textarea",
+    "label": "Z Score",
+    "name": "zscore",
+    "req": 1
+},
+{
+    "type": "textarea",
+    "label": "Students ambition",
+    "name": "ambition",
+    "req": 1
+},
+{
+    "type": "textarea",
+    "label": "Short description why this student needs scholarship",
+    "name": "scholarshipdes",
+    "req": 1
+}]

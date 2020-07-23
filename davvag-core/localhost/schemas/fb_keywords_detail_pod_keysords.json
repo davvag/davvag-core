@@ -1,0 +1,28 @@
+{
+    "rawquery" : {
+        "type":"sql",
+        "parameters" : ["keywords","id"],
+        "query": "select * from fb_keywords_detail where keyword in ($keywords) and id <> $id"
+    },
+    "fields" : [
+        {
+            "fieldName":"keywordid",
+            "dataType":"java.lang.String"
+        },{
+            "fieldName":"id",
+            "dataType":"int"
+        },
+        {
+            "fieldName":"keyword",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"filter",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"davvagflow",
+            "dataType":"java.lang.String"
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "fields" : [
+        {
+            "fieldName":"userid",
+            "dataType":"java.lang.String",
+            "annotations":{
+                "isPrimary": true
+            }
+        },
+        {
+            "fieldName":"email",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"username",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"name",
+            "dataType":"java.lang.String"
+        },
+        {
+            "fieldName":"otherdata",
+            "dataType":"java.lang.String"
+        }
+    ]
+}
