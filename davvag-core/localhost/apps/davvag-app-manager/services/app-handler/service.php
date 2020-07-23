@@ -31,7 +31,7 @@ class BroadcastService {
                 foreach ($tenantObj->apps as $appCode => $appData) {
                     
                     
-                    $appLocation = TENANT_RESOURCE_LOCATION . "/$appCode/app.json" ;
+                    $appLocation = TENANT_RESOURCE_LOCATION_APPS . "/$appCode/app.json" ;
                     if (file_exists($appLocation)){
                         $jsonObj = json_decode(file_get_contents($appLocation));
                         //return $tenantObj->apps;
@@ -54,7 +54,7 @@ class BroadcastService {
                         foreach ($jsonObj->components as $Code => $Data){
                             $a=new stdClass();
                             $a->Code=$Code;
-                            $aLocation = TENANT_RESOURCE_LOCATION . "/$appCode/$Data->location/$Code/component.json";
+                            $aLocation = TENANT_RESOURCE_LOCATION_APPS . "/$appCode/$Data->location/$Code/component.json";
                             if (file_exists($aLocation)){
                                 $aObj = json_decode(file_get_contents($aLocation));
                                 

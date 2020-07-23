@@ -57,7 +57,7 @@
         define ("AUTH_DOMAIN", $_SERVER["HTTP_HOST"]);
     }
     define ("TENANT_RESOURCE_LOCATION", RESOURCE_LOCATION . "/" . HOST_NAME);
-    
+    define ("TENANT_RESOURCE_LOCATION_APPS", RESOURCE_LOCATION . "/" . HOST_NAME."/apps");
     define ("BASE_PATH", dirname(__FILE__));
     define ("COMPONENT_PATH", dirname(__FILE__) . "/components");
     define ("PLUGIN_PATH", dirname(__FILE__) ."/plugins");
