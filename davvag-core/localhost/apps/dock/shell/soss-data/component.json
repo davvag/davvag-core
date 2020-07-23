@@ -18,7 +18,10 @@
         "methods" : {
             "q" : {
                 "method" : "POST"
-            },"qcrossdomain" : {
+            },
+            "Podq" : {
+                "method" : "POST"
+            },"Settings" : {
                 "method" : "POST"
             }
         }
