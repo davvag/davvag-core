@@ -5,8 +5,8 @@
 class CacheData{
     public static function getObjects($lastVersionId,$className){
         
-        $tenantId = $_SERVER["HTTP_HOST"];
-        $path = MEDIA_FOLDER . "/cache/".  $_SERVER["HTTP_HOST"] . "/".$className;
+        $tenantId = DATASTORE_DOMAIN;
+        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN . "/".$className;
             
         if (!file_exists($path))
               mkdir($path, 0777, true);
@@ -34,8 +34,8 @@ class CacheData{
 
     public static function getObjects_fullcache($lastVersionId,$className){
         
-        $tenantId = $_SERVER["HTTP_HOST"];
-        $path = MEDIA_FOLDER . "/cache/".  $_SERVER["HTTP_HOST"] . "/".$className;
+        $tenantId = DATASTORE_DOMAIN;
+        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN . "/".$className;
             
         if (!file_exists($path))
               mkdir($path, 0777, true);
@@ -61,7 +61,7 @@ class CacheData{
         if($className==""){
             return;
         }
-        $path = MEDIA_FOLDER . "/cache/".  $_SERVER["HTTP_HOST"] . "/$className";
+        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN . "/$className";
         if (file_exists($path)){
             array_map('unlink', glob("$path/*.*"));
             rmdir($path);
@@ -70,7 +70,7 @@ class CacheData{
     public static function setObjects($lastVersionId,$className, $saveObj){
         
         $tenantId = $_SERVER["HTTP_HOST"];
-        $path = MEDIA_FOLDER . "/cache/".  $_SERVER["HTTP_HOST"] . "/$className";
+        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN . "/$className";
             
         if (!file_exists($path))
               mkdir($path, 0777, true);
