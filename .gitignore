@@ -1695,3 +1695,7 @@ davvag-core/dev.domain.com/schemas/store_products.json
 davvag-core/dev.domain.com/schemas/storeproductmapping.json
 davvag-core/dev.domain.com/schemas/testschema.json
 davvag-core/dev.domain.com/schemas/uom.json
+davvag-core/dev.domain.com/web_user.json
+davvag-core/dev.domain.com/tenant.json
+davvag-core/dev.domain.com/sysadmin.json
+davvag-core/dev.domain.com/anonymous.json

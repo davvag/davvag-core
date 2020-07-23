@@ -31,7 +31,7 @@ class CarbiteTransform {
         
         //$currentHeaders = apache_request_headers();
         $forwardHeaders = $mObj->rh;
-        array_push($forwardHeaders, "Host: $_SERVER[HTTP_HOST]");
+        array_push($forwardHeaders, "Host: ".DATASTORE_DOMAIN."");
         array_push($forwardHeaders, "Content-Type: application/json");
         /*
         foreach ($currentHeaders as $key => $value)
