@@ -33,7 +33,8 @@
             }
         }
     }else{
-        define ("LOCAL_DEV_HOST", "default");
+        //define ("LOCAL_DEV_HOST", "default");
+        //exit;
     }
     
     
