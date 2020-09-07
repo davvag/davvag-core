@@ -30,7 +30,8 @@ class ProductService {
     public function postSave($req,$res){
         
         $product=$req->Body(true);
-        $user= Auth::Autendicate("product","save",$res);
+        //return $product;
+        //$user= Auth::Autendicate("product","save",$res);
         $summery =new stdClass();
         $summery->summery=substr($product->caption,0,500);
         $summery->title=$product->name;
@@ -69,6 +70,10 @@ class ProductService {
         CacheData::clearObjects("products");
         CacheData::clearObjects("d_all_summery");
         CacheData::clearObjects("products_attributes");
+        if(count($product->RemoveImages)>0){
+            $product->removedStatus=SOSSData::Delete("products_image",$product->RemoveImages);
+        }
+
         foreach($product->Images as $key=>$value){
             $product->Images[$key]->articalid=$product->itemid;
             if($product->Images[$key]->id==0){
@@ -86,6 +91,14 @@ class ProductService {
         CacheData::clearObjects("products_image");
         return $product;
         
+    }
+
+    function postDeleteProduct($req,$res){
+        $product=$req->Body(true);
+        $product->removedStatus=SOSSData::Delete("products",$product);
+        CacheData::clearObjects("products");
+        CacheData::clearObjects("d_all_summery");
+        CacheData::clearObjects("products_attributes");
     }
 
     function getproductid($req){

@@ -12,7 +12,8 @@ WEBDOCK.component().register(function(exports){
         p_image:[],
         categories:[],
         uoms: [],
-        submitErrors: undefined
+        submitErrors: undefined,
+        p_removed:[]
     };
 
     var vueData = {
@@ -65,7 +66,7 @@ WEBDOCK.component().register(function(exports){
         producthandler = exports.getComponent("product");
         uomhandler = exports.getComponent("uom-handler");
         uploaderInstance = exports.getShellComponent("soss-uploader");
-        
+        editor=$("#txtcaption").Editor();
         loadValidator();
         
         uploaderInstance = exports.getShellComponent("soss-uploader");
@@ -118,6 +119,19 @@ WEBDOCK.component().register(function(exports){
 
     function removeImage(e) {
         bindData.image = '';
+    }
+
+    function removeImage(e) {
+        //const index = array.indexOf(e);
+        if (e > -1) {
+            if(bindData.p_image[e].id!=0){
+                bindData.p_removed.push({id:bindData.p_image[e].id,name:bindData.p_image[e].name,
+                    caption:bindData.p_image[e].caption,default_img:bindData.p_image[e].default_img});
+            }
+            bindData.p_image.splice(e, 1);
+            newfiles.splice(e,1);
+        }
+
     }
 
     function createImage(file) {
@@ -190,6 +204,7 @@ WEBDOCK.component().register(function(exports){
                                
                                if(r.result.products!=null){
                                 bindData.product = r.result.products[0];
+                                $("#txtcaption").data("editor").html(bindData.product.caption);
                                 if(r.result.products_attributes.length!=0)
                                     bindData.product.attributes=r.result.products_attributes[0];
                                 else
@@ -238,14 +253,15 @@ WEBDOCK.component().register(function(exports){
         $('#send').prop('disabled', true);
         bindData.submitErrors = validator.validate(); 
         if (!bindData.submitErrors){
+            bindData.product.caption=$("#txtcaption").data("editor").html(); 
             bindData.product.caption=bindData.product.caption.split("'").join("~^");
             bindData.product.caption=bindData.product.caption.split('"').join("~*");
             bindData.product.Images=[];
             for (var i = 0; i < bindData.p_image.length; i++) {
-                bindData.product.Images.push({id:bindData.p_image[i].id,name:bindData.p_image[i].name,
+                bindData.product.Imsages.push({id:bindData.p_image[i].id,name:bindData.p_image[i].name,
                     caption:bindData.p_image[i].caption,default_img:bindData.p_image[i].default_img});
             }
-            
+            bindData.product.RemoveImages=bindData.p_removed;
             var promiseObj = producthandler.services.Save(bindData.product);
            
             

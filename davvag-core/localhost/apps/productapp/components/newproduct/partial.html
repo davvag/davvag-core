@@ -35,7 +35,7 @@
                     <div class="form-group">
                       <label class="col-sm-3 control-label">Product Caption</label>
                       <div class="col-sm-6">
-                          <textarea class="form-control" v-model="product.caption" rows="5"></textarea>
+                          <textarea id="txtcaption" class="form-control"  rows="5"></textarea>
                       </div>
                       
                     </div>
@@ -170,10 +170,12 @@
    <div class="row">
     <div class="col-sm-6 col-sm-offset-3">
       <button id="send" class="btn btn-primary" v-on:click="submit">Submit</button>&nbsp;
-      <button class="btn btn-default">Cancel</button>
+      <button class="btn btn-default" v-on:click="navigateBack">Cancel</button>
     </div>
    </div>
   </div><!-- panel-footer -->
     
   </div>
+<script src='assets/productapp/editor.js'></script>
+<link href="assets/productapp/editor.css" type="text/css" rel="stylesheet"/>
   
