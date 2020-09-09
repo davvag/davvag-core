@@ -62,6 +62,6 @@
     define ("BASE_PATH", dirname(__FILE__));
     define ("COMPONENT_PATH", dirname(__FILE__) . "/components");
     define ("PLUGIN_PATH", dirname(__FILE__) ."/plugins");
-    define ("PLUGIN_PATH_LOCAL", dirname(__FILE__) . "/davvag-core/".HOST_NAME."/plugins");
+    define ("PLUGIN_PATH_LOCAL", TENANT_RESOURCE_LOCATION . "/plugins");
     define ("SCHEMA_PATH", TENANT_RESOURCE_LOCATION . "/schemas");
 ?>
