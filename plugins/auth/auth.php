@@ -47,10 +47,34 @@ class Auth {
         if($ops===""){
             $ops="null";
         }
-        if(isset($type) && isset($code) && isset($ops))
-            return Auth::getObjectForGetMethod(AUTH_URL . "/getacess/$groupid/$app/$type/$code/$ops/");
-        else
-            return Auth::getObjectForGetMethod(AUTH_URL . "/getacess/$groupid/$app/");
+        if(isset($type) && isset($code) && isset($ops)){
+            $token=md5($groupid."-".$app."-".$type."-".$code."-".$ops);
+            $result=CacheData::getObjects($token,"sys_access");
+            if(isset($result)){
+                return $result;
+                
+            }else{
+                $r=Auth::getObjectForGetMethod(AUTH_URL . "/getacess/$groupid/$app/$type/$code/$ops/");
+                if(!isset($r->error)){
+                    CacheData::setObjects($token,"sys_access",$r);
+                }
+                return $r;
+            }
+        }
+        else{
+            $token=md5($groupid."-".$app);
+            $result=CacheData::getObjects($token,"sys_access");
+            if(isset($result)){
+                return $result;
+            }else{
+                $r=Auth::getObjectForGetMethod(AUTH_URL . "/getacess/$groupid/$app/");
+                if(!isset($r->error)){
+                    CacheData::setObjects($token,"sys_access",$r);
+                }
+                return $r;
+            }
+        }
+            
     }
 
     

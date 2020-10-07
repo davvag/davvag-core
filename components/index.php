@@ -10,7 +10,7 @@
     require_once (dirname(__FILE__) . "/component_manager.php");
     require_once (dirname(__FILE__) . "/virtual_firewall.php");
     require_once (PLUGIN_PATH . "/auth/auth.php");
-
+    require_once (PLUGIN_PATH . "/phpcache/cache.php");
     $componentManager = new ComponentManager();
     $virtualFirewall = new VirtualFirewall();
     $groupid="anonymous";
