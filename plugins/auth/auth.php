@@ -19,6 +19,28 @@ class Auth {
         return json_decode(Auth::callRest(AUTH_URL . "/createuser/","POST",$user));
     }
 
+    public static function NewDomain ($data){
+        require_once(PLUGIN_PATH . "/sossdata/SOSSData.php");
+        $result = SOSSData::Insert ("profile", $data);
+        if($result->success){
+            $data->otherdata->profileid=$result->result->generatedId;
+            $data->id=$result->result->generatedId;
+            //$data->nationalidcardnumber=$data->xxxxxxxnationalidcardnumber;
+            $d=json_decode(Auth::callRest(AUTH_URL . "/newdomain/","POST",$data));
+            //var_dump($d);
+            $data->linkeduserid=$d->createdUser;
+            $data->userid=$d->createdUser;
+            $data->id_number=$data->xxxxxxxnationalidcardnumber;
+            $data->name=$data->userfullname;
+            $data->tid=$d->domain;
+            $data->catorgory=empty($data->organization)?"User":"Company";
+            $data->mainid=1;
+            $data->mainprofileid=0;
+            $result = SOSSData::Update ("profile", $data);
+            return $d;
+        }
+    }
+
     public static function Join ($domain,$userid,$usergroup){
         return Auth::getObjectForGetMethod(AUTH_URL . "/join/$domain/$userid/$usergroup");
     }
