@@ -429,7 +429,7 @@ strong {
 .leftpanelinner {
     padding: 5px 15px;
     padding: 5px 15px;
-    max-height: 90vh;
+    height: calc(100vh - 100px);
     overflow: auto;
 }
 
@@ -809,7 +809,7 @@ strong {
 .contentpanel {
     padding: 20px;
     position: relative;
-    height: 80vh;
+    height: calc(100vh - 120px);
     overflow: auto;
 }
 
