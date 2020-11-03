@@ -32,7 +32,7 @@ class Auth {
             $data->userid=$d->createdUser;
             $data->id_number=$data->xxxxxxxnationalidcardnumber;
             $data->name=$data->userfullname;
-            $data->tid=$d->domain;
+            //$data->tid=$d->domain;
             $data->catorgory=empty($data->organization)?"User":"Company";
             $data->mainid=1;
             $data->mainprofileid=0;
