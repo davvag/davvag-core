@@ -49,6 +49,11 @@ class Auth {
         return Auth::getObjectForGetMethod(AUTH_URL . "/resetpassword/$email/$token/$newPassword");
     }
 
+
+    public static function ChangePassword ($oldpassword, $newPassword){       
+        return Auth::getObjectForGetMethod(AUTH_URL . "/resetpassworduser/$oldpassword/$newPassword");
+    }
+
     public static function GetSession ($token){
         return Auth::getObjectForGetMethod(AUTH_URL . "/getsession/$token");
     }
