@@ -103,6 +103,7 @@
         }
 
         public function HandleService($req,$res){
+            //echo json_encode($req->Params());
             $s=checkAccess($res,$req->Params()->appCode,"service",$req->Params()->componentName,$req->Params()->handlerName);
             if(!$s){
                 writeResponse($res, false, array("message"=>"UnAutherized call. this user group do not have permision ".GROUPID));
