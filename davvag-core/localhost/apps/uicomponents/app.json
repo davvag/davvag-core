@@ -1,0 +1,23 @@
+{
+    "components": {
+        "tagtextbox": {
+            "type":"service",
+            "location":"services"
+        },
+        "dependencies": {
+            "type":"shell",
+            "location":""
+        }
+    },
+    "description":{
+        "title": "UI Components",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":""
+    },
+    "tags":[],
+    "configuration":{
+        "webdock":{
+        }
+    }
+}

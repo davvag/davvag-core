@@ -1,0 +1,14 @@
+<div  class="input-form">
+  <div class="input-error">
+    <div class="alert alert-danger" v-if="submitErrors" v-for="error in submitErrors">
+      <strong>ERROR! </strong> {{error}}
+    </div>
+    <div class="alert alert-info" v-if="submitInfo" v-for="error in submitInfo">
+        <strong>INFO! </strong> {{error}}
+      </div>
+  </div>
+  <div  id="card_container">
+    <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Varifying Please wait......</h1>
+  </div>
+</div>
+<script src="https://cdn.directpay.lk/live/00061/v1/directpayCardPayment.js?v=2.0.1"></script>

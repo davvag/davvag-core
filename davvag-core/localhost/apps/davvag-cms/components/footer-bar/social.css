@@ -14,13 +14,10 @@
     background-color:var( --SocialButton);
   }
 
-  .page-footer{
-    margin-top: 10px;
-  }
+  
 
   @media only screen and (max-width: 600px) {
     .page-footer{
-      margin-top: 50px;
       margin-bottom: 55px;
     }
 }

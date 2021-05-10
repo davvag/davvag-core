@@ -3,6 +3,7 @@ WEBDOCK.component().register(function(exports){
         item:{catogory:"Student",id:0,title:"Mr",name:"Lasitha",gender:"m",organization:"Christ Gospel",email:"lasitha@gmail.com",contactno:"sss",addresss:"ssss",country:"sssss",city:"dddddddd"},
         submitErrors: undefined,
         SearchItem:"",
+        attributes:{},
         items:[],
         Activities:[],
         Transaction:[],
@@ -138,31 +139,32 @@ WEBDOCK.component().register(function(exports){
     function getProfilebyID(id){
         //console.log(bindData.item)
         
-            console.log("items chnaged");
-            //bindData.item=response.result[0];
-            bindData.image = 'components/dock/soss-uploader/service/get/profile/'+id;
-            
-            var query=[{storename:"profilestatus",search:"profileid:"+id},
-                        {storename:"profile","search":"id:"+id},
-                        {storename:"ledger","search":"profileid:"+id},
-                        {storename:"profileservices","search":"profileid:"+id}];
-                        pInstance.services.q(query)
-            .then(function(r){
-                console.log(JSON.stringify(r));
-                if(r.success){
-                    bindData.Transaction=r.result.ledger;
-                    if(r.result.profilestatus.length!=0){
-                        bindData.Summary=r.result.profilestatus[0];
-                    }
-                    if(r.result.profile.length!=0){
-                        bindData.item=r.result.profile[0];
-                    }
-                    bindData.items=r.result.profileservices;
+        console.log("items chnaged");
+        //bindData.item=response.result[0];
+        bindData.image = 'components/dock/soss-uploader/service/get/profile/'+id;
+        
+        var query=[{storename:"profilestatus",search:"profileid:"+id},
+                    {storename:"profile","search":"id:"+id},
+                    {storename:"profile_attributes","search":"id:"+id},
+                    {storename:"profileservices","search":"profileid:"+id}];
+                    pInstance.services.q(query)
+        .then(function(r){
+            console.log(JSON.stringify(r));
+            if(r.success){
+                //bindData.Transaction=r.result.ledger;
+                bindData.attributes=r.result.profile_attributes[0]==null?{}:r.result.profile_attributes[0]
+                if(r.result.profilestatus.length!=0){
+                    bindData.Summary=r.result.profilestatus[0];
                 }
-            })
-            .error(function(error){
-                console.log(error.responseJSON);
-            });
+                if(r.result.profile.length!=0){
+                    bindData.item=r.result.profile[0];
+                }
+                bindData.items=r.result.profileservices;
+            }
+        })
+        .error(function(error){
+            console.log(error.responseJSON);
+        });
             //image
         
     }

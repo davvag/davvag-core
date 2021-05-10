@@ -1,0 +1,439 @@
+ 
+
+  body .fax {
+    font-size: 3em;
+    width: 2em;
+    height: 1.5em;
+    text-align: center;
+  }
+
+  .fax {
+    color: #efefef;
+  }
+  .fax.fa-500px {
+    color: #0099e5;
+  }
+  .fax.fa-adn {
+    color: #4A484C;
+  }
+  .fax.fa-amazon {
+    color: #ff9900;
+  }
+  .fax.fa-android {
+    color: #a4c639;
+  }
+  .fax.fa-angellist {
+    color: #000;
+  }
+  .fax.fa-apple {
+    color: #979797;
+  }
+  .fax.fa-behance {
+    color: #1769ff;
+  }
+  .fax.fa-behance-square {
+    color: #1769ff;
+  }
+  .fax.fa-bitbucket {
+    color: #205081;
+  }
+  .fax.fa-bitbucket-square {
+    color: #205081;
+  }
+  .fax.fa-bitcoin {
+    color: #ee9209;
+  }
+  .fax.fa-black-tie {
+    color: #222;
+  }
+  .fax.fa-btc {
+    color: #ee9209;
+  }
+  .fax.fa-buysellads {
+    color: #c90100;
+  }
+  .fax.fa-cc-amex {
+    color: #007bc1;
+  }
+  .fax.fa-cc-diners-club {
+    color: #004A97;
+  }
+  .fax.fa-cc-discover {
+    color: #f68121;
+  }
+  .fax.fa-cc-jcb {
+    color: #003A8F;
+  }
+  .fax.fa-cc-mastercard {
+    color: #0a3a82;
+  }
+  .fax.fa-cc-paypal {
+    color: #253b80;
+  }
+  .fax.fa-cc-stripe {
+    color: #00afe1;
+  }
+  .fax.fa-cc-visa {
+    color: #0157a2;
+  }
+  .fax.fa-chrome {
+    color: #4587F3;
+  }
+  .fax.fa-codepen {
+    color: #000;
+  }
+  .fax.fa-connectdevelop {
+    color: #391448;
+  }
+  .fax.fa-contao {
+    color: #eb8623;
+  }
+  .fax.fa-creative-commons {
+    color: #231f20;
+  }
+  .fax.fa-css3 {
+    color: #1680C0;
+  }
+  .fax.fa-dashcube {
+    color: #7f7f7f;
+  }
+  .fax.fa-delicious {
+    color: #3399ff;
+  }
+  .fax.fa-deviantart {
+    color: #4e6252;
+  }
+  .fax.fa-digg {
+    color: #000;
+  }
+  .fax.fa-dribbble {
+    color: #444444;
+  }
+  .fax.fa-dropbox {
+    color: #007ee5;
+  }
+  .fax.fa-drupal {
+    color: #0077c0;
+  }
+  .fax.fa-empire {
+    color: #000;
+  }
+  .fax.fa-expeditedssl {
+    color: #343433;
+  }
+  .fax.fa-facebook {
+    color: #3b5998;
+  }
+  .fax.fa-facebook-official {
+    color: #3b5998;
+  }
+  .fax.fa-facebook-square {
+    color: #3b5998;
+  }
+  .fax.fa-firefox {
+    color: #e66000;
+  }
+  .fax.fa-flickr {
+    color: #ff0084;
+  }
+  .fax.fa-fonticons {
+    color: #1C1E29;
+  }
+  .fax.fa-forumbee {
+    color: #83ad13;
+  }
+  .fax.fa-foursquare {
+    color: #0072b1;
+  }
+  .fax.fa-ge {
+    color: #000;
+  }
+  .fax.fa-get-pocket {
+    color: #d3505a;
+  }
+  .fax.fa-gg {
+    color: #000;
+  }
+  .fax.fa-gg-circle {
+    color: #000;
+  }
+  .fax.fa-git {
+    color: #333;
+  }
+  .fax.fa-git-square {
+    color: #333;
+  }
+  .fax.fa-github {
+    color: #333;
+  }
+  .fax.fa-github-alt {
+    color: #333;
+  }
+  .fax.fa-github-square {
+    color: #333;
+  }
+  .fax.fa-gittip {
+    color: #663300;
+  }
+  .fax.fa-google {
+    color: #4285f4;
+  }
+  .fax.fa-google-plus {
+    color: #dd4b39;
+  }
+  .fax.fa-google-plus-square {
+    color: #dd4b39;
+  }
+  .fax.fa-google-wallet {
+    color: #4285f4;
+  }
+  .fax.fa-hacker-news {
+    color: #ff6600;
+  }
+  .fax.fa-houzz {
+    color: #7ac142;
+  }
+  .fax.fa-html5 {
+    color: #e34f26;
+  }
+  .fax.fa-instagram {
+    color: #3f729b;
+  }
+  .fax.fa-internet-explorer {
+    color: #1EBBEE;
+  }
+  .fax.fa-ioxhost {
+    color: #faa729;
+  }
+  .fax.fa-joomla {
+    color: #142849;
+  }
+  .fax.fa-jsfiddle {
+    color: #4679BD;
+  }
+  .fax.fa-lastfm {
+    color: #c3000d;
+  }
+  .fax.fa-lastfm-square {
+    color: #c3000d;
+  }
+  .fax.fa-leanpub {
+    color: #0c0c0c;
+  }
+  .fax.fa-linkedin {
+    color: #0976b4;
+  }
+  .fax.fa-linkedin-square {
+    color: #0976b4;
+  }
+  .fax.fa-linux {
+    color: #333333;
+  }
+  .fax.fa-maxcdn {
+    color: #FF6600;
+  }
+  .fax.fa-meanpath {
+    color: #538ed7;
+  }
+  .fax.fa-medium {
+    color: #000;
+  }
+  .fax.fa-odnoklassniki {
+    color: #ed812b;
+  }
+  .fax.fa-odnoklassniki-square {
+    color: #ed812b;
+  }
+  .fax.fa-opencart {
+    color: #2AC2EF;
+  }
+  .fax.fa-openid {
+    color: #F78C40;
+  }
+  .fax.fa-opera {
+    color: #cc0f16;
+  }
+  .fax.fa-optin-monster {
+    color: #83c11f;
+  }
+  .fax.fa-pagelines {
+    color: #000;
+  }
+  .fax.fa-paypal {
+    color: #253b80;
+  }
+  .fax.fa-pied-piper {
+    color: #2f9f46;
+  }
+  .fax.fa-pied-piper-alt {
+    color: #2f9f46;
+  }
+  .fax.fa-pied-piper-square {
+    color: #2f9f46;
+  }
+  .fax.fa-pinterest {
+    color: #cc2127;
+  }
+  .fax.fa-pinterest-p {
+    color: #cc2127;
+  }
+  .fax.fa-pinterest-square {
+    color: #cc2127;
+  }
+  .fax.fa-qq {
+    color: #000;
+  }
+  .fax.fa-ra {
+    color: #000;
+  }
+  .fax.fa-rebel {
+    color: #000;
+  }
+  .fax.fa-reddit {
+    color: #ff4500;
+  }
+  .fax.fa-reddit-square {
+    color: #ff4500;
+  }
+  .fax.fa-renren {
+    color: #005EAC;
+  }
+  .fax.fa-safari {
+    color: #1B88CA;
+  }
+  .fax.fa-sellsy {
+    color: #1f78b9;
+  }
+  .fax.fa-share-alt {
+    color: #01bf01;
+  }
+  .fax.fa-share-alt-square {
+    color: #01bf01;
+  }
+  .fax.fa-shirtsinbulk {
+    color: #dd3a26;
+  }
+  .fax.fa-simplybuilt {
+    color: #000;
+  }
+  .fax.fa-skyatlas {
+    color: #00adbb;
+  }
+  .fax.fa-skype {
+    color: #00aff0;
+  }
+  .fax.fa-slack {
+    color: #0f7965;
+  }
+  .fax.fa-slideshare {
+    color: #e98325;
+  }
+  .fax.fa-soundcloud {
+    color: #f80;
+  }
+  .fax.fa-spotify {
+    color: #7ab800;
+  }
+  .fax.fa-stack-exchange {
+    color: #000;
+  }
+  .fax.fa-stack-overflow {
+    color: #fe7a15;
+  }
+  .fax.fa-steam {
+    color: #0B0B0B;
+  }
+  .fax.fa-steam-square {
+    color: #0B0B0B;
+  }
+  .fax.fa-stumbleupon {
+    color: #eb4924;
+  }
+  .fax.fa-stumbleupon-circle {
+    color: #eb4924;
+  }
+  .fax.fa-tencent-weibo {
+    color: #74AF2C;
+  }
+  .fax.fa-trello {
+    color: #256a92;
+  }
+  .fax.fa-tripadvisor {
+    color: #589442;
+  }
+  .fax.fa-tumblr {
+    color: #35465c;
+  }
+  .fax.fa-tumblr-square {
+    color: #35465c;
+  }
+  .fax.fa-twitch {
+    color: #6441a5;
+  }
+  .fax.fa-twitter {
+    color: #55acee;
+  }
+  .fax.fa-twitter-square {
+    color: #55acee;
+  }
+  .fax.fa-viacoin {
+    color: #333;
+  }
+  .fax.fa-vimeo {
+    color: #1ab7ea;
+  }
+  .fax.fa-vimeo-square {
+    color: #1ab7ea;
+  }
+  .fax.fa-vine {
+    color: #00b488;
+  }
+  .fax.fa-vk {
+    color: #45668e;
+  }
+  .fax.fa-wechat {
+    color: #93d034;
+  }
+  .fax.fa-weibo {
+    color: #E71D34;
+  }
+  .fax.fa-weixin {
+    color: #93d034;
+  }
+  .fax.fa-wikipedia-w {
+    color: #000;
+  }
+  .fax.fa-windows {
+    color: #00bcf2;
+  }
+  .fax.fa-wordpress {
+    color: #21759b;
+  }
+  .fax.fa-xing {
+    color: #026466;
+  }
+  .fax.fa-xing-square {
+    color: #026466;
+  }
+  .fax.fa-y-combinator {
+    color: #F0652F;
+  }
+  .fax.fa-yc {
+    color: #F0652F;
+  }
+  .fax.fa-yahoo {
+    color: #400191;
+  }
+  .fax.fa-yelp {
+    color: #af0606;
+  }
+  .fax.fa-youtube {
+    color: #e52d27;
+  }
+  .fax.fa-youtube-play {
+    color: #e52d27;
+  }
+  .fax.fa-youtube-square {
+    color: #e52d27;
+  }
+  

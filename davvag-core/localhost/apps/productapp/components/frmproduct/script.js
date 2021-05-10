@@ -107,6 +107,7 @@ WEBDOCK.component().register(function(exports){
     }
 
     function loadInitialData(){
+        bindData.categories=[];
         producthandler.transformers.allCategories()
         .then(function(result){
             for (var i=0;i<result.result.length;i++)

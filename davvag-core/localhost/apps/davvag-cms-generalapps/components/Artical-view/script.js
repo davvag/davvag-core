@@ -96,25 +96,31 @@ WEBDOCK.component().register(function(exports){
                             console.log(JSON.stringify(r));
                             if(r.success){
                                 if(r.result.d_cms_artical_v1.length!=0)
-                                bindData.product= r.result.d_cms_artical_v1[0];
-                                document.title = unescape(bindData.product.title);
-                                bindData.product.title=unescape(bindData.product.title);
-                                bindData.product.content=unescape(bindData.product.content);
-                                bindData.product.summery=chunkString(unescape(bindData.product.summery),150);
-                                //bindData.product.tags=unescape(bindData.product.tags);
-                                bindData.product.content=bindData.product.content.split("~^").join("'");
-                                bindData.product.content=bindData.product.content.split('~*').join('"');
-                                bindData.p_image =  r.result.d_cms_artical_imagev1;
-                                bindData.url="http://"+window.location.hostname+"/components/davvag-cms-generalapps/cms-gapp-handler/service/Artical/?q="+bindData.product.id;
-                                var query=[{storename:"d_all_summery_pod_related",parameters:{keywords:bindData.product.tags,size:"3",id:"'"+bindData.product.id.toString()+"'"}}];
-                                menuhandler.services.q(query)
-                                .then(function(r1){
-                                    if(r1.success){
-                                        bindData.Articals=r1.result.d_all_summery_pod_related;
-                                    }
-                                }).error(function(e){
+                                {
+                                    bindData.product= r.result.d_cms_artical_v1[0];
+                                    document.title = unescape(bindData.product.title);
+                                    bindData.product.title=unescape(bindData.product.title);
+                                    bindData.product.content=unescape(bindData.product.content);
+                                    bindData.product.summery=chunkString(unescape(bindData.product.summery),150);
+                                    //bindData.product.tags=unescape(bindData.product.tags);
+                                    bindData.product.content=bindData.product.content.split("~^").join("'");
+                                    bindData.product.content=bindData.product.content.split('~*').join('"');
+                                    bindData.p_image =  r.result.d_cms_artical_imagev1;
+                                    bindData.url="http://"+window.location.hostname+"/components/davvag-cms-generalapps/cms-gapp-handler/service/Artical/?q="+bindData.product.id;
+                                    var query=[{storename:"davvag_summery_related",parameters:{keywords:bindData.product.tags,size:"3",id:"'"+bindData.product.id.toString()+"'"}}];
+                                    menuhandler.services.q(query)
+                                    .then(function(r1){
+                                        if(r1.success){
+                                            bindData.Articals=r1.result.davvag_summery_related;
+                                        }
+                                    }).error(function(e){
 
-                                });
+                                    });
+                                }
+                                else{
+                                    bindData.product={title:"The Post is not Found or Deleted",content:"This Artical or Post cannot be found in our system."};
+                                }
+                                
                                 
                                 for (var i = 0; i < bindData.p_image.length; i++) {
                                     bindData.p_image[i].scr='components/dock/soss-uploader/service/get/d_cms_artical/'+bindData.product.id+'-'+bindData.p_image[i].name;

@@ -1,0 +1,55 @@
+{
+    "components": {
+        "uom-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "uom-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "ar-camara": {
+            "type":"component",
+            "location":"components"
+        },
+        "ar-camara-gltf": {
+            "type":"component",
+            "location":"components"
+        },
+        "image_capture":{
+            "type":"component",
+            "location":"components"
+        },
+        "objectviewer":{
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Augmented Reality",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock","showincms"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "objectviewer",
+            "onLoad": ["uom-handler"],
+            "routes":{
+                "partials":{
+                    "/gltf" : "ar-camara-gltf",
+                    "/image" : "image_capture"
+                }
+            }
+        }
+    },
+    "dependency":{
+        "dock":{
+            "version":"1.0"
+        }
+    },
+    "schemas":[
+        "users"
+    ]
+}

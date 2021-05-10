@@ -23,6 +23,9 @@
             "Save" : {
                 "method" : "POST"
             },
+            "Delete" : {
+                "method" : "POST"
+            },
             "ProductToStore" : {
                 "method" : "POST"
             }

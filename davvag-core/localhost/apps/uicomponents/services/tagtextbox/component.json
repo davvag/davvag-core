@@ -1,0 +1,30 @@
+{
+    "name" : "soss-routes-vue",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "dependencies" : {
+    },
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ],
+        "js" : [
+            {
+                "tag": "jquery.tagsinput.js",
+                "version" : "latest",
+                "location":"jquery.tagsinput.min.js"
+            }
+        ],
+        "css" : [
+            {
+                "type":"jquery.tagsinput.css",
+                "location" : "jquery.tagsinput.css"
+            }
+        ]
+    }
+}

@@ -18,6 +18,7 @@ WEBDOCK.component().register(function(exports){
     };
 
     function Login(routeData){
+        /*
         if(localStorage.loginData!=null){
             if(routeData.u){
                 //scope.isBusy=false;
@@ -27,7 +28,7 @@ WEBDOCK.component().register(function(exports){
                 //pInstance.appNavigate("/profile");
 
             }
-        }else{
+        }else{*/
             var handler = exports.getComponent("login-handler");
             handler.services.LoginState().then(function(result){
                 if (result.result){
@@ -54,11 +55,11 @@ WEBDOCK.component().register(function(exports){
             }).error(function(result){
                 if(routeData.u)
                         sessionStorage.redirecturl=routeData.u;
-                        
+                localStorage.clear();
                 location.href="#/app/userapp/login";
                 //pInstance.appNavigate("/login");
             });
-        }
+       // }
     }
 
     var vueData =  {

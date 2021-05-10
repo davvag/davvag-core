@@ -1,0 +1,132 @@
+<div  class="container">
+    <div class="row clearfix">
+				<div class="col-md-4">
+						<div class="form-group">
+								<label class="col-sm-3 control-label">Select Rider</label>
+								<div class="col-sm-6">
+										<select class="form-control" id="textProductCategory" v-model="rideremail">
+												<option></option>
+												<option v-for="item in riders" v-bind:value="item.username">{{ item.name }}</option>
+											</select>
+								</div>
+								
+							</div>
+				</div>
+        <div class="col-md-4">
+						
+          <button  class="pull-right btn btn-danger" v-on:click="cancel">Reject</button>
+          <button  class="pull-right btn btn-success" v-on:click="approve">Accept</button>
+        </div>
+      </div>
+    <div id="printcontent" >
+    <div class="row">
+        <div class="col-xs-8">
+    		<div class="invoice-title">
+    			<h2>Invoice</h2><h3 class="pull-right">Invoice # {{ InvoiceToSave.invoiceNo }}</h3>
+    		</div>
+    		<hr>
+    		<div class="row">
+    			<div class="col-xs-6">
+    				<address>
+            <strong>Billed To:</strong><br>
+            <strong>ID:</strong>{{ InvoiceToSave.profileId }}<br>
+    					{{ InvoiceToSave.name }}<br>
+    					{{ InvoiceToSave.address }}<br>
+    					{{ InvoiceToSave.city }}<br>
+    					{{ InvoiceToSave.country }}
+    				</address>
+    			</div>
+    			<div class="col-xs-6 text-right">
+            
+    				<address>
+        			<strong>Invoiced By:</strong><br>
+    					Lanka Bible College<br>
+    					Christopher Road,<br>
+    					Peradeneya<br>
+    					Sri Lanka
+    				</address>
+    			</div>
+    		</div>
+    		<div class="row">
+    			<div class="col-xs-6">
+    				<address>
+    					<strong>Conatct Details:</strong><br>
+    					{{ InvoiceToSave.contactno }}<br>
+              {{ InvoiceToSave.email }}<br>
+              <img :src="'https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=pfl'+InvoiceToSave.profileId+'&choe=UTF-8'" v-show="InvoiceToSave.invoiceNo != 0 ? true : false"/>
+						</address>
+						
+						
+						
+					</div>
+					
+    			<div class="col-xs-6 text-right">
+    				<address>
+    					<strong>Order Date:</strong><br>
+              {{ InvoiceToSave.invoiceDate }}<br>
+              <img :src="'https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=inv'+InvoiceToSave.invoiceNo+'&choe=UTF-8'" v-show="InvoiceToSave.invoiceNo != 0 ? true : false"/>
+              <br>
+    				</address>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+    
+    <div class="row">
+    	<div class="col-md-8">
+    		<div class="panel panel-default">
+    			<div class="panel-heading">
+    				<h3 class="panel-title"><strong>Invoice summary</strong></h3>
+    			</div>
+    			<div class="panel-body">
+    				<div class="table-responsive">
+    					<table class="table table-condensed">
+    						<thead>
+                    <tr>
+        							<td><strong>Item</strong></td>
+                      <td class="text-center"><strong>Price</strong></td>
+                      <td class="text-center"><strong>UOM</strong></td>
+        							<td class="text-center"><strong>Quantity</strong></td>
+        							<td class="text-right"><strong>Totals</strong></td>
+                      </tr>
+    						</thead>
+    						<tbody>
+    							<!-- foreach ($order->lineItems as $line) or some such thing here -->
+    							<tr v-for="invoiceitem in InvoiceToSave.InvoiceItems">
+    								<td>{{ invoiceitem.name }}</td>
+    								<td class="text-center">{{ invoiceitem.price }}</td>
+                    <td class="text-center">{{ invoiceitem.uom }}</td>
+                    <td class="text-center">{{ invoiceitem.qty }}</td>
+    								<td class="text-right">{{ invoiceitem.total }}</td>
+    							</tr>
+    							<tr>
+    								<td class="thick-line"></td>
+                    <td class="thick-line"></td>
+                    <td class="thick-line"></td>
+    								<td class="thick-line text-left"><strong>Subtotal</strong></td>
+    								<td class="thick-line text-right">{{ InvoiceToSave.subtotal }}</td>
+    							</tr>
+    							<tr>
+    								<td class="no-line"></td>
+                    <td class="no-line"></td>
+                    <td class="no-line"></td>
+    								<td class="no-line text-left"><strong>Tax Amount</strong></td>
+    								<td class="no-line text-right">{{ InvoiceToSave.taxamount }}</td>
+    							</tr>
+    							<tr>
+    								<td class="no-line"></td>
+                    <td class="no-line"></td>
+                    <td class="no-line"></td>
+    								<td class="no-line text-left"><strong>Total</strong></td>
+    								<td class="no-line text-right">{{ InvoiceToSave.total }}</td>
+    							</tr>
+    						</tbody>
+    					</table>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+	</div>
+	<div id="map">map...</div>
+</div>

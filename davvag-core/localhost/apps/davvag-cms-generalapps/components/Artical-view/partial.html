@@ -87,7 +87,7 @@
         </a>
         </div>
         <div class="col-social">
-            <a  :href="'whatsapp://send?text='+product.summery+' '+url" target="_blank" aria-label="Share on WhatsApp">                
+            <a  :href="'whatsapp://send?text='+escape(product.summery)+' '+escape(url)" target="_blank" aria-label="Share on WhatsApp">                
                     <i class="fa fa-whatsapp fa-2x"></i>
                 </a>
         </div>
@@ -116,10 +116,11 @@
     
     <div class="row blogCard">
             <div class="col-sm-4 col-sm-offset-1 blogShortContainer" v-for="item in Articals">
-              <div class="blogShort">
-                <a :href="item.application+'?id='+item.id"><h3 class="articleTitlte">{{ unescape(item.title) }}</h3></a>
-                <article class="articalHight" v-html="marked(unescape(item.summery))"></article>
-                <a class="pull-right marginBottom10 read-more-link" :href="item.application+'?id='+item.id">READ MORE</a> 
+              <div v-if="item.applicationtype=='URL'" class="blogShort">
+                <a :href="item.url"><h3 class="articleTitlte">{{ unescape(item.title) }}</h3></a>
+                <article class="articalHight" v-html="marked(unescape(item.description))"></article>
+                
+                <a class="pull-right marginBottom10 read-more-link" :href="item.url">READ MORE</a> 
               </div>    
              </div>
             

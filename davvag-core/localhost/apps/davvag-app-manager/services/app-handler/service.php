@@ -26,7 +26,7 @@ class BroadcastService {
         if (file_exists($tenantFile)){
             $jsonContents = file_get_contents($tenantFile);
             $tenantObj = json_decode($jsonContents);
-
+            //return $tenantObj;
             if (isset($tenantObj)){
                 foreach ($tenantObj->apps as $appCode => $appData) {
                     
@@ -74,10 +74,27 @@ class BroadcastService {
                                                 foreach ($aObj->serviceHandler->methods as $m=>$md){
                                                     $method=new stdClass();
                                                     $method->name=$m;
+                                                    $method->otherdata=$md;
+                                                    if(isset($md->route)){
+                                                       $x= explode("/",$md->route);
+                                                       foreach($x as $xm){
+                                                            
+                                                            if($xm!="" && is_bool(strpos($xm,"@"))){
+                                                                $method->name=$xm;
+                                                            }
+                                                       }
+                                                       
+                                                    }
                                                     $method->selected=$this->Permistion($Group,$app->appCode,"service",$Code,$m);
                                                     array_push($a->methods,$method);
     
                                                 }
+                                            }else{
+                                                $a->methods=array();
+                                                $method=new stdClass();
+                                                $method->name="all";
+                                                $method->selected=$this->Permistion($Group,$app->appCode,"service",$Code,"all");
+                                                array_push($a->methods,$method);
                                             }
                                             array_push($app->Services,$a);
                                     break;
@@ -88,10 +105,17 @@ class BroadcastService {
                                             foreach ($aObj->serviceHandler->methods as $m=>$md){
                                                 $method=new stdClass();
                                                 $method->name=$m;
+                                                $method->otherdata=$md;
                                                 $method->selected=$this->Permistion($Group,$app->appCode,"service",$Code,$m);
                                                 array_push($a->methods,$method);
 
                                             }
+                                        }else{
+                                            $a->methods=array();
+                                            $method=new stdClass();
+                                            $method->name="all";
+                                            $method->selected=$this->Permistion($Group,$app->appCode,"service",$Code,"all");
+                                            array_push($a->methods,$method);
                                         }
                                         array_push($app->Services,$a);
                                     break;

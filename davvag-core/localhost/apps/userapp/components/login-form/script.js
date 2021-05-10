@@ -6,6 +6,7 @@ WEBDOCK.component().register(function(exports){
         submitErrors : [],submitInfo : [],
         isLoggedIn: localStorage.loginData ? true: false,
         loginData : localStorage.loginData ? JSON.parse(localStorage.loginData) : {},
+        header:sessionStorage.blogheader?JSON.parse(sessionStorage.blogheader):null,
         loginForm : {
             email :"",
             password :""
@@ -14,7 +15,8 @@ WEBDOCK.component().register(function(exports){
         canShowSignUp: false,
         partialToShow: 0,
         isBusy: false,
-        isCompleted: false
+        isCompleted: false,
+        fbEnabled:false
     };
 
     var vueData =  {
@@ -153,44 +155,46 @@ WEBDOCK.component().register(function(exports){
                     result = result.result;
                     
 
-                    if (!result.error){
+                    if (result.token){
                         setCookie("authData", JSON.stringify(result),1);
-                    // var passhash = CryptoJS.MD5(result.email);
-                    // self.profileimage = "https://www.gravatar.com/avatar/" + passhash+"?s=200&r=pg&d=mm";
-                    bindData.loginData = result;
-                    localStorage.loginData = JSON.stringify(result);
-                    bindData.isLoggedIn = true;
+                        // var passhash = CryptoJS.MD5(result.email);
+                        // self.profileimage = "https://www.gravatar.com/avatar/" + passhash+"?s=200&r=pg&d=mm";
+                        bindData.loginData = result;
+                        localStorage.loginData = JSON.stringify(result);
+                        bindData.isLoggedIn = true;
                     
-                    //if (!cb)
-                        //displayPartial();
+                        //if (!cb)
+                            //displayPartial();
                         $("#form-signin :input").prop("disabled", false);
-                    if (result.profile){
-                        scope.profile = result.profile;
-                        localStorage.setItem("profile",JSON.stringify(bindData.profile));
-                    }
-                    
-                    
-                    if(cb)
-                        cb();
-                    else
-                    {
-                        if(sessionStorage.redirecturl){
-                            scope.isBusy=false;
-                            location.href=sessionStorage.redirecturl;
-                        }else{
-                            pInstance.appNavigate("../profile");
-        
+                        if (result.profile){
+                            scope.profile = result.profile;
+                            localStorage.setItem("profile",JSON.stringify(bindData.profile));
                         }
-
-                    }
+                    
+                    
+                        if(cb)
+                            cb();
+                        else
+                        {
+                            if(sessionStorage.redirecturl){
+                                scope.isBusy=false;
+                                location.href="?q="+encodeURI(sessionStorage.redirecturl);
+                            }else{
+                                if(sessionStorage.blogheader){
+                                    //location.href=JSON.parse(sessionStorage.blogheader).buttonuri;
+                                    location.href="?q="+encodeURI(JSON.parse(sessionStorage.blogheader).buttonuri);
+                                    //pInstance.appNavigate(JSON.parse(sessionStorage.blogheader).url);
+                                }else{
+                                    location.href="?q="+encodeURI("/#/app/userapp/profile");
+                                    //pInstance.appNavigate("../profile");
+                                }
+                            }
+                        }
                      
-                }else {
-                    //toastr.error('email and password is incorrect.', 'Security!');    
+                }else {    
                     $("#form-signin :input").prop("disabled", false);
-
                     bindData.submitErrors=[];
                     bindData.submitErrors.push('email and password is incorrect.');
-                    //console.log('email and password is incorrect.', 'Security!');
                 }
     
             }).error (function(result){

@@ -102,8 +102,7 @@ WEBDOCK.component().register(function(exports){
     }
 
     function gotoUom(){
-        handler1 = exports.getShellComponent("soss-routes");
-        handler1.appNavigate("..");
+        window.location="#/app/davvag-cms-generalapps/buttonsall";
     }
 
 

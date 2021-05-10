@@ -1,0 +1,62 @@
+{
+    "name" : "product-handler",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ]
+    },
+    "serviceHandler" : {
+        "file": "service.php",
+        "class": "LoginService",
+        "methods" : {
+            "login" : {
+                "method" : "GET",
+                "parameters": ["email","password","domain"]
+            },
+            "logout" : {
+                "method" : "GET"
+            },
+            "getSession":{
+                "method" : "GET",
+                "parameters": ["token"]
+            },
+            "resetPassword":{
+                "method" : "GET",
+                "parameters": ["email","token","password"]
+            },
+            "getResetToken":{
+                "method" : "GET",
+                "parameters": ["email"]
+            }
+        }
+    },
+    "transformers": {
+        "createUser": {
+            "method": "POST",
+            "route": "/createUser",
+            "destMethod": "POST",
+            "destUrl" : "http://localhost:9000/createuser/"
+        },
+        "login":{
+            "method": "GET",
+            "route": "/login/@email/@password/@domain",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/login/@email/@password/@domain"
+        },
+        "getSession":{
+            "method": "GET",
+            "route": "/getsession/@token",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/getsession/@token"
+        }
+    }
+    
+    
+}

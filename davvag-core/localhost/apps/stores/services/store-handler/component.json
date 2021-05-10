@@ -1,0 +1,65 @@
+{
+    "name" : "product-handler",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ]
+    },
+    "transformers": {
+        "allStores": {
+            "method": "GET",
+            "route": "/all",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/store"
+        },
+        "insertStore": {
+            "method": "POST",
+            "route": "/insert",
+            "destMethod": "POST",
+            "destUrl" : "http://localhost:9000/data/store",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "updateStore": {
+            "method": "POST",
+            "route": "/update",
+            "destMethod": "PUT",
+            "destUrl" : "http://localhost:9000/data/store",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "deleteStore": {
+            "method": "POST",
+            "route": "/delete",
+            "destMethod": "DELETE",
+            "destUrl" : "http://localhost:9000/data/store",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "getStoreById": {
+            "method": "GET",
+            "route": "/byid/@storeid",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/store?query=id:@storeid"
+        },
+        "addMappings":{
+            "method": "POST",
+            "route": "/addmappings",
+            "destMethod": "POST",
+            "destUrl" : "http://localhost:9000/data/storeproductmapping",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "deleteMappings":{
+            "method": "POST",
+            "route": "/deletemappings",
+            "destMethod": "DELETE",
+            "destUrl" : "http://localhost:9000/data/storeproductmapping",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        }
+    }
+    
+}

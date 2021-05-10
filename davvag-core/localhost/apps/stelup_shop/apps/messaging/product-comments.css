@@ -1,0 +1,54 @@
+.comments-box{
+    display: block;
+    max-height: 400px;
+    min-height: 200px;
+    width: 100%;
+    overflow: hidden scroll;
+    
+}
+
+.comments{
+    display: flex;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.comments-text{
+    width: 100%;
+}
+
+.comments-icon{
+    width: 40px;
+    border-radius: 50% !important;
+}
+.comments-input{
+    display: block;
+    margin: auto;
+}
+.comments-input textarea{
+    display: inline;
+    width: 60%;
+    height: 50px;
+}
+
+.comments-input button{
+    display: inline;
+    width: 35%;
+    height: 50px;
+}
+
+@media screen and (max-width:480px){
+    .comments-box{
+        display: block;
+        max-height: calc(100vh - 300px);
+        min-height: 200px;
+        width: 100%;
+        overflow: hidden scroll;
+        
+    }
+
+    .comments{
+        display: flex;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}

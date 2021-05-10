@@ -1,0 +1,136 @@
+{
+    "name" : "product",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ]
+    },
+    "serviceHandler" : {
+        "file": "service.php",
+        "class": "ProductService",
+        "methods" : {
+            "allProducts" : {
+                "method" : "GET",
+                "parameters": ["page","size","q"]
+            },
+            "Save" : {
+                "method" : "POST"
+            }
+        }
+    },
+    "transformers": {
+        "testMethod": {
+            "method": "GET",
+            "route": "/echo/@test",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost/test.php?@test"
+        },
+        "allProducts": {
+            "method": "GET",
+            "route": "/all",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/products"
+        },
+        "insertProduct": {
+            "method": "POST",
+            "route": "/insert",
+            "destMethod": "POST",
+            "destUrl" : "http://localhost:9000/data/products",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "updateProduct": {
+            "method": "POST",
+            "route": "/update",
+            "destMethod": "PUT",
+            "destUrl" : "http://localhost:9000/data/products",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "deleteProduct": {
+            "method": "POST",
+            "route": "/delete",
+            "destMethod": "DELETE",
+            "destUrl" : "http://localhost:9000/data/products",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "getByCategory": {
+            "method": "GET",
+            "route": "/bycat/@catid",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/products?query=catogory:@catid"
+        },
+        "getById": {
+            "method": "GET",
+            "route": "/byid/@iid",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/products?query=itemid:@iid"
+        },
+        "allCategories": {
+            "method": "GET",
+            "route": "/categories/all",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/productcat"
+        },
+        "insertCategory": {
+            "method": "POST",
+            "route": "/categories/insert",
+            "destMethod": "POST",
+            "destUrl" : "http://localhost:9000/data/productcat",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "deleteCategory": {
+            "method": "POST",
+            "route": "/categories/delete",
+            "destMethod": "DELETE",
+            "destUrl" : "http://localhost:9000/data/productcat",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "updateCategory": {
+            "method": "POST",
+            "route": "/categories/update",
+            "destMethod": "PUT",
+            "destUrl" : "http://localhost:9000/data/productcat",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "getCategoryById": {
+            "method": "GET",
+            "route": "/categories/byid/@catid",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/productcat?query=id:@catid"
+        },
+        "getStoreMappings": {
+            "method": "GET",
+            "route": "/storemappings/get/@storeid",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/storeproductmapping?query=storeid:@storeid"
+        },
+        "createStoreMappings": {
+            "method": "POST",
+            "route": "/storemappings/create",
+            "destMethod": "POST",
+            "destUrl" : "http://localhost:9000/data/storeproductmapping",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "deleteStoreMappings": {
+            "method": "POST",
+            "route": "/storemappings/delete",
+            "destMethod": "DELETE",
+            "destUrl" : "http://localhost:9000/data/storeproductmapping",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "getImagesById": {
+            "method": "GET",
+            "route": "/Imgsbyid/@catid",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/products_image?query=articalid:@catid"
+        }
+        
+    }
+    
+}

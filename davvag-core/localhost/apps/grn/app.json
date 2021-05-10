@@ -1,0 +1,34 @@
+{
+    "components": {
+        "grn-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "grn-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "grn-form": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "GRN",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":""
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "grn-all",
+            "onLoad": ["grn-handler"],
+            "routes":{
+                "partials":{
+                    "/grn" : "grn-form"
+                }
+            }
+        }
+    }
+}

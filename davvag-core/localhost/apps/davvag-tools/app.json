@@ -1,0 +1,27 @@
+{
+    "components": {
+        "davvag-img-cropper": {
+            "type":"service",
+            "location":"services"
+        },
+        "davvag-file-uploader":{
+            "type":"service",
+            "location":"services"
+        },
+        "davvag-app-downloader":{
+            "type":"service",
+            "location":"services"
+        }
+    },
+    "description":{
+        "title": "App Downloader",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":""
+    },
+    "tags":[],
+    "configuration":{
+        "webdock":{
+        }
+    }
+}

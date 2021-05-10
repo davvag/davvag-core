@@ -1,30 +1,32 @@
 :root {
-    --backcolor:#f79009;
-    --backtextcolor: #0a0a0a;
-    --backtexthovercolor: #062e52;
-    --blue: #4679bd;
-    --grey: #ddd;
-    --textColor: rgb(0, 0, 0);
-    --ToolBar: #ffffff;
-    --SocialButton: #f79009;
-    --FooterColor: var(--backcolor);
-    --FooterTextxColor: var(--backtextcolor);
-    --FooterLinkColor: #080808;
-    --FooterLinkhoverColor: #3d3d3c;
-    --W200: 200px;
-    --Lft: left;
-    --formBackColor: #f1f8f9;
+  --backcolor: #b51f1f;
+  --backtextcolor:#ffffff;
+  --backtexthovercolor:#5040af;
+  --blue: #4679bd;
+  --grey: #ddd;
+  --textColor:#ddd;
+  --ToolBar:#ffffff;
+  --SocialButton:rgb(5, 2, 150);
+  --FooterColor:var(--backcolor);
+  --FooterTextxColor:var(--backtextcolor);
+  --FooterLinkColor:#ffffff;
+  --FooterLinkhoverColor:rgb(55, 4, 104);
+  --W200: 200px;
+  --Lft: left;
+  --formBackColor: #f1f8f9;
+}
+
+.modal {
+  z-index: 100000;
+}
+
+
+.id-soss-routes {
+  min-height: calc(100vh - 200px) !important;
 }
 
 a {
-  color:var(--backtextcolor);
-}
-
-.nav-link {
-  color:var(--backtextcolor);
-}
-.nav-link:hover{
-  color:var(--backtexthovercolor);
+  color:var(--backcolor);
 }
 
 a:hover{
@@ -60,13 +62,13 @@ a:hover{
   }
   
   #id-headerbar{
-      z-index:99999;
+      z-index:1100;
       position: fixed; /* Set the navbar to fixed position */
       top: 0; /* Position the navbar at the top of the page */
       width: 100%;
   }
   .page-footer{
-    background-color:var(--FooterColor);
+    background-color: #fbfafa;
     color: var(--FooterTextxColor);
   }
   .page-footer a{
@@ -135,7 +137,7 @@ a:hover{
 } 
   
   .id-soss-routes{
-      margin-top: 54px;
+      margin-top:54px;
   }
   
   div.blog-post {

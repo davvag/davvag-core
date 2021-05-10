@@ -1,0 +1,41 @@
+{
+    "name" : "partial-home",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "js" : [
+            {
+                "tag": "bootstrap-datetimepicker",
+                "version" : "latest",
+                "location":"bootstrap-datetimepicker.min.js"
+            },
+            {
+                "tag": "notify.js",
+                "version" : "latest",
+                "location":"notify.js"
+            }
+
+        ],
+        "css":[
+            {
+                "type":"css",
+                "location":"bootstrap-datetimepicker.min.css"
+            },{
+                "type" : "css",
+                "location" : "broadstyle.css"
+            }
+        ],
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            },
+            {
+                "type" : "mainView",
+                "location" : "partial.html"
+            }
+        ]
+    }
+}

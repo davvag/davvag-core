@@ -1,0 +1,60 @@
+{
+    "components": {
+        "keyword-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "broadcaster-handler": {
+            "type":"service",
+            "location":"services"
+        }
+        ,
+        "keyword":{
+            "type":"component",
+            "location":"components"
+        }
+        ,
+        "keyword-list": {
+            "type":"component",
+            "location":"components"
+        },
+        "brodcastform": {
+            "type":"component",
+            "location":"components"
+        },
+        "Brodcast":{
+            "type":"component",
+            "location":"components"
+        },
+        "privacy-policy":{
+            "type":"component",
+            "location":"components"
+        },
+        "terms-conditions":{
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Facebook Messanger v1",
+        "author":"Lasitha Senanayake",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "keyword-list",
+            "onLoad": ["keyword-handler","broadcaster-handler"],
+            "routes":{
+                "partials":{
+                    "/keyword" : "keyword",
+                    "/broadcast":"brodcastform",
+                    "/broadcastlist":"Brodcast",
+                    "/privacy-policy":"privacy-policy",
+                    "/terms-conditions":"terms-conditions"
+                }
+            }
+        }
+    }
+}

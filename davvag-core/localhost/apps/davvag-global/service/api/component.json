@@ -1,0 +1,29 @@
+{
+    "name" : "app-handler",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Lasitha Senanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ]
+    },
+    "serviceHandler" : {
+        "file": "service.php",
+        "class": "appService",
+        "methods" : {
+            "NewDomain" : {
+                "method" : "GET",
+                "parameters":["domain"]
+            }        
+        }
+    },
+    "transformers": {
+        
+    }
+    
+}

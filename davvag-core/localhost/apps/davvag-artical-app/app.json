@@ -1,0 +1,34 @@
+{
+    "components": {
+        "cmsArtical-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "Artical-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "Artical-form": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Articals",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "Artical-form",
+            "onLoad": ["cmsArtical-handler"],
+            "routes":{
+                "partials":{
+                    "/artical" : "Artical-form"
+                }
+            }
+        }
+    }
+}

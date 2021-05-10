@@ -22,7 +22,7 @@
         <td>
             <div class="btn-group pull-right" role="group" aria-label="..." style="margin: 10px;">
                 <a class="btn btn-primary" v-on:click="navigate(item.id)" ><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-                <a class="btn btn-primary" href=""> <span class="glyphicon glyphicon-remove"></span> Delete</a>
+                <a class="btn btn-primary" v-on:click="deleteitem(item)"> <span class="glyphicon glyphicon-remove"></span> Delete</a>
             </div>
         </td>
       </tr>

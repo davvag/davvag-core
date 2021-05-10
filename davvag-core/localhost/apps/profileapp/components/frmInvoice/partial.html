@@ -1,11 +1,4 @@
 <div  class="container" v-show="!invoiceSave">
-    <div class="row clearfix">
-        <div class="col-md-12">
-          <button  class="btn btn-default pull-left" v-on:click="savePreview">Save</button>
-          
-          <button  class="pull-right btn btn-default" v-on:click="navigateBack">Back</button>
-        </div>
-      </div>
     <div class="row clearfix" style="margin-top:20px">
         <div class="pull-left col-md-4">
           <table class="table table-bordered table-hover" id="tab_logic_total">
@@ -117,16 +110,15 @@
       </table>
     </div>
   </div>
+  <div class="row clearfix">
+    <div class="col-md-12">
+      <button  class="pull-right btn btn-default" v-on:click="navigateBack">Back</button>
+      <button  class="pull-right btn btn-primary" v-on:click="savePreview">Save</button>
+    </div>
+  </div>
 </div>
 <div  class="container" v-show="invoiceSave">
-    <div class="row clearfix">
-        <div class="col-md-12">
-          <button id="send" class="btn btn-default pull-left" v-on:click="save" :disabled="InvoiceToSave.invoiceNo != 0 ? true : false">Confirm To Save</button>
-          <button  class="pull-right btn btn-default" v-on:click="savePreviewCancel" :disabled="InvoiceToSave.invoiceNo != 0 ? true : false">Cancel</button>
-          <button  class="pull-right btn btn-default" v-on:click="navigateBack" v-show="InvoiceToSave.invoiceNo != 0 ? true : false">Back</button>
-          <button  class="pull-right btn btn-default" v-on:click="print" v-show="InvoiceToSave.invoiceNo != 0 ? true : false">Print</button>
-        </div>
-      </div>
+    
     <div id="printcontent" >
     <div class="row">
         <div class="col-xs-12">
@@ -231,6 +223,15 @@
     			</div>
     		</div>
     	</div>
+    </div>
+  </div>
+  <div class="row clearfix">
+    <div class="col-md-12">
+      
+      <button  class="pull-right btn btn-default" v-on:click="savePreviewCancel" :disabled="InvoiceToSave.invoiceNo != 0 ? true : false">Cancel</button>
+      <button  class="pull-right btn btn-default" v-on:click="navigateBack" v-show="InvoiceToSave.invoiceNo != 0 ? true : false">Back</button>
+      <button  class="pull-right btn btn-default" v-on:click="print" v-show="InvoiceToSave.invoiceNo != 0 ? true : false">Print</button>
+      <button id="send" class="pull-right btn btn-primary" v-on:click="save" :disabled="InvoiceToSave.invoiceNo != 0 ? true : false">Confirm To Save</button>
     </div>
   </div>
 </div>

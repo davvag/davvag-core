@@ -1,0 +1,74 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <a class="navbar-brand" :href="url" v-if="headerdata.icon==''">{{ name }}</a>
+  <a class="navbar-brand" :href="url" v-if="headerdata.icon!=''"><img :src="headerdata.icon" height="40px"></a>
+
+  
+  <div class="collapse navbar-collapse" id="navbarColor01">
+    <ul class="navbar-nav mr-auto">
+      <li  v-for="btnitem in TopButtons" v-bind:class="btnitem.class">
+        <a class="nav-link" :href="btnitem.url" v-if="btnitem.sub.length==0" v-html="unescape(btnitem.Caption)"></a>
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" :id="btnitem.id" aria-expanded="false" v-if="btnitem.sub.length!=0" > <span class="caret" v-html="unescape(btnitem.Caption)"></span></a>
+        <div class="dropdown-menu" :aria-labelledby="btnitem.id" v-if="btnitem.sub.length!=0">
+            <a v-for="itm in btnitem.sub" class="dropdown-item" :href="itm.url" v-html="unescape(itm.Caption)"></a>
+          </div>
+      </li>
+    </ul>
+    
+    <form class="form-inline my-2 my-lg-0" v-if="searchbar">
+      <input class="form-control mr-sm-2" type="text" place holder="Search">
+      <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+  <div class="userbar">
+    <ul class="nav navbar-nav flex-row justify-content-between ml-auto">
+      <li class="nav-item order-2 order-md-1"><a  v-on:click="notification()" class="nav-link" title="Notification"><i class="fa fa-bell fa-fw fa-lg"></i></a></li>  
+      <li class="nav-item order-2 order-md-1"><a href="#/app/userapp/setting" class="nav-link" title="settings"><i class="fa fa-cog fa-fw fa-lg"></i></a></li>
+      <li class="nav-item order-2 order-md-1"><a href="#/app/userapp" class="nav-link" title="User Info"><i class="fa fa-user fa-fw fa-lg"></i></a></li>    
+               
+      </ul>
+  </div>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</nav>
+<nav class="notification-bar">
+  <div class="list-group list-group-flush">
+    <div v-for="nitem in Notify" class="list-group-item list-group-item-action bg-light">
+      <a v-if="nitem.url" :href="nitem.url" class="list-group-item list-group-item-action bg-light">{{ nitem.notify_message }}</a>
+      <a v-if="!nitem.url" v-on:click="downloadapp(nitem.appcode,nitem.app,nitem.notify_data,nitem.apptitle,nitem)" class="list-group-item list-group-item-action bg-light">{{ nitem.notify_message }}</a>
+    </div>
+    
+  </div>
+</nav>
+<div v-if="MobileMenu.length!=0" id="mobile-menu" class="row">
+  <ul class="nav navbar-nav navbar-right mobile-bar">
+  <li v-for="menu in MobileMenu">
+    <a  :href="menu.url" target="_self">
+        <span :class="'menu-icon '+menu.other"></span> 
+        
+        <sup style="font-size:x-small;"> {{ menu.Caption }}</sup>
+    </a>
+  </li>
+  </ul>
+
+</div>
+<div class="modal fade" id="notifyappwindow" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+          <div class="modal-header">
+              <div class="col">
+                  <h6>{{ appTitle }}</h6>
+              </div>
+              <div class="col" style="width: 30px;text-align: right;">
+                  <a v-on:click="close">x</a>
+              </div>
+              
+              
+          </div>
+          <div id="notifyappdock" class="modal-body">
+                
+          </div>
+      </div>
+  </div>
+</div>
+

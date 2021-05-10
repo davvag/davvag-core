@@ -1,0 +1,28 @@
+<div class="input-form">
+<h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
+<hr>
+<div class="input-error">
+  <div class="alert alert-danger" v-if="submitErrors" v-for="error in submitErrors">
+    <strong>ERROR! </strong> {{error}}
+  </div>
+  <div class="alert alert-info" v-if="submitInfo" v-for="error in submitInfo">
+      <strong>INFO! </strong> {{error}}
+    </div>
+</div>
+<form id="form-details">
+  <div class="form-group">
+    <label for="exampleInputEmail1">Email address</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" v-model="data.email">
+    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" v-model="data.password">
+  </div>
+  <div class="form-group form-check">
+    <input type="checkbox" class="form-check-input" id="exampleCheck1" v-model="data.checkbox">
+    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+  </div>
+  <button  class="btn bg-primary-button btn-block" v-on:click="submit">Submit</button>
+</form>
+</div>

@@ -1,0 +1,32 @@
+<header class="masthead">
+    <div class="hero-image">
+      <div class="mx-auto text-center">
+        <br/><br/><br/><br/>
+        <h1 class="mx-auto my-0 text-white text-uppercase">Davvag</h1>
+        <h2 class="text-white-50 mx-auto mt-2 mb-5"> Is not driven by technology but drives technology by its latest revolutionary cloud frameworks.</h2>
+        
+        <br/><br/><br/><br/>
+      </div>
+    </div>
+</header>
+<div class="row blogCard">
+        <div class="col-sm-4 col-sm-offset-1 blogShortContainer" v-for="item in Articals">
+          <div class="blogShort">
+            <a :href="'#/app/davvag-cms-generalapps/a?id='+item.id"><h3 class="articleTitlte">{{ unescape(item.title) }}</h3></a>
+            <img v-if="item.imgname" :src="'components/dock/soss-uploader/service/get/d_cms_artical/'+item.id+'-'+item.imgname" alt="post img" class="pull-left img-responsive thumb margin10 img-thumbnail2">
+            
+            <em class="card-date">{{ item.createdate | dateformate }}</em>
+            <article class="articalHight" v-html="marked(unescape(item.summery))"></article>
+            <a class="pull-right marginBottom10 read-more-link" :href="'#/app/davvag-cms-generalapps/a?id='+item.id">READ MORE</a> 
+          </div>    
+         </div>
+        
+</div>
+
+</br>
+
+
+
+
+
+

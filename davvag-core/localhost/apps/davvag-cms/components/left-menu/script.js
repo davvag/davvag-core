@@ -17,7 +17,7 @@ WEBDOCK.component().register(function(exports){
         vueData.el = '#' + $(element).attr('id');
         new Vue(vueData);
 
-        WEBDOCK.callRest("components/object/apps?tags=showindock")
+        WEBDOCK.callRest("components/object/apps?tags=showincms")
         .success(function(data){
             vueData.data.apps = data.result;
             isAppsLoaded = true;
@@ -35,5 +35,7 @@ WEBDOCK.component().register(function(exports){
         else
             appLoadedCallback = callback;
     }
+
+    
 
 });

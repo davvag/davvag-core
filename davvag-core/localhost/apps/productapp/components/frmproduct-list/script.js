@@ -21,11 +21,31 @@ WEBDOCK.component().register(function(exports){
             navigatePublish: function(id){
                 handler = exports.getShellComponent("soss-routes");
                 handler.appNavigate(id ? "/publish?productid=" + id : "/product");
-            }
+            },
+            deleteProduct:deletepr
 
         }
     }
-    
+
+    function deletepr(e){
+        var handler = exports.getComponent("product");
+
+        handler.services.Delete(e).then(function(result){
+            //scope.items = result.result;
+            if(result.success){
+                filteredItems = bindData.items.filter(function(item) {
+                    if(item.itemid!==result.result.itemid)
+                        return item;
+                });
+                bindData.items=filteredItems==null?[]:filteredItems;
+            }else{
+
+            }
+            //console.log(JSON.stringify(result));
+        }).error(function(){
+            
+        });
+    }
     exports.vue = vueData;
     exports.onReady = function(element){
     }

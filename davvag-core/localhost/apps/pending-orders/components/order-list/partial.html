@@ -1,0 +1,60 @@
+<div style="color:black;">
+    <div class="people-list">
+      <div class="row">
+        
+        <div class="col-md-6" v-for="profile in items">
+          <div class="people-item">
+            <div class="media">
+              <div class="form-group">
+                <label class="col-sm-3 control-label"><b>Name</b></label>
+                <div class="col-sm-6">
+                    {{ profile.name }}
+                </div>
+                
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label"><b>Contact No</b></label>
+                <div class="col-sm-6">
+                    {{ profile.contactno }}
+                </div>
+                
+              </div>
+              
+              <div class="form-group">
+                <label class="col-sm-3 control-label"><b>Email</b></label>
+                <div class="col-sm-6">
+                    {{ profile.email }}
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label"><b>Pending ID</b></label>
+                <div class="col-sm-6">
+                    {{ profile.invoiceNo }}
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label"><b>Date</b></label>
+                <div class="col-sm-6">
+                    {{ profile.invoiceDate }}
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label"><b>Total Amount</b></label>
+                <div class="col-sm-6">
+                    {{ profile.total }}
+                </div>
+              </div>
+                <div class="btn-group pull-right" role="group" aria-label="..." style="margin: 10px;">
+                  <!-- <a class="btn btn-primary" :href="'./viewproduct?productid=' + profile.itemid"><span class="glyphicon glyphicon-pencil"></span> Edit</a> -->
+                  <a class="btn btn-success" v-on:click="navigate(profile.invoiceNo)"><span class="glyphicon glyphicon-pencil"></span> Accept</a>
+                  <a class="btn btn-danger" v-on:click="deleteProduct(profile)" style="cursor:pointer;"> <span class="glyphicon glyphicon-remove"></span> Reject</a>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- col-md-6 -->
+      </div>
+    </div>
+</div>
+ 
+

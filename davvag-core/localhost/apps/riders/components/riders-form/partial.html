@@ -1,0 +1,31 @@
+<form style="color:black;">
+  <a v-on:click="navigateBack()">Back</a>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Rider ID</label>
+    <input type="number" class="form-control" id="textItemId" aria-describedby="emailHelp" v-model="rider.id"  disabled="disabled">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Rider Name</label>
+    <input type="text" class="form-control" id="textProductName" v-model="rider.name">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Email address</label>
+    <input type="text" class="form-control" id="textProductName" v-model="rider.username">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Phone Number 1</label>
+    <input type="text" class="form-control" id="textProductName" v-model="rider.phonenumber1">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Phone Number 2</label>
+    <input type="text" class="form-control" id="textProductName" v-model="rider.phonenumber2">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Rider Address</label>
+    <input type="text" class="form-control" id="textProductName" v-model="rider.address">
+  </div>
+  <div>
+    <p v-if="submitErrors" v-for="error in submitErrors" class = "alert alert-danger"> {{error}} </p>
+  </div>
+  <button class="btn btn-primary" v-on:click="submit">Submit</button>
+</form>

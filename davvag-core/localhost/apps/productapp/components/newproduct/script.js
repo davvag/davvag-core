@@ -227,25 +227,19 @@ WEBDOCK.component().register(function(exports){
                         .error(function(error){
                             
             });
-        producthandler.transformers.allCategories()
-        .then(function(result){
-            for (var i=0;i<result.result.length;i++)
-            bindData.categories.push(result.result[i].name);
-        })
-        .error(function(){
-
-        });
+        
 
         
     }
 
     function loadValidator(){
+        bindData.product.caption=$("#txtcaption").data("editor").html(); 
         validator = validatorInstance.newValidator (bindData);
-        validator.map ("product.name",true, "You should enter a name");
-        validator.map ("product.caption",true, "You should enter a caption");
-        validator.map ("product.price",true, "You should endter a price");
-        validator.map ("product.price","number", "Price should be a number");
-        validator.map ("product.catogory",true, "You should select a product category");
+        validator.map ("product.name",true, "You should enter a name.");
+        //validator.map ("product.caption",true, "You should enter a psroduct Caption.");
+        validator.map ("product.price",true, "You should endter a price.");
+        validator.map ("product.price","number", "Price should be a number.");
+        validator.map ("product.catogory",true, "You should select a product category.");
     }
     
 
@@ -258,7 +252,7 @@ WEBDOCK.component().register(function(exports){
             bindData.product.caption=bindData.product.caption.split('"').join("~*");
             bindData.product.Images=[];
             for (var i = 0; i < bindData.p_image.length; i++) {
-                bindData.product.Imsages.push({id:bindData.p_image[i].id,name:bindData.p_image[i].name,
+                bindData.product.Images.push({id:bindData.p_image[i].id,name:bindData.p_image[i].name,
                     caption:bindData.p_image[i].caption,default_img:bindData.p_image[i].default_img});
             }
             bindData.product.RemoveImages=bindData.p_removed;

@@ -1,0 +1,126 @@
+<div class="container" @scroll="handleScroll($event)">
+    <div v-if="a5>0" class="row">
+        <input id="idButtonLocation" type="button" class="fabButton" style="margin-top: -150px; background-image: url(&quot;assets/davvag-shop/img/grabit.png&quot;); visibility: visible;" v-on:click="navcheckout()">
+    </div>
+    <div class="row">
+	    <div class="col-12">
+    	    <div id="custom-search-input">
+                <div class="input-group">
+                    <input type="text" class="search-query form-control" placeholder="Search" v-model="q" v-on:keyup="OnkeyEnter"/>
+                    <span class="input-group-btn">
+                        <button type="button" v-on:click="onSearch">
+                            <span class="fa fa-search"></span>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+	</div>
+  <div class="row" style="margin: auto;">
+        <div class="col-sm-4" v-for="product in products" style="padding-bottom: 10px;">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div style="width: 40px;">
+                            <div class="profile-userpic">
+                                <img :src="'components/dock/soss-uploader/service/get/profile/'+product.storeid" class="img-responsive" alt="">
+                                
+                            </div>
+                        </div>
+                        <div class="col">
+                            <a :href="'#/app/stelup_shop/profile?id='+product.storeid">
+                                <h5 v-html="product.storename"></h5>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <img :src="'components/davvag-cms/soss-uploader/service/get/products/'+product.itemid+'-'+product.imgurl" style="width: 100%;">
+                <div class="row" style="margin: 10px;">
+                    <a class="btn btn-default" v-on:click="like(product)" aria-label="Settings">
+                        <i v-if="product.liked==1" class="fa fa-heart fa-2x"> </i>
+                        <i v-if="product.liked==0" class="fa fa-heart-o fa-2x"> </i>
+                    </a> 
+                    <a class="btn btn-default" v-on:click="downloadapp('stelup_shop','messaging',product,'Message','components/davvag-cms/soss-uploader/service/get/profile/'+product.storeid)"><i class="fa fa-envelope-o fa-2x"> </i></a>
+                         
+                    <a class="btn btn-default"  aria-label="Settings" v-on:click="downloadapp('stelup_shop','product-comments',product,'Comment','components/davvag-cms/soss-uploader/service/get/products/'+product.itemid+'-'+product.imgurl)"><i class="fa fa-comment-o fa-2x" ></i> </i> </a>
+                    <a class="btn btn-default" v-on:click="favorite(product)" aria-label="Settings" style="right: 10px;position: absolute;margin-right: 10px;">
+                        <i v-if="product.favorite==0" class="fa fa-plus-square-o fa-2x" > </i> 
+                        <i v-if="product.favorite==1" class="fa fa-plus-square fa-2x" > </i> 
+                    </a>
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title" v-html="product.name">Card title</h5>
+                  <p class="card-text" v-html="marked(product.caption)">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  
+               
+                </div>
+                <div v-if="!isEditable(product)" class="card-body">
+                    <button type="button" class="btn bg-primary-button pull-left" v-on:click="additem(product,true)">Add to cart</button>
+                    <button type="button" class="btn bg-primary-button pull-right" v-on:click="addchecout(product,true)">Buy</button>
+                    
+                </div>
+                <div v-if="isEditable(product)" class="card-body">
+                    <button type="button" class="btn bg-primary-button pull-left"   v-on:click="edit(product)">Edit</button>
+                    <button type="button" class="btn bg-primary-button pull-right"   v-on:click="marksold(product)">Unlist</button>
+                    
+                </div>
+              </div>
+        </div>
+        
+  </div>
+  
+</div>
+<div v-if="loading" class="row" >    
+    <div class="col-md-4 col-sm-6">
+           
+    </div>
+    <div class="col-md-4 col-sm-6">
+            <div id="custom-search-input">
+                <h2><span class="fa fa-refresh fa-spin" ></span> Loading Please wait...</h2>
+            </div>
+    </div>
+    <div class="col-md-4 col-sm-6">
+            
+    </div>
+           
+</div>
+<div v-if="noproducts" class="row" >
+        <div class="col-md-4 col-sm-6">
+           
+            </div>    
+        
+        <div class="col-md-4 col-sm-6">
+                <h1> No Results for Search Query "{{ q }}" </h1>
+            </div>
+            <div class="col-md-4 col-sm-6">
+           
+                </div>
+</div>
+
+<div class="modal fade" id="modalappwindow" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+            <div class="modal-header">
+                <div style="width: 40px;">
+                    <div class="profile-userpic">
+                        <img :src="appIcon" class="img-responsive" alt="">
+                        
+                    </div>
+                </div>
+                <div class="col">
+                    <h6>{{ appTitle }}</h6>
+                </div>
+                <div class="col" style="width: 30px;text-align: right;">
+                    <a v-on:click="close">x</a>
+                </div>
+                
+                
+            </div>
+            <div id="appdock" class="modal-body">
+                	
+            </div>
+        </div>
+    </div>
+</div>
+</div>

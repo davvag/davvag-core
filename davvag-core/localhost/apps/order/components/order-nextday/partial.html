@@ -1,0 +1,48 @@
+<div style="color:black;">
+    <div>
+        <div class="btn-group" role="group" aria-label="..." style="margin: 10px;">
+            <a class="btn btn-primary" href="#/admin">Admin Panel</a>
+        </div>
+    </div>
+    <br/><br/><br/>
+
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Delivery Date</th>
+        <th>Order Date</th>
+        <th>Person Name</th>
+        <th>Contact Number</th>
+        <th>Address</th>
+        <th>Items</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in items">
+        <td>{{ item.deliverydate }}</td>
+        <td>{{ item.orderdate }}</td>
+        <td>{{ item.profile.name }}</td>
+        <td>{{ item.profile.contactno1 }}</td>
+        <td>{{ item.address.addressline1  + ' ' + item.address.addressline2 }}</td>
+        <th>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>QTY</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="detail in item.details">
+                  <td>{{ allProducts[detail.productid] ? allProducts[detail.productid].caption : '' }}</td>
+                  <td>{{ detail.qty }}</td>
+                </tr>
+              </tbody>
+            </table>
+        </th>
+      </tr>
+    </tbody>
+  </table>
+</div>

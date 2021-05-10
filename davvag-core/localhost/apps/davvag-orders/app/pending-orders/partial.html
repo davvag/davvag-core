@@ -1,0 +1,38 @@
+<div style="color:black;">
+    <div>
+        <div class="btn-group" role="group" aria-label="..." style="margin: 10px;">
+           
+        </div>
+    </div>
+    <br/><br/><br/>
+
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Invoice No</th>
+        <th>Order Date</th>
+        <th>Name</th>
+        <th>Contact No</th>
+        <th>Address</th>
+        <th>Country</th>
+        <th>Status</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in items">
+        <td><a :href="'#/app/profileapp/invoice?tid='+item.invoiceNo" class="btn btn-primary">{{ item.invoiceNo }}</a></td>
+        <td>{{ item.invoiceDate }}</td>
+        <td><a :href="'#/app/profileapp/view?id='+item.profileId">{{ item.name }}</a></td>
+        <td>{{ item.contactno }}</td>
+        <td>{{ item.address }}</td>
+        <td>{{ item.country }}</td>
+        <td>{{ item.status }}</td>
+        <td><a class="btn btn-success" v-on:click="navigate(item)">Accept</a></td>
+        <td><a class="btn btn-danger" v-on:click="reject(item)">Reject</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

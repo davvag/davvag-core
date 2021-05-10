@@ -1,0 +1,77 @@
+{
+    "name" : "product-handler",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ]
+    },
+    "serviceHandler" : {
+        "file": "service.php",
+        "class": "LoginService",
+        "methods" : {
+            "login" : {
+                "method" : "GET",
+                "parameters": ["email","password","domain"]
+            },"GoogleLogin":{
+                "method" : "GET",
+                "parameters": []
+            }, "FacebookLogin" : {
+                "method" : "GET",
+                "parameters": []
+            }, "FacebookLoginCallback" : {
+                "method" : "GET",
+                "parameters": []
+            },"LoginState":{
+                "method" : "GET",
+                "parameters": []
+            },
+            "Logout" : {
+                "method" : "GET"
+            },
+            "getSession":{
+                "method" : "GET",
+                "parameters": ["token"]
+            },
+            "resetPassword":{
+                "method" : "GET",
+                "parameters": ["email","token","password"]
+            },
+            "ResetToken":{
+                "method" : "GET",
+                "parameters": ["email"]
+            },
+            "registerUser":{
+                "method":"POST"
+            }
+        }
+    },
+    "transformers": {
+        "createUser": {
+            "method": "POST",
+            "route": "/createUser",
+            "destMethod": "POST",
+            "destUrl" : "http://localhost:9000/createuser/"
+        },
+        "login":{
+            "method": "GET",
+            "route": "/login/@email/@password/@domain",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/login/@email/@password/@domain"
+        },
+        "getSession":{
+            "method": "GET",
+            "route": "/getsession/@token",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/getsession/@token"
+        }
+    }
+    
+    
+}

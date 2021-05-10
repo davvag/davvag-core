@@ -47,6 +47,18 @@ WEBDOCK.component().register(function(exports){
                     $fieldSet.append($txt);                     
                     $formTmp.append($fieldSet);
                     break;
+                case 'checkbox':
+                        $fieldSet = $('<div class="form-group"></div>');
+                        $fieldSet.append('<label class="col-sm-3 control-label">'+obj.label+'</label>');
+                        $txt=$('<div class="col-sm-6"></div>');
+                        if ( obj.req === 1) {
+                            $txt.append('<input class="form-control" type="checkbox" true-value="'+obj.truevalue+'" false-value="'+obj.falsevalue+'"  v-model="'+varibaleembed+'.'+obj.name+'" required>');
+                        } else {
+                            $txt.append('<input class="form-control" type="checkbox" true-value="'+obj.truevalue+'" false-value="'+obj.falsevalue+'"  v-model="'+varibaleembed+'.'+obj.name+'">');
+                        }
+                        $fieldSet.append($txt); 
+                        $formTmp.append($fieldSet);
+                        break;  
                 default:
                     alert('There was no input type found.');
                     break;

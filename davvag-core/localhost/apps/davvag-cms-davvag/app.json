@@ -1,0 +1,126 @@
+{
+    "components": {
+        "dependencies": {
+            "type":"shell",
+            "location":""
+        },
+        "soss-routes": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-routes-vue": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-validator": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-uploader": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "auth-handler": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "domain-info": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-data": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "productsvr": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "Artical-list": {
+            "type":"component",
+            "location":"components"
+        },"left-menu": {
+            "type":"component",
+            "location":"components"
+        },
+        "footer-bar": {
+            "type":"component",
+            "location":"components"
+        },
+        "headerbar": {
+            "type":"component",
+            "location":"components"
+        },
+        "partial-homeblogdetail": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-404": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-app": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-account": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-profile": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-help": {
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-homedavvag":{
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-donation":{
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-shoping-view":{
+            "type":"partial",
+            "location":"partials"
+        },
+        "partial-shoping-view_2":{
+            "type":"partial",
+            "location":"partials"
+        }
+    },
+    "description":{
+        "title": "Davvag",
+        "author":"Daavg",
+        "version":"0.9",
+        "icon":""
+    },
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "product",
+            "onLoad": ["dependencies", "soss-routes","soss-routes-vue", "soss-uploader","soss-validator", "auth-handler","soss-data","domain-info","productsvr"],
+            "firewall" : {
+                "guest" : [],
+                "admin": []
+            },
+            "routes":{
+                "home" : "/home",
+                "notFound": "/notFound",
+                "partials" : {
+                    "/" : "partial-homedavvag",
+                    "/app/@appName/*appRoute" : "partial-app",
+                    "/home" : "partial-homeblogdetail",
+                    "/home2" : "partial-shoping-view_2",
+                    "/donate" : "partial-donation",
+                    "/notFound": "partial-404",
+                    "/account": "partial-account",
+                    "/profile": "partial-profile",
+                    "/help": "partial-help"
+                }
+            }
+        }
+    }
+}

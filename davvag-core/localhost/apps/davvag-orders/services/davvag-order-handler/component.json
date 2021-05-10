@@ -1,0 +1,37 @@
+{
+    "name" : "product-handler",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ]
+    },
+    "serviceHandler" : {
+        "file": "service.php",
+        "class": "BroadcastService",
+        "methods" : {
+            "allPendingOrders" : {
+                "method" : "GET"
+            },"PendingSchedulesBy":{
+                "method":"GET",
+                "parameters":["app","service","method"]
+            },
+            "AcceptOrder":{
+                "method":"POST"
+            },
+            "RejectOrder":{
+                "method":"POST"
+            }
+        }
+    },
+    "transformers": {
+        
+    }
+    
+}

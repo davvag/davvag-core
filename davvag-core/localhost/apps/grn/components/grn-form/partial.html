@@ -1,0 +1,83 @@
+<div style="color:black;">
+  <a v-on:click="navigateBack()">Back</a>
+  <div class="col-sm-12">
+    <div>
+      <p v-if="submitErrors" v-for="error in submitErrors" class = "alert alert-danger"> {{error}} </p>
+    </div>
+    <div class="col-sm-5">
+      <form>      
+        <div class="form-group">
+          <label>GRN ID</label>
+          <input type="number" class="form-control" v-model="grn.id" disabled="disabled"/>
+        </div>
+        <div class="form-group">
+          <label>GRN Date</label>
+          <input type="text" class="form-control" id="grnDatePicker" data-date-format="mm-dd-yyyy" v-model="grn.grndate"/>
+        </div>
+      </form>
+    </div>
+    <div class="col-sm-7">
+      <form>
+        <div class="form-group col-sm-12">
+          <label for="exampleSelect1">Product</label>
+          <select class="form-control" id="textProductCategory" v-model="currentItem.product">
+            <option v-for="product in products" v-bind:value="product">{{product.name}}</option>
+          </select>
+        </div>
+        <div class="form-group col-sm-6">
+          <label>Mfd Date</label>
+          <input type="text" class="form-control" id="grnMfdDatePicker" data-date-format="mm-dd-yyyy" v-model="currentItem.datemfd"/>
+        </div>
+        <div class="form-group col-sm-6">
+          <label>Exp Date</label>
+          <input type="text" class="form-control" id="grnExpDatePicker" data-date-format="mm-dd-yyyy" v-model="currentItem.dateexp"/>
+        </div>
+        <div class="form-group col-sm-4">
+          <label>Qty</label>
+          <input type="number" class="form-control" v-model="currentItem.qty"/>
+        </div>
+        <div class="form-group col-sm-4">
+          <label>Unit Price</label>
+          <input type="number" class="form-control" v-model="currentItem.unitprice"/>
+        </div>
+        <div class="form-group  col-sm-4">
+          <label>Total Price</label>
+          <input type="number" class="form-control" v-model="currentItem.totalprice" disabled="disabled"/>
+        </div>
+        <div class="form-group col-sm-4">
+          <input type="button" class="form-control btn btn-primary" value="Clear" v-on:click="clearCurrentItem"/>
+        </div>
+        <div class="form-group col-sm-4">
+          <input type="button" class="form-control btn btn-primary" value="Add/Update" v-on:click="addCurrentItem"/>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-sm-12"  style="min-height:150px;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product Id</th>
+          <th>Product Name</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Total Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in grn.items" v-on:click="selectCurrentItem(item)">
+          <td>{{ item.productid }}</td>
+          <td>{{ item.productname }}</td>
+          <td>{{ item.qty }}</td>
+          <td>{{ item.unitprice }}</td>
+          <td>{{ item.totalprice }}</td>
+        </tr>
+      </tbody>
+    </table> 
+  </div>
+
+  <div class="col-sm-12">
+    <button class="btn btn-primary" v-on:click="saveGrn">Submit</button>
+  </div>
+</div>

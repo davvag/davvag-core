@@ -31,6 +31,12 @@
     },
     "transformers": {
         
-    }
+    },
+    "dependencies":[
+        {"type":"PLUGIN_PATH_LOCAL","name":"davvag-summary","files":["summary.php"]},
+        {"type":"PLUGIN_PATH_LOCAL","name":"profile","files":["profile.php"]},
+        {"type":"PLUGIN_PATH","name":"sossdata","files":["SOSSData.php"]},
+        {"type":"PLUGIN_PATH","name":"phpcache","files":["cache.php"]}
+    ]
     
 }

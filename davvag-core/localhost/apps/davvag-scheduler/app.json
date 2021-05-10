@@ -1,0 +1,49 @@
+{
+    "components": {
+        "schedules-handler": {
+            "type":"service",
+            "location":"services"
+        }
+        ,
+        "schedules":{
+            "type":"component",
+            "location":"app"
+        }
+    },
+    "description":{
+        "title": "Schedules",
+        "author":"Lasitha Senanayake",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "schedules",
+            "onLoad": ["schedules-handler"],
+            "routes":{
+                "partials":{
+                    "/keyword" : "schedules"
+                }
+            }
+        }
+    },
+    "resources": {
+        "js" : [
+            {
+                "tag": "bootstrap-datetimepicker",
+                "version" : "latest",
+                "location":"assets/bootstrap-datetimepicker.min.js"
+            }
+        ],
+        "css":[
+            {
+                "type":"css",
+                "location":"assets/bootstrap-datetimepicker.min.css"
+            },{
+                "type" : "css",
+                "location" : "assets/broadstyle.css"
+            }
+        ]
+    }
+}

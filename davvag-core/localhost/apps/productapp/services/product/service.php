@@ -26,6 +26,22 @@ class ProductService {
             return $product;
         }
     }
+    public function postDelete($req,$res){
+        $product=$req->Body(true);
+        if(isset($product->itemid)){
+            $r=SOSSData::Delete("products",$product);
+            if($r->success){
+                return $product;    
+            }else{
+                $res->SetError($r);
+                return $r;
+            }
+             
+        }else{
+            $res->SetError("Error SavingDeleting.");
+            return $product;
+        }
+    }
 
     public function postSave($req,$res){
         

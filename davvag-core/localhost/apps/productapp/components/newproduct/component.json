@@ -2,7 +2,7 @@
     "name" : "newproduct",
     "description":"Vue.JS Plugin for Soss Router",
     "author":"Supun Dissanayake",
-    "version" : "0.1",
+    "version" : "0.7",
     "gitUrl" : "",
     "resources": {
         "files":[

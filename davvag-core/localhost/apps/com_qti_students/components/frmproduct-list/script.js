@@ -57,13 +57,13 @@ WEBDOCK.component().register(function(exports){
                                 }else{
                                     bindData.noproducts=false;
                                 }
-                                //bindData.loading=false;
+                                bindData.loading=false;
                                 page=page+bindData.products.length;
                             }
                         })
                         .error(function(error){
                             //bindData.products=[];
-                            //bindData.loading=false;
+                            bindData.loading=false;
                             bindData.allloaded=false;
                             //page=
                             console.log(error.responseJSON);
@@ -72,7 +72,7 @@ WEBDOCK.component().register(function(exports){
             }catch(e){
                 console.log(e);
             }finally{
-                bindData.loading=false;
+                
             }
             
         }
@@ -164,6 +164,7 @@ WEBDOCK.component().register(function(exports){
                 console.log("In the event ...");
                 if(!bindData.allloaded && !bindData.loading){
                     //page=page+size;
+                    bindData.loading=true;
                     loadproducts();
                     console.log("Bottom of the page products " +bindData.products.length +" pageNumber "+page);
                 }

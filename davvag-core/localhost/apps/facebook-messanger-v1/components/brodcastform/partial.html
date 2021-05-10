@@ -1,0 +1,276 @@
+
+<div class="row" >
+  <div  class="col-md-12">
+    <div class="card gedf-card">
+      <div class="card-body">
+        <div class="form-group">
+          <label for="exampleInputEmail1">ID</label>
+          <input type="number" class="form-control" id="textItemId" v-model="broadcast.id" disabled="disabled">
+          <label for="exampleInputEmail1">Scheduled Date</label>
+          <div class="input-append date form_datetime">
+            <input size="20" id="scheduledate" type="text" value="" readonly v-model="broadcast.scheduled_date">
+            <span class="add-on"><i class="icon-th"></i></span>
+          </div>
+          
+        </div>
+        <div v-if="showBroacaster" class="row">
+          <div class="col-md-3">
+
+            <select class="form-control" data-placeholder="Choose a Field..." v-model="field.name">
+              <option v-bind:value="i" v-for="i in fields">{{ i }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+              <select class="form-control" data-placeholder="Choose a Condition..." v-model="field.condition">
+                <option v-bind:value="i" v-for="i in queryParams">[{{ i.query }}] {{ i.name }}</option>
+              </select>
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Input Values" v-model="field.value">
+          </div>
+          <div class="col-md-3">
+            <button type="button" class="btn btn-success" v-on:click="addQuery(field)">Add</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            {{ field.condition.Description }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Condition</th>
+                <th scope="col">Value</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="x in query">
+                <th scope="row">{{ x.name }}</th>
+                <td>{{ x.con }}</td>
+                <td>{{ x.value }}</td>
+                <td><button v-if="showBroacaster" type="button" class="btn btn-danger" v-on:click="removeQuery(x)">Remove</button></td>
+              </tr>
+            </tbody>
+            </table>
+          </div>
+        </div>
+        <button v-if="showBroacaster" id="btngonext" type="button" class="btn btn-success" v-on:click="SaveBroadcast">Go To Next</button>
+        <button v-if="showBroacaster" type="button" class="btn btn-success" v-on:click="navigate(null)">Cancel</button>
+      </div>
+    </div>
+    </div>
+
+  <div v-if="!showBroacaster" class="col-md-12" v-for="i in items">
+    <div class="card gedf-card" >
+      <div class="card-header container-fluid">
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col">
+            <button type="button" class="close" aria-label="Close" v-on:click="removeItem(i)">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3" v-for="x in i.elements">
+          <div class="card" style="width: 20rem;border: 1px black solid;" >
+            <div class="card-body">
+              <img class="card-img-top" :src="x.image_url">
+              <h5 class="card-title">{{ x.title }}</h5> 
+              <h6 class="card-subtitle mb-2 text-muted">{{ x.subtitle }}</h6>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li v-for="b in x.buttons" class="list-group-item">{{ b.title }}</li>
+            </ul>
+          </div>
+      </div>
+      </div>
+      
+    </div>
+     <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card" style="width: 20rem;border: 1px black solid;" >
+            <div class="card-body">
+              <p class="card-text">{{ i.text }}</p> 
+            </div>
+            <ul class="list-group list-group-flush">
+              <li v-for="b in i.buttons" class="list-group-item">{{ b.title }}</li>
+            </ul>
+          </div>
+      </div>
+      </div>
+      
+     </div>
+    </div>
+  </div>
+  
+  <div v-if="!showBroacaster" class="col-md-12">
+  <div class="card gedf-card">
+    <div class="card-body">
+      <button type="button" class="btn btn-success" v-on:click="selectStore(null)">Add Message Element</button>
+    </div>
+  </div>
+  </div>
+
+  <div v-if="!showBroacaster" class="col-md-12">
+    <div class="card gedf-card">
+      <div class="card-body">
+        <button id="btnschedule" type="button" class="btn btn-success" v-on:click="Broadcast">Save</button>
+        <button id="btnschedule" type="button" class="btn btn-success" v-on:click="Schedule">Publish</button>
+        <button type="btnsendnow" class="btn btn-success" v-on:click="navigate(null)">Cancel</button>
+      </div>
+    </div>
+    </div>
+</div>
+
+  <div class="modal fade" id="modalImagePopup" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+    
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+          <div class="modal-header">
+            
+          </div>
+          <div class="modal-body">
+            <div class="profile-content">
+              
+                <div class="mainBody">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">ID</label>
+                  <input type="number" class="form-control" id="textItemId" v-model="item.id" disabled="disabled">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">Template Type</label>
+                  <select class="form-control" data-placeholder="Choose a Flow..." v-model="template_type">
+                    <option v-bind:value="i" v-for="i in filters">{{ i }}</option>
+                  </select>
+                </div>
+                <div v-if="template_type=='generic'" id="generic">
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">Title</label>
+                    <input type="text" class="form-control" maxlength="80" v-model="element.title">
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">Sub Titles</label>
+                    <input type="text" class="form-control"  maxlength="80" v-model="element.subtitle">
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputFile" class="col-md-4">Profile Image</label>
+                    <div class="col-md-4">
+                    <div v-if="!element.image_url">
+                      <input type="file" @change="onFileChange">
+                    </div>
+                    <div v-else>
+                      <img :src="element.image_url" class="col-md-12" width="60"/>
+                      <button @click="removeImage">Remove image</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="btn_group" id="button Group">
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">Button Type</label>
+                    <select class="form-control" data-placeholder="Choose a Flow..." v-model="button_type">
+                      <option v-bind:value="i" v-for="i in types">{{ i }}</option>
+                    </select>
+                    <input type="text" class="form-control" placeholder="Enter Title"  maxlength="80" v-model="button.title">
+                    <input v-if="button_type=='web_url'" placeholder="Enter Web URL" type="text" class="form-control"  maxlength="255" v-model="button.url">
+                    <input v-if="button_type=='postback'" type="hidden" class="form-control"  maxlength="255" v-model="button.payload">
+                  </div>
+                  <div v-if="button_type=='postback'" class="form-group">
+                    <select class="form-control" placeholder="Choose a Flow..." data-placeholder="Choose a Flow..." v-model="postback.davvagflow">
+                      <option v-bind:value="i.name" v-for="i in davvagflows">{{ i.name }}</option>
+                    </select>
+                    <input type="text" class="form-control"  placeholder="Workflow Entry point" maxlength="80" v-model="postback.point">
+                  </div>
+                  <button  class="btn btn-info" v-on:click="addButton(button)">Add</button>
+                  <div class="button_list">
+                    <button v-for="b in buttons" type="button" class="btn btn-default" >{{ b.title }}</button>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <button class="btn btn-primary" v-on:click="addCard(element)">Add Card</button>
+                  <div class="rows">
+                    <div class="col-sm-6" style="margin-top: 20px;" v-for="i in elements">
+                      <div class="card gedf-card" style="width: 18rem;">
+                        <div class="card-header container-fluid">
+                          <div class="row">
+                              <div class="col">
+                              </div>
+                              <div class="col">
+                              <button type="button" class="close" aria-label="Close" v-on:click="removeCard(i)">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                              </div>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <img class="card-img-top" :src="i.image_url">
+                          <h5 class="card-title">{{ i.title }}</h5> 
+                          <h6 class="card-subtitle mb-2 text-muted">{{ i.subtitle }}</h6>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                          <li v-for="b in i.buttons" class="list-group-item">{{ b.title }}</li>
+                        </ul>
+                        <div class="card-body">
+                          
+                        </div>
+                      </div>
+
+                    </div>
+                    
+                  </div>
+                  
+                </div>
+                </div>
+                <div  v-if="template_type=='button'" id="button">
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">Text</label>
+                    <textarea class="form-control" v-model="item.text" maxlength="2000" rows="5"></textarea>
+                  </div>
+                  <div class="btn_group" id="button Group">
+                    <div class="form-group">
+                      <label for="exampleInputPassword1">Button Type</label>
+                      <select class="form-control" data-placeholder="Choose a Flow..." v-model="button_type">
+                        <option v-bind:value="i" v-for="i in types">{{ i }}</option>
+                      </select>
+                      <input type="text" class="form-control" placeholder="Enter Title"  maxlength="80" v-model="button.title">
+                      <input v-if="button_type=='web_url'" placeholder="Enter Web URL" type="text" class="form-control"  maxlength="255" v-model="button.url">
+                      <input v-if="button_type=='postback'" type="hidden" class="form-control"  maxlength="255" v-model="button.payload">
+                    </div>
+                    <div v-if="button_type=='postback'" class="form-group">
+                      <select class="form-control" placeholder="Choose a Flow..." data-placeholder="Choose a Flow..." v-model="postback.davvagflow">
+                        <option v-bind:value="i.name" v-for="i in davvagflows">{{ i.name }}</option>
+                      </select>
+                      <input type="text" class="form-control"  placeholder="Workflow Entry point" maxlength="80" v-model="postback.point">
+                    </div>
+                    <button class="btn btn-info" v-on:click="addButton(button)">Add</button>
+                    <div class="button_list">
+                      <button v-for="b in buttons" type="button" class="btn btn-default" >{{ b.title }}</button>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <p v-if="submitErrors" v-for="error in submitErrors" class = "alert alert-danger"> {{error}} </p>
+                </div>
+              </div>
+            </div>
+            </div>
+            
+          <div class="modal-footer">
+            <button class="btn btn-primary" v-on:click="submit">Submit</button>
+            <button type="button" class="btn btn-warning" v-on:click="selectStoreClose()">Close</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+

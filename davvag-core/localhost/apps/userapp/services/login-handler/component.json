@@ -49,6 +49,15 @@
             },
             "registerUser":{
                 "method":"POST"
+            },
+            "ChangePassword":{
+                "method":"POST"
+            },
+            "updatePolicy":{
+                "method":"POST"
+            },"ProfileData":{
+                "method" : "GET",
+                "parameters": []
             }
         }
     },

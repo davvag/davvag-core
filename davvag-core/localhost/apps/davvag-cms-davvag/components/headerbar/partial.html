@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <a class="navbar-brand" href="#/home" v-if="icon==''">{{ name }}</a>
+  <a class="navbar-brand" href="#/home" v-if="icon!=''"><img :src="icon" height="40px"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  
+  <div class="collapse navbar-collapse" id="navbarColor01">
+    <ul class="navbar-nav mr-auto">
+      <li  v-for="btnitem in TopButtons" v-bind:class="btnitem.class">
+        <a class="nav-link" :href="btnitem.url" v-if="btnitem.sub.length==0">{{ btnitem.Caption }}</a>
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" :id="btnitem.id" aria-expanded="false" v-if="btnitem.sub.length!=0">{{ btnitem.caption }} <span class="caret"></span></a>
+        <div class="dropdown-menu" :aria-labelledby="btnitem.id" v-if="btnitem.sub.length!=0">
+            <a v-for="itm in btnitem.sub" class="dropdown-item" :href="itm.url">{{ itm.Caption }}</a>
+          </div>
+      </li>
+    </ul>
+    
+    
+    <form class="form-inline my-2 my-lg-0" v-if="searchbar">
+      <input class="form-control mr-sm-2" type="text" place holder="Search">
+      <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <ul class="navbar-nav my-2 my-lg-0">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="themes"><img src="https://cdn2.iconfinder.com/data/icons/flags/flags/48/united-kingdom-great-britain.png" height="30px"> English <span class="caret"></span></a>
+        <div class="dropdown-menu" aria-labelledby="themes">
+          <a class="dropdown-item" href="#/home"><img src="https://cdn2.iconfinder.com/data/icons/flags/flags/48/united-kingdom-great-britain.png" height="20px" width="30px"> English </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#/home2"><img src="https://cdn1.iconfinder.com/data/icons/famfamfam_flag_icons/de.png" height="20px" width="30px"> German </a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>

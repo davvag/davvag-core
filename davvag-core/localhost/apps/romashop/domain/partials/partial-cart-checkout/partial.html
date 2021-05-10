@@ -1,0 +1,124 @@
+<div class="container" id="idOrderWizard">
+    <div class="row col-md-8">
+        <div class="row">
+            <p v-if="submitErrors" v-for="error in submitErrors" class = "alert alert-danger"> {{error}} </p>
+        </div>
+    </div>
+
+    <div class="row col-md-8" v-if="partialToShow == 0">
+
+        <div class="row">
+            <div class="form-group col-md-6">
+                <p>You must log in to raha.lk to complete your transaction.</p>
+                <p>If you have an account, please login with your email address and password. </p>
+                <p>If you are new to raha.lk, please register with us to create an account.</p>
+            </div>
+        </div>
+        <form>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputPassword1">Email *</label>
+                    <input type="text" class="form-control" v-model="loginForm.email">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="exampleInputPassword1">Password *</label>
+                    <input type="password" class="form-control" v-model="loginForm.password">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <input type="button" class="btn btn-success" style="margin-bottom:20px;" v-on:click="showSignUp()" :disabled="isBusy" value ="Register with raha.lk" v-if="!isCompleted"/>
+                    <input type="button" class="btn btn-success" style="margin-bottom:20px;" v-on:click="submitLogin()" :disabled="isBusy" value ="Log In" v-if="!isCompleted"/>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row col-md-8" v-if="partialToShow == 1">
+        <form>
+            <div class="form-group col-md-12">
+                <label for="exampleInputPassword1">Email </label>
+                <input type="text" class="form-control" v-model="signupForm.email" >
+            </div>
+            <div class="form-group col-md-12">
+                <label for="exampleInputPassword1">Password *</label>
+                <input type="password" class="form-control" v-model="signupForm.password">
+            </div>
+            <div class="form-group col-md-12">
+                <label for="exampleInputPassword1">Name *</label>
+                <input type="text" class="form-control" v-model="signupForm.name">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="exampleInputPassword1">Contact Number *</label>
+                <input type="text" class="form-control" v-model="signupForm.contactno" maxlength="10">
+            </div>
+
+            <div class="form-group col-md-12">
+                <label for="exampleInputPassword1">Remarks (You can mention additional information such as landmarks)</label>
+                <textarea class="form-control deliveryAddress" v-model="signupForm.remarks" style="margin-bottom:10px;"></textarea>
+            </div>
+            <!-- 
+            <div class="input-group">
+                <input type="text" class="form-control deliveryAddress" v-model="profile.address.gpspoint" placeholder="GPS Coordinates">
+                <span class="input-group-addon btn btn-primary" v-on:click="getMyLocation()">Get My Location</span>
+            </div>-->
+
+            <!-- <div class="form-group col-md-12" style="height:300px;">
+                <div id=" " style="height:300px;">
+                    <div style="left:50%;top:50%;position:absolute;margin-left:-77px;margin-top-27px;text-align:center;">
+                        <img src="assets/raha/img/loading.gif" /><br/>
+                        <label>Loading Google Maps</label>
+                    </div>
+                </div>
+            </div> -->
+            <div class="form-group col-md-12">
+                <input type="button" class="btn btn-success pull-right" style="margin-bottom:20px;" v-on:click="submitSignup" :disabled="isBusy"  value ="Register & Complete Payment" v-if="!isCompleted"/>
+                <input type="button" class="btn btn-success pull-right" style="margin-bottom:20px;margin-right:10px;" v-on:click="showLogin" :disabled="isBusy" value ="Back to Login form" v-if="!isCompleted"/>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="row col-md-8" v-if="partialToShow == 2">
+        <form>
+            <div class="form-group col-md-12">
+                <label for="exampleInputPassword1">Email </label>
+                <input type="text" class="form-control" v-model="profile.email" disabled="disabled">
+            </div>
+            <div class="form-group col-md-12">
+                <label for="exampleInputPassword1">Name *</label>
+                <input type="text" class="form-control" v-model="profile.name">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="exampleInputPassword1">Contact Number *</label>
+                <input type="text" class="form-control" v-model="profile.contactno" maxlength="10">
+            </div>
+
+            <div class="form-group col-md-12">
+                <label for="exampleInputPassword1">Remarks (You can mention additional information such as landmarks)</label>
+                <textarea class="form-control deliveryAddress" v-model="profile.remarks" style="margin-bottom:10px;"></textarea>
+            </div>
+            <!-- 
+            <div class="input-group">
+                <input type="text" class="form-control deliveryAddress" v-model="profile.address.gpspoint" placeholder="GPS Coordinates">
+                <span class="input-group-addon btn btn-primary" v-on:click="getMyLocation()">Get My Location</span>
+            </div>-->
+
+            <!-- <div class="form-group col-md-12" style="height:300px;">
+                <div id=" " style="height:300px;">
+                    <div style="left:50%;top:50%;position:absolute;margin-left:-77px;margin-top-27px;text-align:center;">
+                        <img src="assets/raha/img/loading.gif" /><br/>
+                        <label>Loading Google Maps</label>
+                    </div>
+                </div>
+            </div> -->
+            <div class="form-group col-md-12">
+                <input type="button" class="btn btn-success pull-right" style="margin-bottom:20px;" v-on:click="submitPurchase()" :disabled="isBusy" v-if="!isCompleted" value ="Complete purchase"/>
+            </div>
+        </form>
+    </div>
+</div>

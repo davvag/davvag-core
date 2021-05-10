@@ -1,0 +1,25 @@
+{
+    "components": {
+        "reader-bible": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Bible App",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "reader-bible",
+            "onLoad": [],
+            "routes":{
+                "partials":{
+                }
+            }
+        }
+    }
+}

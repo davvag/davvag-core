@@ -34,12 +34,12 @@
     <div id="status"><i class="fa fa-spinner fa-spin"></i></div>
 </div>
 
-<div class="headerbar" webdock-component="headerbar" id="id-headerbar">
+<div class="headerbar" webdock-component="headerbar_usertab" id="id-headerbar">
     </div>
 <div id="idLeftPanel" class="leftpanel" webdock-component="left-menu" style="display:none">
 
     </div><!-- leftpanel -->
-<div  webdock-component="soss-routes" class="id-soss-routes">
+<div  webdock-component="soss-routes" class="id-soss-routes" style="padding-top: 0px;">
     </div><!-- contentpanel -->
 
 <div  webdock-component="footer-bar" id="id-footer-bar">

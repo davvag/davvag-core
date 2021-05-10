@@ -1,0 +1,10 @@
+<div class="card">
+  <h1 class="card-title">{{ BookName }}:{{ Chapter }}</h1>
+  <article class="card-body">
+    <p v-for="verse in BibleVerses">
+        <h4 v-if="verse.topic==1">{{ verse.vText }}</h1>
+        <span style="color:#b3002d;font-style:italic;" v-if="verse.topic==0"> {{ verse.verse }}.</span>
+        <span v-if="verse.topic==0">{{ verse.vText  }}</span>
+    </p>
+    </article>
+</div>

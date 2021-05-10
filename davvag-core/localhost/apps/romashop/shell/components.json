@@ -1,0 +1,9 @@
+{
+    "loader":{
+        "onLoad": ["soss-routes-vue"],
+        "priviledges" : {
+            "user" : [],
+            "admin" : []
+        }
+    }
+}

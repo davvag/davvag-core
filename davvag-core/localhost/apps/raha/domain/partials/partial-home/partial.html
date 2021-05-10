@@ -1,0 +1,93 @@
+<!-- <div class="row carousel-holder collapseMobile" v-if="canShowSlider">
+    <div class="col-md-12">
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" style="margin-bottom:50px">
+            <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
+                <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
+            </ol>
+            <div class="carousel-inner">
+                <div class="item active">
+                    <img class="slide-image" src="assets/raha/img/slider/image1.png" alt="">
+                </div>
+                <div class="item">
+                    <img class="slide-image" src="assets/raha/img/slider/image2.png" alt="">
+                </div>
+                <div class="item">
+                    <img class="slide-image" src="assets/raha/img/slider/image3.png" alt="">
+                </div>
+            </div>
+            <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+            <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+        </div>
+    </div>
+</div> -->
+
+<a href="#/cart">
+    <div class="fabButton showMobile" style="background-image: url('assets/raha/img/grabit.png');">
+        <div v-if="itemCount > 0" style="left: 100%;top: 100%;position: absolute;margin-left: -25px;margin-top: -25px;background-color: red;width: 30px;height: 30px;border-radius: 20px;color: black;align-content: middle;text-align: center;">
+            <label style="margin-top: 4px;">{{itemCount}}</label>
+        </div>
+    </div>
+</a>
+<div v-if="items.length >0">
+    <div class="col-sm-4 col-lg-4 col-md-4" v-for="item in items">
+        <div class="thumbnail" style="border-radius:2px;">
+            <div class="form-group" style="text-align:center;">
+
+                <div class="deliveryOverlay" v-if="item.timeFrom">
+                    <p>
+                        <b>Delivery Time</b><br/>
+                        <b>From:</b>{{ item.timeFrom }} <b> To:</b>{{ item.timeTo }}
+                    </p>
+                </div>
+                <img v-if="item.qty ? item.qty == 0 : true" src="assets/raha/img/outofstock.png" alt="" style="position: absolute;left: 50%;top: 45px;width: 200px;margin-left:-100px;"/>
+                <img v-if="item.qty ? item.qty == 0 : true" class="homeImage" v-bind:src="'//'+item.tenant+'/components/raha/soss-uploader/service/get/products/' +item.tid+'-'+item.imgurl" style="opacity: 0.5; filter: alpha(opacity=50);"  alt=""/>
+                <img v-if="item.qty ? item.qty != 0 : false" class="homeImage" v-bind:src="'//'+item.tenant+'/components/raha/soss-uploader/service/get/products/' +item.tid+'-'+item.imgurl" alt=""/>
+            </div>
+            <div class="caption form-group">
+                <h4 class="pull-right">{{ item.uom }}.{{ item.price }}</h4> 
+                <h4 v-html="item.name"></h4><br/>
+                
+                <!--Label v-if="item.inventory ? item.inventory.qty != 0 : false">QTY in Stock : <label>{{ item.inventory.qty }}</label></Label-->
+                <a v-if="item.qty ? item.qty != 0 : false" v-on:click="additem(item,false)" role="button" style="margin-left:-1px;width:130px;margin-top:10px;" class="pull-right btn btn-primary addCartButton">Order</a>
+                <a v-if="item.qty ? item.qty == 0 : true" v-on:click="additem(item,true)" role="button" style="margin-left:-1px;width:130px;margin-top:10px;" class="pull-right btn btn-primary addCartButton">Pre-Order</a>
+            </div>
+            <div class="form-group">
+    
+            </div>                  
+        </div>	
+    </div>
+</div>
+<div v-if="items.length == 0" v-bind:style="'visibility:' + (items.length == 0 && areItemsLoaded ? 'visible' : 'collapse' )" style="visibility: collapse">
+    <center>
+        <h1>We are sorry to tell that no restaurents found near your location to deliver</h1>
+    </center>
+</div>
+                
+
+<div class="modal fade" id="idLocationPicker" role="dialog"  style="overflow-x: auto;overflow-y: auto;width:100%;color:black;">
+    <div class="modal-dialog">
+        <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+            <div class="modal-header">
+                <h4 class="modal-title">Refresh Location</h4>
+            </div>
+            <div class="modal-body">
+                <input type="button" v-if="isMapsLoaded" class="btn btn-success" v-on:click="getCurrentLocation" value ="Get Current Location">
+                <hr>
+                <div id="myLunchMapHome" style="height:300px;">
+                    <div style="left:50%;top:50%;position:absolute;margin-left:-77px;margin-top-27px;text-align:center;">
+                        <img src="assets/raha/img/loading.gif" /><br/>
+                        <label>Loading Google Maps</label>
+                    </div>
+                </div>
+                <hr>
+                <input type="button" v-if="isMapsLoaded" class="btn btn-success" v-on:click="selectLocation" value ="Proceed">
+            </div>
+        </div>
+    </div>
+</div>

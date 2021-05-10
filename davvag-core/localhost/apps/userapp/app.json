@@ -12,6 +12,10 @@
             "type":"component",
             "location":"components"
         },
+        "chnage-password": {
+            "type":"component",
+            "location":"components"
+        },
         "login-switcher": {
             "type":"component",
             "location":"components"
@@ -23,15 +27,27 @@
         "frmprofile-view": {
             "type":"component",
             "location":"components"
+        },
+        "terms-conditions": {
+            "type":"component",
+            "location":"components"
+        },
+        "privacy-policy": {
+            "type":"component",
+            "location":"components"
+        },
+        "profile-edit":{
+            "type":"component",
+            "location":"components"
         }
     },
     "description":{
         "title": "User App",
         "author":"Davvag",
-        "version":"0.5",
+        "version":"0.7",
         "icon":"appicon.png"
     },
-    "tags":["showindock"],
+    "tags":["showincms"],
     "configuration":{
         "webdock":{
             "startupComponent" : "login-switcher",
@@ -41,7 +57,9 @@
                     "/login":"login-form",
                     "/profile":"frmprofile-view",
                     "/reset":"login-restpassword",
-                    "/error":"login-error"
+                    "/error":"login-error",
+                    "/privacy-policy":"privacy-policy",
+                    "/terms-conditions":"terms-conditions"
                 }
             }
         }

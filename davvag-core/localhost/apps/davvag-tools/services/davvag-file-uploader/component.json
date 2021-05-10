@@ -1,0 +1,20 @@
+{
+    "name" : "i18n",
+    "description":"Internationalization component for davvag",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ],"css":[
+            {
+                "type":"css",
+                "location":"uploader.css"
+            }
+        ]
+    }
+}

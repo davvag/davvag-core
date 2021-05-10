@@ -1,0 +1,237 @@
+<div class="container" @scroll="handleScroll($event)">
+    <div v-if="itemCount>0" class="row">
+        <input id="idButtonLocation" type="button" class="fabButton" style="margin-top: -150px; background-image: url(&quot;assets/davvag-shop/img/grabit.png&quot;); visibility: visible;" v-on:click="navcheckout()">
+    </div>
+  <div class="row">
+    <div class="col" style="width: 60%;">
+        <div class="profile-row">
+            <div class="profile-pic-col">
+                    <img :src="'components/dock/soss-uploader/service/get/profile/'+user.id" class="img-responsive" alt="">
+            </div>
+            <div class="profile-col" style="margin: auto;">
+                <h6 v-html="user.name"></h6>
+                
+            </div>
+        </div>
+        <div class="profile-row">
+            <button v-if="user.followed==1" v-on:click="follow(user)" type="button" class="btn btn-default btn-sm" style="width: 100px;text-align: center;"><i class="fa fa-plus-square"></i> Following</button>
+            <button v-if="user.followed==0" v-on:click="follow(user)" type="button" class="btn btn-danger btn-sm" style="width: 100px;text-align: center;"><i class="fa fa-plus-square-o"></i> Follow</button>
+            <button v-if="user.followed==-1" type="button" class="btn btn-default btn-sm" style="width: 100px;text-align: center;">Help?</button>
+        </div>
+    </div>
+    <div class="col" style="width: 40%;">
+        <div class="profile-row">
+            <div class="profile-col">
+                <h6>Reviews</h6>
+            </div>
+            <div class="profile-col" style="text-align: right;">
+                {{ reviewsore }}
+            </div>
+           
+        </div>
+        <div class="profile-row">
+            <div class="profile-col">
+                <h6>Followers</h6>
+            </div>
+            <div class="profile-col" style="text-align: right;">
+                {{ user.followers }}
+            </div>
+            
+        </div>
+        <div class="profile-row">
+            <div class="profile-col">
+                <h6>Followed</h6>
+            </div>
+            <div class="profile-col" style="text-align: right;">
+                {{ user.following }}
+            </div>
+        </div>
+       
+    </div>
+  </div>
+  <div class="profile-row-header">
+    <button type="button" class="btn btn-default btn-sm" style="width: 40px;text-align: center;" v-on:click="loadPd(1)"><i class="fa fa-usd"></i></button>
+    <button type="button" class="btn btn-default btn-sm" style="width: 40px;text-align: center;" v-on:click="loadPd(3)"><i class="fa fa-heart-o"></i></button>
+    <button type="button" class="btn btn-default btn-sm" style="width: 40px;text-align: center;" v-on:click="loadPd(2)"><i class="fa fa-plus-square-o"></i></button>
+  </div>
+  <div class="row" style="margin: auto;">
+        
+        <div class="divImage" v-for="item in products" style="margin: auto;">
+            <img :src="'components/davvag-cms/soss-uploader/service/get/products/'+item.itemid+'-'+item.imgurl"  class="upload-image"  @click="selectStore(item)"/>
+            </div>
+        
+      
+  </div>
+  
+</div>
+<div v-if="loading" class="row" >    
+    <div class="col-md-4 col-sm-6">
+           
+    </div>
+    <div class="col-md-4 col-sm-6">
+            <div id="custom-search-input">
+                <h2><span class="fa fa-refresh fa-spin" ></span> Loading Please wait...</h2>
+            </div>
+    </div>
+    <div class="col-md-4 col-sm-6">
+            
+    </div>
+           
+</div>
+<div v-if="noproducts" class="row" >
+        <div class="col-md-4 col-sm-6">
+           
+            </div>    
+        
+        <div class="col-md-4 col-sm-6">
+                <h1> No Results for Search Query "{{ q }}" </h1>
+            </div>
+            <div class="col-md-4 col-sm-6">
+           
+                </div>
+</div>
+<div class="modal fade" id="modalImagePopup" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+            <div class="modal-header">
+                <div style="width: 40px;">
+                    <div class="profile-userpic">
+                        <img :src="'components/dock/soss-uploader/service/get/profile/'+product.storeid" class="img-responsive" alt="">
+                        
+                    </div>
+                </div>
+                <div class="col">
+                    <h2 v-html="product.storename"></h2>
+                </div>
+                
+                
+                
+            </div>
+            <div class="modal-body">
+                	
+                <div class="row">		
+                        <div class="col-md-12">
+                                <div class="row">
+                                        <div class="col-md-12"><img :src="'components/davvag-cms/soss-uploader/service/get/products/'+product.itemid+'-'+product.imgurl" style="width: 100%;"></div>
+                                        
+                                      </div>
+                                <div class="row" style="margin-top: 10px;">
+                                    <a class="btn btn-default" v-on:click="like(product)" aria-label="Settings">
+                                        <i v-if="product.liked==1" class="fa fa-heart fa-2x"> </i>
+                                        <i v-if="product.liked==0" class="fa fa-heart-o fa-2x"> </i>
+                                    </a> 
+                                    <a class="btn btn-default" href="path/to/settings" aria-label="Settings"><i class="fa fa-envelope-o fa-2x"> </i></a>
+                                         
+                                    <a class="btn btn-default" v-on:click="downloadapp('stelup_shop','product-comments',product,'Comment','components/davvag-cms/soss-uploader/service/get/products/'+product.itemid+'-'+product.imgurl)"><i class="fa fa-comment-o fa-2x" ></i> </i> </a>
+                                    <a class="btn btn-default" v-on:click="favorite(product)" aria-label="Settings" style="right: 10px;position: absolute;margin-right: 10px;">
+                                        <i v-if="product.favorite==0" class="fa fa-plus-square-o fa-2x" > </i> 
+                                        <i v-if="product.favorite==1" class="fa fa-plus-square fa-2x" > </i> 
+                                    </a>
+                                    </div>
+                                <hr>
+                                <div class="row" style="margin-right: 10px;margin-left: 10px">
+                                    <h4 v-html="product.name"></h4>
+                                </div>
+                                <div class="row" style="margin-right: 10px;margin-left: 10px">
+                                    <div class="product-desc" v-html="marked(product.caption)"></div>
+                                </div>
+                                <div v-if="showstore" class="row">
+                                        <table class="table table-striped table-condensed">
+                                                <thead>
+                                                <tr>
+                                                    <th>Store Name</th>
+                                                    <th>Price</th>
+                                                    <th>UOM</th>
+                                                    <th>Qty</th>                                          
+                                                </tr>
+                                            </thead>   
+                                            <tbody>
+                                              <tr>
+                                                  <td>{{ product.storename }}</td>
+                                                  <td>{{ product.currencycode }}.{{ product.price-(product.price*(product.discountper/100)) }}</td>
+                                                  <td>{{ product.uom }}</td>
+                                                  <td> <input type="number" min="0" step="1" value="1" style="width: 50px" v-model="product.qty"/></td>                                       
+                                              </tr>                                  
+                                            </tbody>
+                                          </table>
+                                </div>
+                                <div v-if="showshare" class="row" >
+                                    <div class="col-social">
+                                        <a  :href="'https://facebook.com/sharer/sharer.php?u='+escape(product.url)" target="_blank" aria-label="Share on Facebook">
+                                            <i class="fa fa-facebook-square fa-2x"> </i> 
+                                        </a>
+                                    </div>
+                                    <div class="col-social">
+                                    <a  :href="'https://twitter.com/intent/tweet/?text='+product.caption+'&url='+escape(product.url)" target="_blank" aria-label="Share on Twitter">
+                                        <i class="fa fa-twitter-square fa-2x"></i>
+                                    </a>
+                                    </div>
+                                    <div class="col-social">
+                                        <a  :href="'whatsapp://send?text='+product.caption+' '+product.url" target="_blank" aria-label="Share on WhatsApp">                
+                                                <i class="fa fa-whatsapp fa-2x"></i>
+                                            </a>
+                                    </div>
+                                    <div class="col-social">
+                                        <a  :href="'https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title='+product.name+'&amp;caption='+product.caption+'&amp;content='+escape(product.url)+'&amp;canonicalUrl='+escape(product.url)+'&amp;shareSource=tumblr_share_button'" target="_blank" aria-label="Share on Tumblr">                                
+                                                    <i class="fa fa-tumblr-square fa-2x"></i>
+                                                </a>
+                                    </div>
+                                    <div class="col-social">
+                                        <a  :href="'https://www.linkedin.com/shareArticle?mini=true&amp;url='+escape(product.url)+'&amp;title='+product.name+'&amp;summary='+product.caption+'&amp;source='+escape(product.url)" target="_blank" aria-label="Share on LinkedIn">
+                                                            
+                                                    <i class="fa fa-linkedin-square fa-2x"></i>
+                                                </a>
+                                    </div>
+                                    <div class="col-social">
+                                        <a  :href="'mailto:?subject='+product.name+'&amp;body='+escape(product.url)" target="_self" aria-label="Share by E-Mail">                      
+                                                        <i class="fa fa-envelope fa-2x"></i>
+                                                    </a>
+                                        </div>
+                                    <div class="col-social">
+                                        <a  :href="'https://pinterest.com/pin/create/button/?url='+escape(product.url)+'&amp;media='+product.url+'&amp;description='+product.caption" target="_blank" aria-label="Share on Pinterest">                                      
+                                                                <i class="fa fa-pinterest fa-2x"></i>
+                                                            </a>
+                                    </div>
+                                </div>
+                    </div> 
+                </div>
+            <div v-if="!isEditable(product)" class="modal-footer">
+                    <button type="button" class="btn bg-primary-button" v-on:click="additem(product,true)">Add to cart</button>
+                    <button type="button" class="btn bg-primary-button" v-on:click="additem(product,true)">Buy</button>
+                    <button type="button" class="btn bg-primary-button" v-on:click="selectStoreClose()">Close</button>
+            </div>
+            <div v-if="isEditable(product)" class="modal-footer">
+                <button type="button" class="btn bg-primary-button" v-on:click="edit(product)">Edit</button>
+                <button type="button" class="btn bg-primary-button" v-on:click="marksold(product)">Unlist</button>
+                <button type="button" class="btn bg-primary-button" v-on:click="selectStoreClose()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="modalappwindow" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+            <div class="modal-header">
+                <div style="width: 40px;">
+                    <div class="profile-userpic">
+                        <img :src="appIcon" class="img-responsive" alt="">
+                        
+                    </div>
+                </div>
+                <div class="col">
+                    <h6>{{ appTitle }}</h6>
+                </div>
+                <div class="col" style="width: 30px;text-align: right;">
+                    <a v-on:click="close">x</a>
+                </div>
+                
+                
+            </div>
+            <div id="appdock" class="modal-body">
+                	
+            </div>
+        </div>
+    </div>
+</div>

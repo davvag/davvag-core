@@ -1,0 +1,130 @@
+<div class="container" @scroll="handleScroll($event)">
+    <div class="row">
+	    <div class="col-12">
+    	    <div id="custom-search-input">
+                <div class="input-group">
+                    <input type="text" class="search-query form-control" placeholder="Search" v-model="q" v-on:keyup="OnkeyEnter"/>
+                    <span class="input-group-btn">
+                        <button type="button" v-on:click="onSearch">
+                            <span class="fa fa-search"></span>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+	</div>
+  <div class="row">
+      <div class="col-md-3 col-sm-6" v-for="item in products">
+          <div class="product-grid8 product-wine-image">
+              <div class="product-image8">
+                  <a href="#" aria-disabled="true">
+                      <img class="pic-1" :src="'components/dock/soss-uploader/service/get/products/'+item.itemid+'-'+item.imgurl">
+                  </a>
+                  <span class="product-discount-label" v-if="item.discountper>0">-{{ item.discountper }}%</span>
+              </div>
+              <div class="product-content">
+                <div class="price">weinpool price: {{ item.currencycode }}. {{ item.price-(item.price*(item.discountper/100)) }} <br/>
+                    Average paid price: <span v-if="item.discountper>0">{{ item.currencycode }}.{{ item.price }}</span>
+                    </div>
+                  <h3 class="title"><a href="#" aria-disabled="true" v-html="item.name">{{ item.name }}</a></h3>
+                  <button class="form-control btn btn-primary all-deals" v-on:click="selectStore(item)">View Shops</button>
+                  
+              </div>
+          </div>
+      </div>
+  </div>
+  
+</div>
+<div v-if="loading" class="row" >    
+    <div class="col-md-4 col-sm-6">
+           
+    </div>
+    <div class="col-md-4 col-sm-6">
+            <div id="custom-search-input">
+                <h2><span class="fa fa-refresh fa-spin" ></span> Loading Please wait...</h2>
+            </div>
+    </div>
+    <div class="col-md-4 col-sm-6">
+            
+    </div>
+           
+</div>
+<div v-if="noproducts" class="row" >
+        <div class="col-md-4 col-sm-6">
+           
+            </div>    
+        
+        <div class="col-md-4 col-sm-6">
+                <h1> No Results for Search Query "{{ q }}" </h1>
+            </div>
+            <div class="col-md-4 col-sm-6">
+           
+                </div>
+</div>
+<div class="modal fade" id="modalImagePopup" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+            <div class="modal-header">
+                <h2 v-html="product.name"></h2>
+            </div>
+            <div class="modal-body">
+                	
+                <div class="row">		
+                        <div class="col-md-12">
+                                <div class="row">
+                                        <div class="col-md-4"><img :src="'components/dock/soss-uploader/service/get/products/'+product.itemid+'-'+product.imgurl" style="width: 100px;"></div>
+                                        <div class="col-md-8 ml-auto">
+                                            <table>
+                                                <tr>
+                                                    <th>Market Price:</th>
+                                                    <td>{{ product.currencycode }}  {{ product.price }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Weinpool Price:</th>
+                                                    <td>{{ product.currencycode }}  {{ product.price-(product.price*(product.discountper/100)) }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Discount:</th>
+                                                    <td>{{ product.discountper }} %</td>
+                                                </tr>
+                                            </table>
+                                           
+                                            <div class="product-stock">In Stock</div>
+                                        </div>
+                                      </div>
+                                <hr>
+                                <div class="row" style="margin-right: 30px;margin-left: 30px">
+                                    <div class="product-desc" v-html="marked(product.caption)"></div>
+                                </div>
+                                <div class="row">
+                                        <table class="table table-striped table-condensed">
+                                                <thead>
+                                                <tr>
+                                                    <th>Store Name</th>
+                                                    <th>Price</th>
+                                                    <th>UOM</th>
+                                                    <th>Qty</th>
+                                                    <th></th>                                          
+                                                </tr>
+                                            </thead>   
+                                            <tbody>
+                                              <tr>
+                                                  <td>Donna R. Folse</td>
+                                                  <td>{{ product.currencycode }}.{{ product.price }}</td>
+                                                  <td>{{ product.uom }}</td>
+                                                  <td> <input type="number" min="0" step="1" value="1" style="width: 50px"/></td>
+                                                  <td><button type="button" class="btn btn-success">Add to cart</button>
+                                                  </td>                                       
+                                              </tr>                                  
+                                            </tbody>
+                                          </table>
+                                </div>
+                    </div> 
+                </div>
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" v-on:click="selectStoreClose()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

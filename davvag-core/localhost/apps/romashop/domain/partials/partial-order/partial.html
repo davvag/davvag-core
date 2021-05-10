@@ -1,0 +1,116 @@
+<div class="container" id="idOrderWizard">
+
+    <div class="row">
+        <div class="board col-md-4 col-md-offset-2">
+            <ul class="nav nav-tabs" >
+                <div class="liner"></div>
+                <li rel-index="0" class="active">
+                    <a class="btn">
+                        <span><i class="glyphicon glyphicon-shopping-cart"></i></span>
+                    </a>
+                </li>
+                <li rel-index="1">
+                    <a class="btn">
+                        <span><i class="glyphicon glyphicon-map-marker"></i></span>
+                    </a>
+                </li>
+                <li rel-index="2">
+                    <a class="btn">
+                        <span><i class="glyphicon glyphicon-euro"></i></span>
+                    </a>
+                </li>
+                <li rel-index="3">
+                    <a class="btn">
+                        <span><i class="glyphicon glyphicon-ok"></i></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div v-if="items.length ==0" class="row">
+        <div class="col-sm-8 col-md-8 col-md-offset-1">
+            <div class="row text-center">
+                <h1>You don't have any items in the shopping cart</h1>
+            </div>
+            <div class="row text-center">
+                <a type="button" class="btn btn-success pull-center" href="#/home">
+                    Continue Shopping <span class="glyphicon glyphicon-play"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="items.length !=0" class="row">
+        <div class="col-sm-8 col-md-8 col-md-offset-1">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width:50%">Product</th>
+                        <th style="width:8%">Quantity</th>
+                        <th class="text-center"  style="width:10%">Price</th>
+                        <th class="text-center"  style="width:22%">Total</th>
+                        <th style="width:10%"> </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in items">
+                        <td class="col-sm-8 col-md-6">
+                        <div class="media">
+                            <a class="thumbnail pull-left" href="#"> <img class="media-object" v-bind:src="'components/soss-uploader/service/get/products/' + item.itemid" alt="" style="width: 72px; height: 72px;"> </a>
+                            <div class="media-body">
+                                <h4 class="media-heading"><a href="#">{{ item.name }}</a></h4>
+                                <h5 class="media-heading"> by <a href="#">Brand name</a></h5>
+                                <span>Status: </span><span class="text-success"><strong>In Stock</strong></span>
+                            </div>
+                        </div></td>
+                        <td class="col-sm-1 col-md-1" style="text-align: center">
+                        <input type="email" class="form-control" id="exampleInputEmail1" v-model="item.qty">
+                        </td>
+                        <td class="col-sm-1 col-md-1 text-center"><strong>Rs.{{ item.price }}</strong></td>
+                        <td class="col-sm-1 col-md-1 text-center"><strong>Rs.{{ item.price*item.qty }}</strong></td>
+                        <td class="col-sm-1 col-md-1">
+                        <button type="button" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-remove"></span> Remove
+                        </button></td>
+                    </tr>
+                    
+                    <tr>
+                        <td>   </td>
+                        <td>   </td>
+                        <td>   </td>
+                        <td><h5>Subtotal</h5></td>
+                        <td class="text-right"><h5><strong>Rs.{{ total }}</strong></h5></td>
+                    </tr>
+                    <tr>
+                        <td>   </td>
+                        <td>   </td>
+                        <td>   </td>
+                        <td><h5>Estimated shipping</h5></td>
+                        <td class="text-right"><h5><strong>Rs.0.00</strong></h5></td>
+                    </tr>
+                    <tr>
+                        <td>   </td>
+                        <td>   </td>
+                        <td>   </td>
+                        <td><h3>Total</h3></td>
+                        <td class="text-right"><h3><strong>Rs.{{ total }}</strong></h3></td>
+                    </tr>
+                    <tr>
+                        <td>   </td>
+                        <td>   </td>
+                        <td>   </td>
+                        <td>
+                        <a class="btn btn-default" href="#/home" >
+                            <span class="glyphicon glyphicon-shopping-cart"></span> Continue Shopping
+                        </a></td>
+                        <td>
+                        <a type="button" class="btn btn-success" href="#/checkout">
+                            Checkout <span class="glyphicon glyphicon-play"></span>
+                        </a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

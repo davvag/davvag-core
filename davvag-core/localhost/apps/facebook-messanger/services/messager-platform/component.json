@@ -1,0 +1,23 @@
+{
+    "name" : "fb-messanger-platform",
+    "description":"Messanger Platform",
+    "author":"Lasitha Senanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+        ]
+    },
+    "serviceHandler" : {
+        "file": "facebook.php",
+        "class": "FBMessangerPlatform",
+        "methods" : {
+            "Webhook":{
+                "method":"POST"
+            },
+            "Webhook":{
+                "method":"GET"
+            }
+        }
+    }
+}

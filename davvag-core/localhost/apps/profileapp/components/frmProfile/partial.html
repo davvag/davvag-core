@@ -106,15 +106,12 @@
                         <div class="form-group">
                             <label for="exampleInputFile" class="col-md-4">Profile Image</label>
                             <div class="col-md-4">
-                            <div v-if="!p_image">
-                              <input type="file" @change="onFileChange">
+                              <img :src="p_image" class="col-md-12" width="60" @click="crope"/>
+                              <button @click="crope">New Image</button>
                             </div>
-                            <div v-else>
-                              <img :src="p_image" class="col-md-12" width="60"/>
-                              <button @click="removeImage">Remove image</button>
-                            </div>
-                          </div>
                         </div>
+                        
+                      
                         <div class="form-group">
                             <label class="col-md-4 control-label" for="Name (Full name)">Title</label>  
                             <div class="col-md-4">

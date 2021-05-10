@@ -1,0 +1,63 @@
+<a style="cursor:pointer;" v-on:click="refreshOrders();"><div class="fabButton showMobile" style="background-image: url('assets/raha/img/refreshorders.png');"></div></a>
+<div>
+  <div class="col-sm-4 col-lg-4 col-md-4" v-for="item in items" style="color:black;">
+        <div v-if="item.isBusy" style="left:50%;top:50%;position:absolute;margin-left:-27px;margin-top:-27px;text-align:center;">
+            <img src="assets/raha/img/loading.gif" />
+        </div>
+      <div class="thumbnail riderCards">
+        <div style="margin-left:20px;">
+          <div class="form-group">
+              <h5><b>Customer Name</b></h5>
+              <h6>{{ item.profile ? item.profile.name : '' }}</h6>
+          </div>
+          <div class="form-group">
+              <h5><b>Contact Numbers</b></h5>
+              <h6>{{ item.profile ? item.profile.contactno1  : ''}}</h6>
+              <h6>{{ item.profile ? item.profile.contactno2 : '' }}</h6>
+          </div>
+          <div class="form-group">
+              <h5><b>Address</b></h5>
+              <h6>{{ item.address.addressline1  + ' ' + item.address.addressline2 }}</h6>
+          </div>
+          <div class="form-group">
+              <h5><b>Payment Type</b></h5>
+              <h6>{{ item.paymenttype }}</h6>
+          </div>
+          <div class="form-group">
+              <h5><b>Remarks</b></h5>
+              <h6>{{ item.remarks }}</h6>
+          </div>
+          <div class="form-group">
+              <h5><b>Total Price</b></h5>
+              <h6>{{ item.total }}</h6>
+          </div>
+          <div class="form-group" style="text-align:center;margin-left:-20px;" v-if="!item.isBusy">
+            <a :href="'geo:'+ item.address.gpspoint + '?q=' + item.address.gpspoint" v-if="item.address.gpspoint" class="btn btn-primary" ><span class="glyphicon glyphicon-map-marker"></span></a>
+            <a class="btn btn-primary" v-if="item.profile.contactno1" :href="'tel:' + item.profile.contactno1"><span class="glyphicon glyphicon-phone"></span></a>
+            <a class="btn btn-primary" v-if="item.profile.contactno2" :href="'tel:' + item.profile.contactno2"><span class="glyphicon glyphicon-phone-alt"></span></a>
+            <a class="btn btn-primary" v-on:click="changeStatusCancel(item)"><span class="glyphicon glyphicon-remove"></span></a>
+            <a class="btn btn-primary" v-on:click="changeStatusClose(item)"><span class="glyphicon glyphicon-ok"></span></a>
+          </div>     
+        </div>             
+      </div>	
+  </div>
+</div>
+
+<div class="modal fade" id="modalRiderOrders" role="dialog"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+    <div class="modal-dialog">
+        <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Order Cancel Reason</h4>
+            </div>
+            <div class="modal-body">
+                <select class="form-control" v-model="currentReason">
+                  <option v-for="reason in reasons" v-bind:value="reason">{{reason}}</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" v-on:click="selectReason()">Cancel Order</button>
+            </div>
+        </div>
+    </div>
+</div>

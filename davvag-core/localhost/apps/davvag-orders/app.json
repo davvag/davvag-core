@@ -1,0 +1,49 @@
+{
+    "components": {
+        "davvag-order-handler": {
+            "type":"service",
+            "location":"services"
+        }
+        ,
+        "pending-orders":{
+            "type":"component",
+            "location":"app"
+        }
+    },
+    "description":{
+        "title": "Order Taking",
+        "author":"Lasitha Senanayake",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "pending-orders",
+            "onLoad": ["davvag-order-handler"],
+            "routes":{
+                "partials":{
+                    "/keyword" : "pending-orders"
+                }
+            }
+        }
+    },
+    "resources": {
+        "js" : [
+            {
+                "tag": "bootstrap-datetimepicker",
+                "version" : "latest",
+                "location":"assets/bootstrap-datetimepicker.min.js"
+            }
+        ],
+        "css":[
+            {
+                "type":"css",
+                "location":"assets/bootstrap-datetimepicker.min.css"
+            },{
+                "type" : "css",
+                "location" : "assets/broadstyle.css"
+            }
+        ]
+    }
+}

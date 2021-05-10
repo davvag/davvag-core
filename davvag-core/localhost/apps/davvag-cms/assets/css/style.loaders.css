@@ -20,5 +20,5 @@
 }
 
 .id-soss-routes {
-    min-height: 900px;
+    min-height: calc(100vh - 200px);
 }

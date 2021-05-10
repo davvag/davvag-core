@@ -1,46 +1,46 @@
-
-<div id="logreg-forms">
-    <div class="row">
-                <div class="alert alert-danger" v-if="submitErrors" v-for="error in submitErrors">
-                  <strong>ERROR! </strong> {{error}}
+<div style="padding-top: 20px;">
+  <div id="logreg-forms">
+  <div class="row">
+              <div class="alert alert-danger" v-if="submitErrors" v-for="error in submitErrors">
+                <strong>ERROR! </strong> {{error}}
+              </div>
+              <div class="alert alert-info" v-if="submitErrors" v-for="error in submitInfo">
+                  <strong>INFO! </strong> {{error}}
                 </div>
-                <div class="alert alert-info" v-if="submitErrors" v-for="error in submitInfo">
-                    <strong>INFO! </strong> {{error}}
-                  </div>
+  </div>
+<form class="form-signin" id="form-signin">
+      
+    <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
+    <div v-if="fbEnabled" class="social-login">
+      <button class="btn facebook-btn social-btn" type="button" v-on:click="navigate"><span><i class="fa fa-facebook"></i> Sign in with Facebook</span> </button>
     </div>
-  <form class="form-signin" id="form-signin">
+    <input v-model="loginForm.email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">
+    <input v-model="loginForm.password" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+    
+    <button class="btn bg-primary-button btn-block" id="btn-login" v-on:click="login"><i class="fas fa-sign-in-alt"></i> Sign in</button>
+    <a  id="forgot_pswd" v-on:click="toggleResetPswd()">Forgot password?</a>
+    <hr>
+    <!-- <p>Don't have an account!</p>  -->
+    <button v-on:click="toggleSignUp()" class="btn bg-primary-button btn-block" type="button" id="btn-signup"><i class="fa fa-user"></i> Sign up New Account</button>
+    </form>
+
+    <form  class="form-reset" id="form-reset">
+        <input type="email" id="resetEmail" class="form-control" placeholder="Email address" required="" autofocus="" v-model="loginForm.email">
+        <button class="btn bg-primary-button btn-block" v-on:click="resetpassword(loginForm.email)" >Reset Password</button>
+        <a v-on:click="toggleResetPswd()" id="cancel_reset"><i class="fa fa-angle-left"></i> Back</a>
+    </form>
+    
+    <form class="form-signup" id="form-signup">
         
-      <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
-      <div class="social-login">
-        <button class="btn facebook-btn social-btn" type="button" v-on:click="navigate"><span><i class="fa fa-facebook"></i> Sign in with Facebook</span> </button>
-      </div>
-      <input v-model="loginForm.email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">
-      <input v-model="loginForm.password" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
-      
-      <button class="btn btn-success btn-block" id="btn-login" v-on:click="login"><i class="fas fa-sign-in-alt"></i> Sign in</button>
-      <a  id="forgot_pswd" v-on:click="toggleResetPswd()">Forgot password?</a>
-      <hr>
-      <!-- <p>Don't have an account!</p>  -->
-      <button v-on:click="toggleSignUp()" class="btn btn-primary btn-block" type="button" id="btn-signup"><i class="fa fa-user"></i> Sign up New Account</button>
-      </form>
+        <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign up</h1>
+        <input v-model="signupForm.name" type="text" id="user-name" class="form-control" placeholder="Full name" required="" autofocus="">
+        <input v-model="signupForm.email" type="email" id="user-email" class="form-control" placeholder="Email address" required autofocus="">
+        <input v-model="signupForm.password" type="password" id="user-pass" class="form-control" placeholder="Password" required autofocus="">
+        <input v-model="signupForm.confirmpassword" type="password" id="user-repeatpass" class="form-control" placeholder="Repeat Password" required autofocus="">
 
-      <form  class="form-reset" id="form-reset">
-          <input type="email" id="resetEmail" class="form-control" placeholder="Email address" required="" autofocus="" v-model="loginForm.email">
-          <button class="btn btn-primary btn-block" v-on:click="resetpassword(loginForm.email)" >Reset Password</button>
-          <a v-on:click="toggleResetPswd()" id="cancel_reset"><i class="fa fa-angle-left"></i> Back</a>
-      </form>
-      
-      <form class="form-signup" id="form-signup">
-          
-          <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign up</h1>
-          <input v-model="signupForm.name" type="text" id="user-name" class="form-control" placeholder="Full name" required="" autofocus="">
-          <input v-model="signupForm.email" type="email" id="user-email" class="form-control" placeholder="Email address" required autofocus="">
-          <input v-model="signupForm.password" type="password" id="user-pass" class="form-control" placeholder="Password" required autofocus="">
-          <input v-model="signupForm.confirmpassword" type="password" id="user-repeatpass" class="form-control" placeholder="Repeat Password" required autofocus="">
-
-          <button v-on:click="saveUser()" class="btn btn-primary btn-block"><i class="fa fa-user"></i> Sign Up</button>
-          <a v-on:click="toggleSignUp()" id="cancel_signup"><i class="fa fa-angle-left"></i> Back</a>
-      </form>
-      <br>
-      
-</div>
+        <button v-on:click="saveUser()" class="btn bg-primary-button btn-block"><i class="fa fa-user"></i> Sign Up</button>
+        <a v-on:click="toggleSignUp()" id="cancel_signup"><i class="fa fa-angle-left"></i> Back</a>
+    </form>
+    <br>
+    
+</div></div>

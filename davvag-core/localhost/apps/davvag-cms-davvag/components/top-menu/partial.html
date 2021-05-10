@@ -1,0 +1,129 @@
+<div  id="idHeader">
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+        <!--button id ="idHeaderCloseButton" type="button" class="navbar-toggle" style="height:34px;" v-on:click="closeApp()">
+            <span class="glyphicon glyphicon-remove" style="color:white"></span>
+        </button-->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <button id ="idHeaderSwitchLocation" v-on:click="switchLocation()" type="button" class ="showMobileCollapse" style="position: relative; float: right; padding: 9px 10px; margin-top: 8px; margin-right: 15px; margin-bottom: 8px; background-image:url(assets/mylunch/img/location.png);border: 1px solid transparent;overflow: visible;background-size: 24px 24px;background-color: transparent;width: 44px;height: 34px;background-position: center;background-repeat: no-repeat;border-color: #333;border-radius: 5px;">
+        </button>
+
+        <div>
+            <a  href="#/home"><img src="assets/mylunch/img/cart.png" /></a>
+        </div>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <!--ul class="nav navbar-nav" id="menuSection1">
+            <li>
+                <a v-on:click="navigate('home',true)" style="cursor:pointer;">Menu</a>
+            </li>
+            <li>
+                <a v-on:click="navigate('about',true)" style="cursor:pointer;">About Us</a>
+            </li>
+            <li>
+                <a v-on:click="navigate('contact',true)" style="cursor:pointer;">Contact Us</a>
+            </li>
+            
+        </ul-->
+        <ul class="nav navbar-nav navbar-right" id="header-menu">
+            <li v-for="item in items" class="showMobileCollapse" v-on:click="navigate(item.name)" style="cursor:pointer;"><a>{{item.name}}</a></li>
+            <li class="showMobileCollapse" v-on:click="logout(true)" style="cursor:pointer;"><a>Log Out</a></li>
+        </ul>
+            <ul class="nav navbar-nav navbar-right " style="color:black;">
+                            <li class="collapseMobile"><a href="https://play.google.com/apps/testing/lk.mylunch.userapp" style="padding:0px;">
+                                <img src="assets/mylunch/img/playstore.png" style="height:40px;width:109px;margin-top:5px;margin-right:10px;"/>
+                            </a></li>                
+                            
+                            <li style="background:#115FB2;" class="collapseMobile"><a href="#/cart" id="header-cart">Eat It {{itemcount == 0 ? '' : '(' + itemcount + ')'}}</a></li>
+                            <li id = "idHeaderSwitchLocation2" class="collapseMobile" style="cursor:pointer;"><a v-on:click="switchLocation()">Change Location</a></li>
+
+                            <li class="dropdown collapseMobile"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Account
+                                <b class="caret"></b></a>
+                                <ul class="dropdown-menu" style="background-color:#DDDDDD">
+                                    
+                                    <li id="header-login" >
+                                        <div v-if="isLogin">
+                                            <div class="navbar-content" >
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <img v-bind:src="profileimage"
+                                                            alt="Alternate Text" class="img-responsive" />
+                                                        <p class="text-center small">
+                                                            <a href="http://en.gravatar.com/">Change Photo</a></p>
+                                                    </div>
+                                                    <div class="col-md-7">
+                                                        <span>{{ name }}</span>
+                                                        <p class="text-muted small">
+                                                            {{ email }}</p>
+                                                        <div class="divider">
+                                                        </div>
+                                                        <a href="#" class="btn btn-primary btn-sm active">View Profile</a>
+                                                        <a v-if="isa" href="#/admin" class="btn btn-primary btn-sm active">Admin</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="navbar-footer">
+                                                <div class="navbar-footer-content">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <a href="#" class="btn btn-default btn-sm">Change Passowrd</a>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <a v-on:click="logout(false)" class="btn btn-default btn-sm pull-right">Sign Out</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        <div v-else>
+                                            <div class="navbar-content" style="padding-top:0px;">
+                                            <div class="row">
+                                                    <div class="col-md-12">
+                                                        <label style="margin-top:20px;margin-bottom:10px;">Login via</label>
+                                                        <form class="form" role="form"  v-el:custom  @submit.prevent="login" id="login-nav">
+                                                                <div class="form-group">
+                                                                    <label class="sr-only" for="exampleInputEmail2">Email address</label>
+                                                                    <input v-model="email" type="email" class="form-control" id="exampleInputEmail2" placeholder="Email address" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label class="sr-only" for="exampleInputPassword2">Password</label>
+                                                                    <input v-model="password" type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" required>
+                                                                    <div class="help-block text-right"><a href="">Forget the password ?</a></div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+                                                                </div>
+                                                                <div class="checkbox">
+                                                                    <label>
+                                                                    <input type="checkbox"> keep me logged-in
+                                                                    </label>
+                                                                </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="navbar-footer">
+                                                    <div class="vbar-footer-content text-center" style="margin-bottom:10px">
+                                                        New here ? <a href="#/user"><b>Join Us</b></a>
+                                                    </div>
+                                                    </div>
+                                            </div>
+                                            </div>
+
+                                        </div>
+                                    </li>
+                                </ul>
+    </div>
+
+    <!-- /.navbar-collapse -->
+    </div>
+            <!-- /.container -->
+    </nav>
+</div>

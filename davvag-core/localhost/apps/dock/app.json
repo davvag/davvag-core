@@ -8,6 +8,10 @@
             "type":"shell",
             "location":"shell"
         },
+        "login-handler": {
+            "type":"shell",
+            "location":"shell"
+        },
         "soss-data": {
             "type":"shell",
             "location":"shell"
@@ -48,6 +52,10 @@
             "type":"partial",
             "location":"partials"
         },
+        "frmprofile-view": {
+            "type":"partial",
+            "location":"partials"
+        },
         "partial-404": {
             "type":"partial",
             "location":"partials"
@@ -78,13 +86,13 @@
     "description":{
         "title": "DAAVG Dock",
         "author":"Daavg",
-        "version":"0.1",
+        "version":"0.2",
         "icon":""
     },
     "configuration":{
         "webdock":{
             "startupComponent" : "product",
-            "onLoad": ["dependencies", "soss-routes","dynamic-attributes","soss-routes-vue", "soss-uploader","soss-validator", "auth-handler","soss-data"],
+            "onLoad": ["dependencies","login-handler", "soss-routes","dynamic-attributes","soss-routes-vue", "soss-uploader","soss-validator", "auth-handler","soss-data"],
             "firewall" : {
                 "guest" : [],
                 "admin": []
@@ -93,9 +101,9 @@
                 "home" : "/home",
                 "notFound": "/notFound",
                 "partials" : {
-                    "/" : "partial-home",
+                    "/" : "frmprofile-view",
                     "/app/@appName/*appRoute" : "partial-app",
-                    "/home" : "partial-home",
+                    "/home" : "frmprofile-view",
                     "/notFound": "partial-404",
                     "/account": "partial-account",
                     "/profile": "partial-profile",

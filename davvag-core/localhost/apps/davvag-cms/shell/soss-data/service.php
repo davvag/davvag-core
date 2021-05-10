@@ -21,6 +21,7 @@ class SearchServices {
                 }else{
                     $result = SOSSData::ExecuteRaw ($s->storename,$s);
                 }
+                //return $result;
                 if($result->success){
                     $f->{$s->storename}=$result->result;
                     if(isset($result->result)){

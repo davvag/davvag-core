@@ -1,17 +1,17 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <a class="navbar-brand" href="#/home" v-if="icon==''">{{ name }}</a>
-  <a class="navbar-brand" href="#/home" v-if="icon!=''"><img :src="icon" height="40px"></a>
+  <a class="navbar-brand" :href="headerbar_url" v-if="headerdata.icon==''">{{ name }}</a>
+  <a class="navbar-brand" :href="headerbar_url" v-if="headerdata.icon!=''"><img :src="headerdata.icon" height="40px"></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   
   <div class="collapse navbar-collapse" id="navbarColor01">
     <ul class="navbar-nav mr-auto">
-      <li  v-for="btnitem in TopButtons" v-bind:class="btnitem.class">
+      <li  v-for="btnitem in headerbars_TopButtons" v-bind:class="btnitem.class">
         <a class="nav-link" :href="btnitem.url" v-if="btnitem.sub.length==0" v-html="unescape(btnitem.Caption)"></a>
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" :id="btnitem.id" aria-expanded="false" v-if="btnitem.sub.length!=0" > <span class="caret" v-html="unescape(btnitem.Caption)"></span></a>
         <div class="dropdown-menu" :aria-labelledby="btnitem.id" v-if="btnitem.sub.length!=0">
-            <a v-for="itm in btnitem.sub" class="dropdown-item" :href="itm.url" v-html="unescape(itm.Caption)"></a>
+            <a v-for="itm in btnitem.sub" class="dropdown-item" :href="itm.headerbar_url" v-html="unescape(itm.Caption)"></a>
           </div>
       </li>
     </ul>
@@ -22,7 +22,7 @@
     </form>
   </div>
 </nav>
-<div id="mobile-menu" class="row">
+<div v-if="MobileMenu.length!=0" id="mobile-menu" class="row">
   <ul class="nav navbar-nav navbar-right mobile-bar">
   <li v-for="menu in MobileMenu">
     <a  :href="menu.url" target="_self">

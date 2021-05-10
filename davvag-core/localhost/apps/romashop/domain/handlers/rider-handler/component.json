@@ -1,0 +1,45 @@
+{
+    "name" : "product-handler",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ]
+    },
+    "transformers": {
+        "allRiders": {
+            "method": "GET",
+            "route": "/all",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/rider"
+        },
+        "insertRider": {
+            "method": "POST",
+            "route": "/insert",
+            "destMethod": "POST",
+            "destUrl" : "http://localhost:9000/data/rider",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "updateRider": {
+            "method": "POST",
+            "route": "/update",
+            "destMethod": "PUT",
+            "destUrl" : "http://localhost:9000/data/rider",
+            "bodyTemplate" : "{\"object\":@@body@@}"
+        },
+        "getRiderById": {
+            "method": "GET",
+            "route": "/byid/@riderid",
+            "destMethod": "GET",
+            "destUrl" : "http://localhost:9000/data/rider?query=id:@riderid"
+        }
+        
+    }
+    
+}

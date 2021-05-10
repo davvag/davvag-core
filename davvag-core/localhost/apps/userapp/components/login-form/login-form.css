@@ -1,11 +1,12 @@
 
 /* sign in FORM */
 #logreg-forms{
+    padding-top: 20px;
     width:412px;
     margin:10vh auto;
-    background-color:#f3f3f3;
+    background-color:var(--formBackColor);
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 #logreg-forms form {
     width: 100%;
@@ -46,7 +47,7 @@
 #logreg-forms a{
     display: block;
     padding-top:10px;
-    color:lightseagreen;
+    color:var(--backcolor);
 }
 
 #logreg-form .lines{

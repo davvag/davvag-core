@@ -1,0 +1,41 @@
+{
+    "components": {
+        "crossdomainorder": {
+            "type":"service",
+            "location":"services"
+        },"order-list": {
+            "type":"component",
+            "location":"components"
+        },"frmInvoice-view":{
+            "type":"component",
+            "location":"components"
+        },
+        "frmproduct": {
+            "type":"component",
+            "location":"components"
+        },
+        "newproduct": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "rider-pending",
+        "author":"Davvag",
+        "version":"0.3",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "order-list",
+            "onLoad": ["crossdomainorder"],
+            "routes":{
+                "partials":{
+                    "/product" : "newproduct",
+                    "/invoice":"frmInvoice-view"
+                }
+            }
+        }
+    }
+}

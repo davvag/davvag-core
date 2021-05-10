@@ -67,11 +67,33 @@
               <select class="form-control" id="textProductCategory" placeholder="User Group" v-model="item.groupid">
                 <option v-for="g in groups" v-bind:value="g.groupid">{{g.groupid}}</option>
               </select>
+              
             </form>
         </div>
         <div class="modal-footer">
+          <button v-on:click="navigateNewGroup" class="btn btn-primary btn-block"><i class="fa fa-usergroup"></i> New Group</button>
           <button v-on:click="changeGroup" class="btn btn-primary btn-block"><i class="fa fa-user"></i> Change</button>
             <button v-on:click="cancelgroupForm()" class="btn btn-primary btn-block"><i class="fa fa-close"></i> Close</button>
+          </div>
+      </div>
+    </div>
+  
+  </div>
+  <div class="modal fade" id="modalGroupNew" role="dialog" tabindex="-1"  style="overflow-x: auto;overflow-y: auto;width:100%;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="overflow-x: auto;overflow-y: auto;">
+      
+        <div class="modal-header">
+                <h1>New Group</h1>
+        </div>
+        <div class="modal-body">
+            <form id="form-signup">
+              <input v-model="groupname" type="text" id="user-name" class="form-control" placeholder="New Group Name" required="" autofocus="">
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button v-on:click="newGroup" class="btn btn-primary btn-block"><i class="fa fa-user"></i> Save</button>
+            <button v-on:click="cancelnewgroupForm()" class="btn btn-primary btn-block"><i class="fa fa-close"></i> Close</button>
           </div>
       </div>
     </div>

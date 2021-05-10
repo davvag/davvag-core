@@ -1,0 +1,25 @@
+{
+    "components": {
+        "inventory-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "inventory": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Inventory",
+        "author":"Inventory",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "inventory",
+            "onLoad": ["inventory-handler"]
+        }
+    }
+}

@@ -1,0 +1,133 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+      <div class="panel-btns">
+          <a v-on:click="navigateBack()" class="panel-close">×</a>
+      </div>
+    <h4 v-if="product.title" class="panel-title">{{ product.title }} </h4>
+    <h4 v-if="product.title==null" class="panel-title">New Album </h4>
+    <p v-if="submitErrors" v-for="error in submitErrors" class = "alert alert-danger"> {{error}} </p>
+  </div>
+  <div class="panel-body panel-body-nopadding">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#settings-users" data-toggle="tab"><strong>Information</strong></a></li>
+      <li class=""><a href="#settings-logo-title" data-toggle="tab"><strong>Images & Documents</strong></a></li>
+    </ul>
+    <div class="tab-content mb30">
+      <div class="tab-pane active" id="settings-users">
+        <form style="color:black;">
+          <div class="form-group">
+            <label for="exampleInputEmail1">ID</label>
+            <input type="number" class="form-control" v-model="product.id"  disabled="disabled">
+          </div>
+          
+          <div class="form-group">
+            <label for="exampleInputPassword1">Publish date</label>
+            <div class="input-group">
+              <div class="input-group-addon">
+            
+              
+              <input type="text" class="form-control" id="grnDatePicker" data-date-format="mm-dd-yyyy" v-model="product.createdate"/>
+              
+          </div>
+            
+          </div>
+          <div class="form-group">
+            <label for="exampleSelect1">Catogory : {{ product.catid }}</label>
+            <select class="form-control" id="textProductCategory" v-model="product.catid">
+              <option v-for="item in parentButtons" :value="item.id" v-html="unescape(item.Name)">{{ item.Name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Title</label>
+            <input type="text" class="form-control" v-model="product.title">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">summery</label>
+            <textarea class="form-control" v-model="product.summery"></textarea>
+            
+          </div>
+          <div class="form-group">
+              <label class="col-md-4 control-label" for="feature">Feature</label>
+              <div class="col-md-4"> 
+                <label class="radio-inline" for="feature-0">
+                  <input type="radio" id="feature-0" value="y" name="feature" v-model="product.boost">
+                  Yes
+                </label> 
+                <label class="radio-inline" for="feature-1">
+                  <input type="radio" id="feature-1" value="n" name="feature" v-model="product.boost">
+                  No
+                </label> 
+              </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="col-md-4 control-label" for="feature">Show All Pictures</label>
+            <div class="col-md-4"> 
+              <label class="radio-inline" for="showpics-0">
+                <input type="radio" id="showpics-0" value="y" name="showpics" v-model="product.showpics">
+                Yes
+              </label> 
+              <label class="radio-inline" for="showpics-1">
+                <input type="radio" id="showpics-1" value="n" name="showpics" v-model="product.showpics">
+                No
+              </label> 
+            </div>
+        </div>
+          
+        </div>
+          </form>
+      </div>
+      <div class="tab-pane" id="settings-logo-title">
+        <div class="form-group">
+          <div class="form-group files">
+            <label>Upload Your File </label>
+            <input type="file" class="form-control" multiple="" @change="onFileChange" v-model="files">
+          </div>
+          <div>
+              <div class="row">
+                  <div class="col-md-3" v-for="(image,index) in p_image">
+                    <figure class="imghvr-fade">
+                      <img :src="image.scr" class="img-responsive">
+                      <figcaption>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">Title</label>
+                            <input type="text" class="form-control" :value="'![alt text](components/dock/soss-uploader/service/get/d_cms_artical/'+product.id+'-'+image.name+')'">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">Caption</label>
+                            <textarea class="form-control" v-model="image.caption"></textarea>
+                            
+                          </div>
+                        <label class="radio-inline" for="gender">
+                          <input type="radio" name="gender" v-model="product.imgname" :value="image.name"> 
+                            Default Image
+                          </label> 
+                        <br/>
+                      <div class="btn-group">
+                        
+                        <button @click="removeImage(index)" class="btn btn-default">Remove image</button>
+                      </div>
+                      </figcaption>
+                    </figure>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+   </div>
+   <div class="panel-footer">
+    <div class="row">
+     <div class="col-sm-6 col-sm-offset-3">
+       <button id="send" class="btn btn-primary" v-on:click="submit">Submit</button>&nbsp;
+       <button class="btn btn-default">Cancel</button>
+     </div>
+    </div>
+   </div><!-- panel-footer -->
+</div>
+
+
+
+<script src='assets/davvag-cms-generalapps/editor.js'></script>
+<link href="assets/davvag-cms-generalapps/editor.css" type="text/css" rel="stylesheet"/>

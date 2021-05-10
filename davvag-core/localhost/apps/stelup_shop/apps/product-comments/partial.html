@@ -1,0 +1,18 @@
+<div class="comments-box">
+  <div class="comments" v-for="c in comments">
+    <div class="col-auto" ><img :src="'components/dock/soss-uploader/service/get/profile/'+c.pid" class="comments-icon" alt=""></div>
+    <div class="col-auto">{{ c.comment }}</div>
+    
+  </div>
+</div>
+<div class="form-row align-items-center">
+  <div class="col-auto" ><img :src="'components/dock/soss-uploader/service/get/profile/'+profile.id" class="comments-icon" alt=""></div>
+  <div class="col-auto" style="width: calc(100% - 150px);"><textarea v-model="comment"  maxlength="500" style="width: 100%;height: 50px;"></textarea></div>
+  
+  <div class="col-auto"><button v-on:click="send(comment)" class="btn btn-primary" style="width: 100%;height: 50px;">Send</button></div>
+</div>
+<div class="form-row align-items-center">
+  <div class="col"></div>
+  <div class="col"></div>
+  <div class="col" style="text-align: right;">{{ TextLength }} / 500</div>
+</div>

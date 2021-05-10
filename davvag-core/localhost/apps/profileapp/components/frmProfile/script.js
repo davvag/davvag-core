@@ -12,6 +12,10 @@ WEBDOCK.component().register(function(exports){
     var vueData = {        
         onReady: function(s){
             initializeComponent();
+            exports.getAppComponent("davvag-tools","davvag-img-cropper", function(cropper){
+                cropper.initialize(300,300);
+                cropper1=cropper;
+            });
         },
         data:bindData,
         methods: {
@@ -27,6 +31,13 @@ WEBDOCK.component().register(function(exports){
                     return;
                 this.createImage(files[0]);
             },
+            crope:function(){
+                cropper1.crope(1,1,function(e){
+                    //console.log(e);
+                    bindData.p_image=e.data;
+                    newFile=e.fileData;
+                });
+            },
             navigateBack: function(){
                 handler1 = exports.getShellComponent("soss-routes");
                 handler1.appNavigate("..");
@@ -35,6 +46,9 @@ WEBDOCK.component().register(function(exports){
     }
 
     //exports.vue = vueData;
+    var cropper1;
+   
+
     exports.onReady = function(element){
 
     }
@@ -87,7 +101,7 @@ WEBDOCK.component().register(function(exports){
         validator.map ("i_profile.contactno",true, "contact no is incorrect");
         validator.map ("i_profile.id_number",true, "ID no is incorrect");
         //validator.map ("i_profile.dateofbirth","date", "date of birth is incorrect");
-        validator.map ("i_profile.catogory",true, "You should select a product category");
+        validator.map ("i_profile.catogory",true, "You should select a Profile Category");
         //validator.map ("p_image",true, "You should upload an image");
     }
 
@@ -95,6 +109,14 @@ WEBDOCK.component().register(function(exports){
     function uploadFile(productId, cb){
         if (!newFile)cb();
         else{
+            exports.getAppComponent("davvag-tools","davvag-file-uploader", function(uploader){
+                uploader.initialize();
+                var files=[];
+                newFile.name=productId;
+                files.push(newFile);
+                uploader.upload(files, "profile", null,cb)
+            });
+            /*
             uploaderInstance.services.uploadFile(newFile, "profile", productId)
             .then(function(result){
                 $.notify("Profile Image Has been uploaded", "info");
@@ -103,7 +125,7 @@ WEBDOCK.component().register(function(exports){
             .error(function(){
                 $.notify("Profile Image Has not been uploaded", "error");
                 cb();
-            });
+            });*/
         }
     }
 
@@ -132,6 +154,9 @@ WEBDOCK.component().register(function(exports){
     }
 
     function createImage(file) {
+
+        
+
         newFile = file;
         var image = new Image();
         var reader = new FileReader();
@@ -167,13 +192,14 @@ WEBDOCK.component().register(function(exports){
                     $.notify("Profile Has been saved", "success");
                     addProfileToTmp(bindData.i_profile);
                     uploadFile(bindData.i_profile.id, function(){
-                        //pInstance.appNavigate("..");
+                        handler1 = exports.getShellComponent("soss-routes");
+                        handler1.appNavigate("..");
                     });
                     WEBDOCK.freezeUiComponent("soss-routes",false); 
                     
                 }else{
                     $.notify("ERROR! Saving Profile", "error");
-                    console.log(JSON.stringify(response));
+                    //console.log(JSON.stringify(response));
                     WEBDOCK.freezeUiComponent("soss-routes",false); 
                     //alert (response.result.error);
                 }

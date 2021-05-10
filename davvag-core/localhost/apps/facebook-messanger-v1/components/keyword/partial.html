@@ -1,0 +1,33 @@
+<div class="col-md-6">
+<div class="profile-content">
+  <form style="color:black;">
+    <a v-on:click="navigate(null)">Back</a>
+    <div class="form-group">
+      <label for="exampleInputEmail1">ID</label>
+      <input type="number" class="form-control" id="textItemId" v-model="item.id" disabled="disabled">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Keywords</label>
+      <input type="text" class="form-control" v-model="item.keywords">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Filering option</label>
+      <select class="form-control" data-placeholder="Choose a Flow..." v-model="item.filter">
+        <option v-bind:value="i" v-for="i in filters">{{ i }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Davvag Flow</label>
+      <select class="form-control" data-placeholder="Choose a Flow..." v-model="item.davvagflow">
+        <option v-bind:value="i.name" v-for="i in davvagflows">{{ i.name }}</option>
+      </select>
+    </div>
+    <div>
+      <p v-if="submitErrors" v-for="error in submitErrors" class = "alert alert-danger"> {{error}} </p>
+    </div>
+    <button id="send" class="btn btn-primary" v-on:click="submit">Submit</button>
+  <button id="send" class="btn btn-primary" v-on:click="submit">Delete</button>
+  <button id="send" class="btn btn-primary" v-on:click="navigate(null)">Cancel</button>
+  </form>
+</div>
+</div>

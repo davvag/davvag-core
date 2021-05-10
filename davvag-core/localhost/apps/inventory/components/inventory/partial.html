@@ -1,0 +1,26 @@
+<div style="color:black;">
+    <div>
+        <div class="btn-group" role="group" aria-label="..." style="margin: 10px;">
+            <a class="btn btn-primary" href="#/admin-grnform">New GRN</a>
+        </div>
+    </div>
+    <br/><br/><br/>
+
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Product Category</th>
+        <th>Available QTY</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in items">
+        <td>{{ item.productInfo.name }}</td>
+        <td>{{ item.productInfo.catogory }}</td>
+        <td>{{ item.qty }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

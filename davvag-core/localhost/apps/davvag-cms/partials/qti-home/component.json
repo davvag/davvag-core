@@ -9,6 +9,10 @@
             {
                 "type" : "css",
                 "location" : "style.css"
+            },
+            {
+                "type" : "css",
+                "location" : "marketplace.css"
             }
         ],
         "js":[

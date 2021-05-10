@@ -36,12 +36,15 @@
         "frmprofile-list": {
             "type":"component",
             "location":"components"
+        },"setting-app":{
+            "type":"component",
+            "location":"components"
         }
     },  
     "description":{
         "title": "Profile",
         "author":"Davvag",
-        "version":"0.9",
+        "version":"0.10",
         "icon":""
     },
     "tags":["showindock"],

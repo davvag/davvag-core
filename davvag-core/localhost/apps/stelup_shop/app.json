@@ -1,0 +1,92 @@
+{
+    "components": {
+        "sample-input-form": {
+            "type":"component",
+            "location":"apps"
+        },
+        "seller-register-1":{
+            "type":"component",
+            "location":"apps"
+        }
+        ,
+        "product-register":{
+            "type":"component",
+            "location":"apps"
+        },
+        "app-handler": {
+            "type":"service",
+            "location":"service"
+        },
+        "productsvr":{
+            "type":"service",
+            "location":"service"
+        },
+        "p_svr":{
+            "type":"service",
+            "location":"service"
+        },
+        "frmproduct-list":{
+            "type":"component",
+            "location":"apps"
+        },
+        "home-sp":{
+            "type":"component",
+            "location":"apps"
+        },
+        "partial-404":{
+            "type":"component",
+            "location":"apps"
+        },
+        "profile":{
+            "type":"component",
+            "location":"apps"
+        },
+        "messaging":{
+            "type":"component",
+            "location":"apps"
+        },
+        "product-comments":{
+            "type":"component",
+            "location":"apps"
+        },
+        "cart-checkout":{
+            "type":"component",
+            "location":"apps"
+        },
+        "partial-cart":{
+            "type":"component",
+            "location":"apps"
+        },
+        "order-complete":{
+            "type":"component",
+            "location":"apps"
+        }
+    },
+    "description":{
+        "title": "Stelup App",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showincms"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "home-sp",
+            "onLoad": ["app-handler","p_svr","productsvr"],
+            "routes":{
+                "partials":{
+                    "/test":"sample-input-form",
+                    "/xplo":"frmproduct-list",
+                    "/selleronboard":"seller-register-1",
+                    "/itemonboard":"product-register",
+                    "/checkout":"cart-checkout",
+                    "/checkout-cart":"partial-cart",
+                    "/profile":"profile",
+                    "/payment-gateway":"",
+                    "/order-complete":"order-complete"
+
+                }
+            }
+        }
+    }
+}

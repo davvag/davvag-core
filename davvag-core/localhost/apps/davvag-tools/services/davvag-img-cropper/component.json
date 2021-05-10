@@ -1,0 +1,20 @@
+{
+    "name" : "Image Cropper",
+    "description":"Internationalization component for davvag",
+    "author":"Lasitha Senanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            }
+        ],"css":[
+            {
+                "type":"css",
+                "location":"cropper.min.css"
+            }
+        ]
+    }
+}

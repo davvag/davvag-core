@@ -1,0 +1,69 @@
+<div style="color:black;">
+
+    <div class="modal fade" id="modalRider" role="dialog">
+        <div class="modal-dialog">
+        
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Select Your Rider</h4>
+            </div>
+            <div class="modal-body">
+                <select class="form-control" id="textProductCategory" v-model="currentRider">
+                  <option v-for="rider in riders" v-bind:value="rider">{{rider.name}}</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" v-on:click="selectRider">Select</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  
+    <div>
+        <div class="btn-group" role="group" aria-label="..." style="margin: 10px;">
+            <a :class="'btn ' + (orderTab =='pending'? 'btn-primary' :'btn-default')" style="cursor:pointer;" v-on:click="loadOrders('pending')">Pending Orders</a>
+            <a :class="'btn ' + (orderTab =='dispatched'? 'btn-primary' :'btn-default')" style="cursor:pointer;" v-on:click="loadOrders('dispatched')">Dispatched Orders</a>
+            <a :class="'btn ' + (orderTab =='nextday'? 'btn-primary' :'btn-default')" style="cursor:pointer;" v-on:click="loadOrders('nextday')">Next Day Orders</a>
+            <a :class="'btn ' + (orderTab =='closed'? 'btn-primary' :'btn-default')" style="cursor:pointer;" v-on:click="loadOrders('closed')">Closed Orders</a>
+            <a :class="'btn ' + (orderTab =='cancled'? 'btn-primary' :'btn-default')" style="cursor:pointer;" v-on:click="loadOrders('cancled')">Cancled Orders</a>
+        </div>
+    </div>
+    <br/><br/><br/>
+
+
+  <table class="table" style="color:black;">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Order Date</th>
+        <th>Person Name</th>
+        <th>Rider Name</th>
+        <th>Contact Number</th>
+        <th>Address</th>
+        <th>Total Amount</th>
+        <th>Status</th>
+        <th>Change Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in items">
+        <td>{{ item.id }}</td>
+        <td>{{ item.orderdate }}</td>
+        <td>{{ item.profile ? item.profile.name : '' }}</td>
+        <td>{{ item.ridername }}</td>
+        <td>{{ item.profile ? item.profile.contactno1 : '' }}</td>
+        <td>{{ item.address.addressline1  + ' ' + item.address.addressline2 }}</td>
+        <td>{{ item.total }}</td>
+        <td>{{ (item.status  == 'readytodispatch' ? 'Pending to Dispatch' : (item.status  == 'nextdayorder' ? 'Next Day Order' : (item.status  == 'dispatched' ? 'Order Dispatched' : 'Closed') ) ) }}</td>
+        <td>
+          <a class="btn btn-primary" v-on:click="changeStatusDispatch(item)"><span class="glyphicon glyphicon-road"></span></a>
+          <a class="btn btn-primary" v-on:click="changeStatusClose(item)"><span class="glyphicon glyphicon-ok"></span></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

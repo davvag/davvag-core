@@ -1,16 +1,12 @@
 <header v-show="id==0" class="masthead">
   <div class="hero-image">
     <div class="mx-auto text-center">
+      <br/>
       <h1 class="mx-auto my-0 text-white text-uppercase" v-html="titlepage.title"></h1>
       <h2 class="text-white-50 mx-auto mt-2 mb-5" v-html="titlepage.caption"> Is a ministry providing biblical hope and practical help for everyday problems. </h2>
       <hr>
-      <p >
-        QTI assists Sri Lankan families with a variety of student services. Our Guardian program is a professional, full service with many years of experience caring for international students. We provide prompt, friendly service to students by finding a sponsor who can sponsor for their higher studies. </br></br>
-        A scholarship can give you financial support, work experience, or networking benefits. Students could receive money to help with course fee, living costs and university supplies, opportunities to work on great projects, practical work experience, or an introduction to industry professionals.</br></br>
-        Visit and view our list of ambitious students with highest extra and co-curricular activities whom are seeking for financial aids.</br> 
-      </p>
-      <hr>
-      <a :href="titlepage.buttonuri" class="btn bg-primary-button">{{ titlepage.buttoncaption }}</a>
+      
+      
     </div>
   </div>
 </header>
@@ -19,7 +15,87 @@
   </br>
   </div>
 </header>
+<div class="container">
+  <div class="row">
+   
+    <div class="col-md-12">
+      <p style="padding: 50px;text-align: center;">
+        QTI assists Sri Lankan families with a variety of student services. Our Guardian program is a professional, full service with many years of experience caring for international students. We provide prompt, friendly service to students by finding a sponsor who can sponsor for their higher studies. </br></br>
+        A scholarship can give you financial support, work experience, or networking benefits. Students could receive money to help with course fee, living costs and university supplies, opportunities to work on great projects, practical work experience, or an introduction to industry professionals.</br></br>
+        Visit and view our list of ambitious students with highest extra and co-curricular activities whom are seeking for financial aids.</br> </br>
+      </p>
+    </div>
+  </div>
+  <div class="row" style="padding-bottom: 200px;">
+    <div class="col-md-3">
+      <a href="#/about">     
+        <div id="davvag-img-1">
+        <div class="featured_block_inner">
+          <h4>Learn about scholarship programs</h4>
+        </div>
+        
+        </div>
+      </a>
+ 
+      
+    </div>
+    <div class="col-md-3">
+      <a href="#/about">
+      <div id="davvag-img-2">
+        <div class="featured_block_inner">
+          <h4>Past Scholars</h4>
+        </div>
+        
+      </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="#/about">
+      <div id="davvag-img-3">
+        <div class="featured_block_inner">
+          <h4>Visit Campus</h4>
+        </div>
+        
+      </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="#/app/com_qti_students">
+      <div id="davvag-img-4">
+        <div class="featured_block_inner">
+          <h4>Donate </h4>
+        </div>
+        
+      </div>
+      </a>
+    </div>
+    
+  </div>
 
+  <div class="row" style="text-align: center;padding-bottom: 200px;">
+    <h1 class="mx-auto my-0 text-uppercase">Students Looking For a Gardian</h1>
+  </div>
+  <div class="row" style="padding-bottom: 200px;">
+    
+    <div class="col-md-3"  v-for="item in products">
+        <div class="card-content">
+            <div class="card-img">
+                <img :src="'components/davvag-cms/soss-uploader/service/get/profile/'+item.id" alt="">
+                <span><h4>Donation</h4></span>
+            </div>
+            <div class="card-desc">
+                <h3 style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;max-width: 200px;">{{ item.name }}</h3>
+                
+                <button class="form-control btn bg-primary-button" v-on:click="navProfile(item.id)">Viwe More Details</button>
+          
+                     
+            </div>
+        </div>
+    </div>
+
+  </div>
+  
+</div>
 
 
 

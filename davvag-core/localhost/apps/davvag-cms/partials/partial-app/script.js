@@ -21,6 +21,28 @@ WEBDOCK.component().register(function(exports){
     exports.onReady = function(){
         
     }
+    var appCallBack=null;
+    exports.openAPP=function(appId,startupComponent,callBack){
+        //renderDiv.empty();
+        //showLoadingBar(renderDiv);
+        appCallBack=callBack;
+        $('#appPopup0001').modal({backdrop: 'static', keyboard: false});
+       /* WEBDOCK.componentManager.downloadAppDescriptor(appId, function(descriptor){
+            WEBDOCK.componentManager.downloadComponents(appId, descriptor,function(){
+                WEBDOCK.componentManager.getOnDemand(appId,descriptor, startupComponent, function(results,desc, instance){
+                    renderApp(results,desc,instance);
+                    WEBDOCK.freezeUiComponent("left-menu",false);
+                },appObj.version);
+            },appObj.version);       
+        },appObj.version);*/
+    }
+
+    exports.closeAPP=function(results){
+        if(appCallBack){
+            appCallBack(results);
+        }
+        $('#appPopup0001').modal('toggle');
+    }
 
     function downloadApp(appId,subRoute){
         var leftMenu = exports.getComponent("left-menu");
@@ -70,7 +92,8 @@ WEBDOCK.component().register(function(exports){
                 view = data[i].object.view;
 
             renderDiv.html(view);
-            renderDiv.attr("style", "animation: fadein 0.2s");
+            renderDiv.attr("style", "animation: fadein 0.2s;padding-top: 0px;");
+            //renderDiv.append("<div class='modal fade' id='appPopup0001' role='dialog' tabindex='-1'  style='overflow-x: auto;overflow-y: auto;width:100%;'><div class='modal-dialog modal-dialog-centered' role='document'><div class='modal-content' style='overflow-x: auto;overflow-y: auto;'><div class='modal-header'><h1>Appname</h1></div><div id='appbody' class='modal-body'>{{appbody}}}</div></div>");
             if (!instance)
                 return;
 

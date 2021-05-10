@@ -1,0 +1,39 @@
+{
+    "components": {
+        "login-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "login-form": {
+            "type":"component",
+            "location":"components"
+        },
+        "login-switcher": {
+            "type":"component",
+            "location":"components"
+        },
+        "frmprofile-view": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "User App",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "login-switcher",
+            "onLoad": ["login-handler"],
+            "routes":{
+                "partials":{
+                    "/login":"login-form",
+                    "/profile":"frmprofile-view"
+                }
+            }
+        }
+    }
+}

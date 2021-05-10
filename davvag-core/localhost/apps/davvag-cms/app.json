@@ -39,7 +39,7 @@
             "type":"component",
             "location":"components"
         },
-        "headerbar": {
+        "headerbar_usertab": {
             "type":"component",
             "location":"components"
         },
@@ -75,6 +75,10 @@
             "type":"partial",
             "location":"partials"
         },
+        "partial-album-view":{
+            "type":"partial",
+            "location":"partials"
+        },
         "qti-home":{
             "type":"partial",
             "location":"partials"
@@ -99,9 +103,9 @@
                 "home" : "/home",
                 "notFound": "/notFound",
                 "partials" : {
-                    "/" : "qti-home",
+                    "/" : "partial-homeblog-bg",
                     "/app/@appName/*appRoute" : "partial-app",
-                    "/home" : "qti-home",
+                    "/home" : "partial-homeblog-bg",
                     "/donate" : "partial-donation",
                     "/notFound": "partial-404",
                     "/account": "partial-account",

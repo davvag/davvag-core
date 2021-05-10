@@ -12,13 +12,28 @@ WEBDOCK.component().register(function(exports){
     
         });
     }
+    function deleteitem(i){
+        handler = exports.getComponent("cms-gapp-handler");
+                handler.services.DeleteButton(i).then(function(r){
+                    if(r.success){
+                        filteredItems = scope.items.filter(function(item) {
+                            if(item.id!==i.id)
+                                return item;
+                        });
+                        scope.items=filteredItems==null?[]:filteredItems;
+                    }
+                }).error(function(e){
+
+                });
+    }
 
     var vueData =  {
         methods:{
             navigate: function(id){
                 handler = exports.getShellComponent("soss-routes");
                 handler.appNavigate(id ? "../buttons?id=" + id : "../buttons");
-            }
+            },
+            deleteitem:deleteitem
         },
         data :{
             items : []

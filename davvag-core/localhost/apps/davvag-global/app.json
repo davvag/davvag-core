@@ -1,0 +1,30 @@
+{
+    "components": {
+        "sample-input-form": {
+            "type":"component",
+            "location":"apps"
+        },
+        "api": {
+            "type":"service",
+            "location":"service"
+        }
+    },
+    "description":{
+        "title": "Sampe App",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showincms","showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "sample-input-form",
+            "onLoad": ["app-handler"],
+            "routes":{
+                "partials":{
+                    "/test":"sample-input-form"
+                }
+            }
+        }
+    }
+}

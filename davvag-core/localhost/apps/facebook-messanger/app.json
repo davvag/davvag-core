@@ -1,0 +1,30 @@
+{
+    "components": {
+        "messager-platform": {
+            "type":"service",
+            "location":"services"
+        },
+        "keywordgenerator": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "facebook Messager",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "keywordgenerator",
+            "onLoad": ["keywordgenerator","messager-platform"],
+            "routes":{
+                "partials":{
+                    "/keyword" : "keywordgenerator"
+                }
+            }
+        }
+    }
+}

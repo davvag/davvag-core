@@ -1,0 +1,45 @@
+<div id="logreg-forms">
+  <form class="form-signin">
+      <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
+      <div class="social-login">
+          <button class="btn facebook-btn social-btn" type="button"><span><i class="fa fa-facebook"></i> Sign in with Facebook</span> </button>
+          <button class="btn google-btn social-btn" type="button"><span><i class="fa fa-google"></i> Sign in with Google+</span> </button>
+      </div>
+      <p style="text-align:center"> OR  </p>
+      <input v-model="loginForm.email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">
+      <input v-model="loginForm.password" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+      
+      <button class="btn btn-success btn-block" v-on:click="login"><i class="fas fa-sign-in-alt"></i> Sign in</button>
+      <a  id="forgot_pswd" v-on:click="toggleResetPswd()">Forgot password?</a>
+      <hr>
+      <!-- <p>Don't have an account!</p>  -->
+      <button v-on:click="toggleSignUp()" class="btn btn-primary btn-block" type="button" id="btn-signup"><i class="fa fa-user"></i> Sign up New Account</button>
+      </form>
+
+      <form action="/reset/password/" class="form-reset">
+          <input type="email" id="resetEmail" class="form-control" placeholder="Email address" required="" autofocus="">
+          <button class="btn btn-primary btn-block" type="submit">Reset Password</button>
+          <a v-on:click="toggleResetPswd()" id="cancel_reset"><i class="fa fa-angle-left"></i> Back</a>
+      </form>
+      
+      <form class="form-signup">
+          <div class="social-login">
+              <button class="btn facebook-btn social-btn" type="button"><span><i class="fa fa-facebook"></i> Sign up with Facebook</span> </button>
+          </div>
+          <div class="social-login">
+              <button class="btn google-btn social-btn" type="button"><span><i class="fa fa-google"></i> Sign up with Google+</span> </button>
+          </div>
+          
+          <p style="text-align:center">OR</p>
+
+          <input v-model="signupForm.name" type="text" id="user-name" class="form-control" placeholder="Full name" required="" autofocus="">
+          <input v-model="signupForm.email" type="email" id="user-email" class="form-control" placeholder="Email address" required autofocus="">
+          <input v-model="signupForm.password" type="password" id="user-pass" class="form-control" placeholder="Password" required autofocus="">
+          <input v-model="signupForm.confirmpassword" type="password" id="user-repeatpass" class="form-control" placeholder="Repeat Password" required autofocus="">
+
+          <button v-on:click="saveUser()" class="btn btn-primary btn-block"><i class="fa fa-user"></i> Sign Up</button>
+          <a v-on:click="toggleSignUp()" id="cancel_signup"><i class="fa fa-angle-left"></i> Back</a>
+      </form>
+      <br>
+      
+</div>

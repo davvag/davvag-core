@@ -1,0 +1,12 @@
+<div class="row">
+    <div class="col-md-3" style="margin-bottom:50px;">
+        <div class="list-group collapseMobile" id="idProdCategories">
+            <a v-for="cat in categories" v-on:click="navigatePage(cat.name)" :class="activeItem == cat.name ? 'list-group-item active' : 'list-group-item'" style="cursor:pointer;">{{cat.name}}</a>
+        </div>
+    </div>
+    
+    <div class="col-md-9" webdock-component="soss-routes">
+ 
+    </div>
+
+</div>

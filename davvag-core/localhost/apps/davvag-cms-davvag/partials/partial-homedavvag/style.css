@@ -1,0 +1,127 @@
+em.card-date {
+    margin: 7px;
+    font-size: 11px;
+}
+
+
+table#id-social-table{
+    width:100%;
+}
+
+td.social-icons{
+    vertical-align: middle;
+}
+body {
+    padding:0px;
+}
+
+.white-social{
+    color: white;
+}
+
+
+div.blogCard{
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-top: 20px;
+    background-color: white;
+}
+
+h3.articleTitlte {
+    padding: 7px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+a.read-more-link {
+    padding: 7px;
+    margin-bottom: 37px;
+    bottom: 0px;
+    position: absolute;
+    right: 0px;
+    margin-right: 30px;
+}
+
+@media only screen and  (max-width: 576px) { 
+    .articalHight{
+        min-height: 150px;
+        height: auto;
+        margin: 7px;
+    }
+
+    .blogShort{ 
+        height: auto;
+    }
+}
+
+@media not screen and  (max-width: 576px) { 
+    .articalHight{
+        height: 150px;
+        margin: 7px;
+    }
+
+    .blogShort{ 
+        height: 290px;
+    }
+}
+
+.blogShortContainer {
+    padding-right:0px;
+}
+
+.blogShort{ 
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 40px;
+    margin-right:25px;
+    
+    -webkit-box-shadow: 0px 0px 5px 3px rgba(0,0,0,0.23);
+    -moz-box-shadow: 0px 0px 5px 3px rgba(0,0,0,0.23);
+    box-shadow: 0px 0px 5px 3px rgba(0,0,0,0.23);
+}
+.add{background: #333; padding: 10%; height: 300px;}
+.btn-blog {
+    color: #ffffff;
+    background-color: #41a4f5;
+    border-color:midnightblue;
+    border-radius:0;
+    margin-bottom:10px
+}
+
+.btn-blog:hover,
+.btn-blog:focus,
+.btn-blog:active,
+.btn-blog.active,
+.open .dropdown-toggle.btn-blog {
+    color: white;
+    background-color:#34ca78;
+    border-color: #34ca78;
+}
+.img-thumbnail2 {
+    display: inline-block;
+    height: auto;
+    max-width: 200px;
+    max-height: 150px;
+    padding: 4px;
+    line-height: 1.428571429;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    -webkit-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+/* The hero image */
+.hero-image {
+    /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("banner.jpg");
+
+    /* Set a specific height */
+    height: 500px;
+
+    /* Position and center the image to scale nicely on all screens */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}

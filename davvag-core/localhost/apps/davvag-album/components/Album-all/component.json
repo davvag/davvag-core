@@ -1,0 +1,19 @@
+{
+    "name" : "Album List",
+    "description":"This has the album list",
+    "author":"Lasitha Senanayake",
+    "version" : "0.2",
+    "gitUrl" : "",
+    "resources": {
+        "files":[
+            {
+                "type" : "mainScript",
+                "location" : "script.js"
+            },
+            {
+                "type" : "mainView",
+                "location" : "partial.html"
+            }
+        ]
+    }
+}

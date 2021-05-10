@@ -1,0 +1,34 @@
+<div class="row carousel-holder col-md-9 col-centered">
+	<div class="main-login main-center" style="margin-top:50px;">
+		<form class="form-horizontal" method="post" action="#" style="margin:50px;">
+			<div class="main-login main-center" style="margin-bottom:20px;">             
+				<center><h5>Please enter your email. We will send you a link to reset your password.</h5></center>
+			</div>
+			<div class="form-group">
+				<label class="cols-sm-2 control-label">Password</label>
+				<div class="cols-sm-10">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-lock" aria-hidden="true"></i></span>
+						<input type="password" class="form-control"  placeholder="Enter your Password" v-model="user.password"/>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="cols-sm-2 control-label">Confirm Password</label>
+				<div class="cols-sm-10">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-lock" aria-hidden="true"></i></span>
+						<input type="password" class="form-control"  placeholder="Confirm your Password" v-model="user.confirmPassword"/>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group" style="margin-top:30px;">
+				<button :disabled="isButtonDisabled" type="button" class="btn btn-primary btn-lg btn-block login-button" v-on:click="resetPassword">Reset Password</button>
+			</div>
+
+		</form>
+	</div>
+	</div>
+</div>

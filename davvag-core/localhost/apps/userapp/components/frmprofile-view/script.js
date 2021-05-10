@@ -1,15 +1,36 @@
+
 WEBDOCK.component().register(function(exports){
     var bindData = {
-        item:{catogory:"Student",id:0,title:"Mr",name:"Lasitha",gender:"m",organization:"Christ Gospel",email:"lasitha@gmail.com",contactno:"sss",addresss:"ssss",country:"sssss",city:"dddddddd"},
+        item:{catogory:"",id:0,title:"",name:"",gender:"",organization:"",email:"",contactno:"",addresss:"",country:"",city:""},
         submitErrors: undefined,
         SearchItem:"",
         items:[],
+        items_pending:[],
+        items_rejected:[],
         Activities:[],
         Transaction:[],
         Summary:{},
         showSearch:false,
-        image:'components/dock/soss-uploader/service/get/profile/1'
+        image:'components/dock/soss-uploader/service/get/profile/1',
+        appName:"Tranaction History",
+        profile_policy:{id:1,profilephoto:1,lastseen:1,status:1,read_receipts:1,posts:1},
+        loadingApp:false,
+        loadingAppError:false
     };
+    var newFile;
+    function completeResponce(results){
+        if($('#decker1100').hasClass("profile-content-show")){
+            bindData.apptitle="Tranaction History";
+            showTab("#tran");
+            $('#decker1100').removeClass("profile-content-show");
+        }
+        console.log(results);
+    }
+
+    function showTab(x){
+        $("#tabs>div.active").removeClass("active");
+        $(x).addClass("active");
+    }
 
     var vueData = {
         onReady: function(){
@@ -17,6 +38,67 @@ WEBDOCK.component().register(function(exports){
         },
         data:bindData,
         methods: {
+            updatepolicy:updatePolicy,
+            changeProfilePic:function(){
+                cropper1.crope(1,1,function(e){
+                    //console.log(e);
+                    bindData.image=e.data;
+                    newFile=e.fileData;
+                    exports.getAppComponent("davvag-tools","davvag-file-uploader", function(uploader){
+                        uploader.initialize();
+                        var files=[];
+                        newFile.name=bindData.item.id;
+                        files.push(newFile);
+                        uploader.upload(files, "profile", null,function(e){
+                            console.log(e);
+                        });
+                    });
+                });
+
+            },
+            showTab:function(tab,title){
+                $('#decker1100').addClass("profile-content-show");
+                bindData.appName=title;
+                showTab(tab);
+            },
+            downloadapp:function(appname,form,data,apptitle){
+                $('#decker1100').addClass("profile-content-show");
+                bindData.loadingApp=false;
+                bindData.appName=apptitle;
+                showTab("#app");
+                apploader.downloadAPP(appname,form,"appdock",function(d){
+                    
+                    
+                    bindData.loadingApp=true;
+                    bindData.loadingAppError=false;
+                    
+                },function(e){
+                    console.log(e);
+                    bindData.loadingAppError=true;
+                },completeResponce,data);
+            },
+            hide:function(){
+                $('#decker1100').removeClass("profile-content-show");
+                bindData.apptitle="Tranaction History";
+                showTab("#tran");
+            },
+            showMenu:function(a){
+                if($(a).hasClass("show")){
+                    $(a).removeClass("show");
+                    $(a).addClass("toggle");
+                }else{
+                    $(a).addClass("show");
+                    $(a).removeClass("toggle");
+                }
+                
+            },
+            setAttribute:function(a,itemprop,newValue){
+                $(a).removeClass("show");
+                $(a).addClass("toggle");
+                bindData.profile_policy[itemprop]=newValue;
+                updatePolicy();
+            }
+            ,
             pay:function(){
 
             },
@@ -31,11 +113,14 @@ WEBDOCK.component().register(function(exports){
                 userHandler.services.Logout().then(function(result){
                     if(result.result){
                         localStorage.clear();
-                        sessionStorage.clear();
+                        //sessionStorage.clear();
                         pInstance = exports.getShellComponent("soss-routes");
                         pInstance.appNavigate("../login");
                     }else{
-
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        pInstance = exports.getShellComponent("soss-routes");
+                        pInstance.appNavigate("../login");
                     }
                 }).error(function(result){
                     //$("#form-reset :input").prop("disabled", false);
@@ -81,9 +166,34 @@ WEBDOCK.component().register(function(exports){
               if (!value) return ''
               value = value.toString()
               return parseFloat(value).toFixed(2);
+            },
+            privacy_filter:function(value){
+                switch(value){
+                    case 0:
+                        return "Nobody";
+                        break;
+                    case 1:
+                        return "Everyone";
+                        break;
+                    case 2:
+                        return "Followers";
+                        break;
+                }
             }
+
           
         }
+    }
+
+    function updatePolicy(){
+        bindData.profile_policy.id=bindData.item.id;
+        authhandler.services.updatePolicy(bindData.profile_policy).then(function(r){
+            if(r.success){
+                bindData.profile_policy=r.result;
+            }
+        }).error(function(er){
+
+        });
     }
 
     exports.vue = vueData;
@@ -93,21 +203,25 @@ WEBDOCK.component().register(function(exports){
     //var item ={};
     var productHandler;
     var profileHandler;
-    var uploaderInstance;
+    var authhandler;
     var pInstance;
-
+    var apploader,cropper1;
     function initializeComponent(){
+        exports.getAppComponent("davvag-tools","davvag-img-cropper", function(cropper){
+            cropper.initialize(300,300);
+            cropper1=cropper;
+        });
         profileHandler = exports.getComponent("profile");
         pInstance = exports.getShellComponent("soss-data");
-        uploaderInstance = exports.getComponent ("soss-uploader");
-        //localStorage.profile
-        //routeData = pInstance.getInputData();
-        //console.log("profile");
-        //console.log(localStorage.profile);
+        authhandler = exports.getComponent ("login-handler");
+        exports.getAppComponent("davvag-tools","davvag-app-downloader", function(_uploader){
+            apploader=_uploader;
+            apploader.initialize();
+        });
         if(localStorage.profile!=null){
             profile =JSON.parse(localStorage.profile);
             //console.log(profile);
-            getProfilebyID(profile.id)
+            getProfilebyID(profile.id);
         }
         //console.log(routeData);
     }
@@ -122,27 +236,25 @@ WEBDOCK.component().register(function(exports){
 
     function getProfilebyID(id){
         //console.log(bindData.item)
-        
             console.log("items chnaged");
             //bindData.item=response.result[0];
             bindData.image = 'components/dock/soss-uploader/service/get/profile/'+id;
-            
-            var query=[{storename:"profilestatus",search:"profileid:"+id},
-                        {storename:"profile","search":"id:"+id},
-                        {storename:"ledger","search":"profileid:"+id},
-                        {storename:"profileservices","search":"profileid:"+id}];
-                        pInstance.services.q(query)
+            authhandler.services.ProfileData()
             .then(function(r){
-                console.log(JSON.stringify(r));
                 if(r.success){
                     bindData.Transaction=r.result.ledger;
-                    if(r.result.profilestatus.length!=0){
-                        bindData.Summary=r.result.profilestatus[0];
+                    if(r.result.profilestatus!=null){
+                        bindData.Summary=r.result.profilestatus;
                     }
-                    if(r.result.profile.length!=0){
-                        bindData.item=r.result.profile[0];
+                    if(r.result!=null){
+                        bindData.item=r.result;
                     }
-                    bindData.items=r.result.profileservices;
+                    if(r.result.profile_policy!=null){
+                        bindData.profile_policy=r.result.profile_policy;
+                    }
+                    bindData.items=r.result.orders;
+                    bindData.items_pending=r.result.order_pending;
+                    bindData.items_rejected=r.result.order_rejected;
                 }
             })
             .error(function(error){

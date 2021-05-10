@@ -1,0 +1,25 @@
+<div class="content">
+    <div class="row card border-primary">
+    <div class="card-header">
+            <div class="row col-sm-12">
+            <div class="col-lg-4"> 
+                    <select class="form-control mb15" data-placeholder="Choose a Country..." v-model="C" v-on:change="itemselect(C)">
+                        <option v-bind:value="item" v-for="item in Chapters">{{ item.BookName }}</option>
+                    </select>
+                </div>
+                <div class="col-lg-4">
+                      <select class="form-control mb15" v-model="Chapter" v-on:change="chapterSelect(Chapter.Chapter)">
+                              <option v-for="x in ids" :value="x">{{ x.Chapter }}  වන පරිච්ඡේදය </option>
+                      </select>
+                 </div>
+            </div>
+            
+    </div>
+    <div class="card-body">
+            <p v-html="BibleText">
+          
+                </p>
+    </div>
+    
+  </div>
+</div>

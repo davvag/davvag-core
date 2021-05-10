@@ -1,52 +1,269 @@
-<div class="container">
+<div class="">
   <div class="row profile">
-  <div class="col-md-3">
-    <div class="profile-sidebar">
-      <!-- SIDEBAR USERPIC -->
-      <div class="profile-userpic">
-        <img :src="image" class="img-responsive" alt="">
-      </div>
-      <!-- END SIDEBAR USERPIC -->
-      <!-- SIDEBAR USER TITLE -->
-      <div class="profile-usertitle">
-        <div class="profile-usertitle-name">
-          {{ item.name }}
+  <div class="col-md-4">
+    <div class="profile-leftsidebar mr-lg-1">
+      <div class="text-center border-bottom p-4">
+        <div class="mb-4 profile-user">
+          <img :src="image" class="rounded-circle avatar-lg img-thumbnail" alt="">
+          <button type="button" class="btn bg-light avatar-xs p-0 rounded-circle profile-photo-edit" v-on:click="changeProfilePic">
+              <i class="fa fa-pencil"></i>
+          </button>
         </div>
-        <div class="profile-usertitle-job">
-          {{ item.email }}
-        </div>
+        <h5 class="font-size-16 mb-1 text-truncate">{{ item.name }}</h5>
       </div>
-      <!-- END SIDEBAR USER TITLE -->
-      <!-- SIDEBAR BUTTONS -->
-      <div class="profile-userbuttons">
-        <button type="button" class="btn btn-success btn-sm">Edit</button>
-        <button type="button" class="btn btn-success btn-sm">Chang Password</button>
+      <div class="simplebar-content" style="padding: 5px;height: calc(100vh - 300px); overflow: hidden scroll; padding-right: 20px; padding-bottom: 0px;">
         
-      </div>
-      <div class="profile-userbuttons">
-        <button type="button" class="btn btn-success btn-sm" v-on:click="showPay">Pay Online</button>
-      </div>
+        <div id="profile-setting-accordion" class="custom-accordion">
+            <div class="card shadow-none border mb-2">
+                <a href="#profile-setting-personalinfocollapse" class="text-dark collapsed" data-toggle="collapse" aria-expanded="false" aria-controls="profile-setting-personalinfocollapse">
+                    <div class="card-header" id="profile-setting-personalinfoheading">
+                        <h5 class="font-size-14 m-0">
+                            Personal Info
+                            <i class="mdi mdi-chevron-up float-right accor-plus-icon"></i>
+                        </h5>
+                    </div>
+                </a>
+
+                <div id="profile-setting-personalinfocollapse" class="collapse" aria-labelledby="profile-setting-personalinfoheading" data-parent="#profile-setting-accordion" style="">
+                    <div class="card-body">
+
+                        <div class="float-right">
+                            <button type="button" class="btn btn-light btn-sm" v-on:click="downloadapp('userapp','profile-edit',item,'Edit Profile')"><i class="fa fa-pencil"></i> Edit</button>
+                        </div>
+
+                        <div>
+                            <p class="text-muted mb-1">Name</p>
+                            <h5 class="font-size-14">{{ item.name }}</h5>
+                        </div>
+
+                        <div class="mt-4">
+                            <p class="text-muted mb-1">Email</p>
+                            <h5 class="font-size-14">{{ item.email }}</h5>
+                        </div>
+
+                        <div class="mt-4">
+                            <p class="text-muted mb-1">Contact No</p>
+                            <h5 class="font-size-14">{{ item.contactno }}</h5>
+                        </div>
+
+                        <div class="mt-4">
+                            <p class="text-muted mb-1">Location</p>
+                            <h5 class="font-size-14 mb-0">{{ item.city }}, {{ item.country }}</h5>
+                        </div>
+                        <hr/>
+                        <div class="py-3">
+                            <button type="button" class="btn btn-light btn-sm" style="width: 100%;" v-on:click="showTab('#tran','Transactions History')"> Transactions <i class="fa fa-usd" ></i></button>
+                        </div>
+                        <div class="py-3">
+                            <button type="button" class="btn btn-light btn-sm" style="width: 100%;" v-on:click="showTab('#events','Purchases History')"> Purchases <i class="fa fa-shopping-cart" ></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end profile card -->
+            <div class="card shadow-none border mb-2">
+                <a href="#profile-setting-privacycollapse" class="text-dark collapsed" data-toggle="collapse" aria-expanded="false" aria-controls="profile-setting-privacycollapse">
+                    <div class="card-header" id="profile-setting-privacyheading">
+                        <h5 class="font-size-14 m-0">
+                            Privacy
+                            <i class="mdi mdi-chevron-up float-right accor-plus-icon"></i>
+                        </h5>
+                    </div>
+                </a>
+                <div id="profile-setting-privacycollapse" class="collapse" aria-labelledby="profile-setting-privacyheading" data-parent="#profile-setting-accordion">
+                    <div class="card-body">
+                        <div class="py-3">
+                            <div class="media align-items-center">
+                                <div class="media-body overflow-hidden">
+                                    <h5 class="font-size-13 mb-0 text-truncate">Profile photo</h5>
+
+                                </div>
+                                <div class="dropdown ml-2">
+                                    <button class="btn btn-light btn-sm dropdown-toggle w-sm"  v-on:click="showMenu('#dr-profile-photo')" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{ profile_policy.profilephoto | privacy_filter}}<i class="mdi mdi-chevron-down"></i>
+                                    </button>
+                                    <div id="dr-profile-photo" class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" v-on:click="setAttribute('#dr-profile-photo','profilephoto',1)">Everyone</a>
+                                        <a class="dropdown-item" v-on:click="setAttribute('#dr-profile-photo','profilephoto',0)">Nobody</a>
+                                        <a class="dropdown-item" v-on:click="setAttribute('#dr-profile-photo','profilephoto',2)">Followers</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="py-3 border-top">
+                            <div class="media align-items-center">
+                                <div class="media-body overflow-hidden">
+                                    <h5 class="font-size-13 mb-0 text-truncate">Last seen</h5>
+
+                                </div>
+                                <div class="ml-2">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="privacy-lastseenSwitch" v-model="profile_policy.lastseen" @change="updatepolicy">
+                                        <label class="custom-control-label" for="privacy-lastseenSwitch"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="py-3 border-top">
+                            <div class="media align-items-center">
+                                <div class="media-body overflow-hidden">
+                                    <h5 class="font-size-13 mb-0 text-truncate">Status</h5>
+
+                                </div>
+                                <div class="dropdown ml-2">
+                                    <button class="btn btn-light btn-sm dropdown-toggle w-sm"  v-on:click="showMenu('#dr-status')" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{ profile_policy.status | privacy_filter}} <i class="mdi mdi-chevron-down"></i>
+                                    </button>
+                                    <div id="dr-status" class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" v-on:click="setAttribute('#dr-status','status',1)">Everyone</a>
+                                        <a class="dropdown-item" v-on:click="setAttribute('#dr-status','status',0)">Nobody</a>
+                                        <a class="dropdown-item" v-on:click="setAttribute('#dr-status','status',2)">Followers</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="py-3 border-top">
+                            <div class="media align-items-center">
+                                <div class="media-body overflow-hidden">
+                                    <h5 class="font-size-13 mb-0 text-truncate">Read receipts</h5>
+
+                                </div>
+                                <div class="ml-2">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="privacy-readreceiptSwitch"  v-model="profile_policy.read_receipts" @change="updatepolicy">
+                                        <label class="custom-control-label" for="privacy-readreceiptSwitch"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="py-3 border-top">
+                            <div class="media align-items-center">
+                                <div class="media-body overflow-hidden">
+                                    <h5 class="font-size-13 mb-0 text-truncate">Posts</h5>
+
+                                </div>
+                                <div class="dropdown ml-2">
+                                    <button class="btn btn-light btn-sm dropdown-toggle w-sm" v-on:click="showMenu('#dr-posts')" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{ profile_policy.posts | privacy_filter}}  <i class="mdi mdi-chevron-down"></i>
+                                    </button>
+                                    <div id="dr-posts" class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" v-on:click="setAttribute('#dr-posts','posts',1)">Everyone</a>
+                                        <a class="dropdown-item" v-on:click="setAttribute('#dr-posts','posts',0)">Nobody</a>
+                                        <a class="dropdown-item" v-on:click="setAttribute('#dr-posts','posts',2)">Followers</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- end Privacy card -->
+
+            <div class="card shadow-none border mb-2">
+                <a href="#profile-setting-securitynoticollapse" class="text-dark collapsed" data-toggle="collapse" aria-expanded="false" aria-controls="profile-setting-securitynoticollapse">
+                    <div class="card-header" id="profile-setting-securitynotiheading">
+                        <h5 class="font-size-14 m-0">
+                            Security
+                            <i class="mdi mdi-chevron-up float-right accor-plus-icon"></i>
+                        </h5>
+                    </div>
+                </a>
+                <div id="profile-setting-securitynoticollapse" class="collapse" aria-labelledby="profile-setting-securitynotiheading" data-parent="#profile-setting-accordion">
+                    <div class="card-body">
+
+                        <div>
+                            <div class="media align-items-center">
+                                <div class="media-body overflow-hidden">
+                                    <h5 class="font-size-13 mb-0 text-truncate">Show security notification</h5>
+
+                                </div>
+                                <div class="ml-2">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="security-notificationswitch" @change="updatepolicy">
+                                        <label class="custom-control-label" for="security-notificationswitch"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="py-3">
+                                <button type="button" class="btn btn-light btn-sm" style="width: 100%;" v-on:click="downloadapp('userapp','chnage-password',item,'Change Password')"> Change Password <i class="fa fa-pencil" ></i></button>
+                    
+                            </div>
+                            <div class="py-3">
+                                <button type="button" class="btn btn-danger btn-sm" style="width: 100%;" v-on:click="logout"> Logout <i class="fa fa-key" ></i></button>
+                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end Security card -->
+
+            <div class="card shadow-none border mb-2">
+                <a href="#profile-setting-helpcollapse" class="text-dark collapsed" data-toggle="collapse" aria-expanded="false" aria-controls="profile-setting-helpcollapse">
+                    <div class="card-header" id="profile-setting-helpheading">
+                        <h5 class="font-size-14 m-0">
+                            Help
+                            <i class="mdi mdi-chevron-up float-right accor-plus-icon"></i>
+                        </h5>
+                    </div>
+                </a>
+                <div id="profile-setting-helpcollapse" class="collapse" aria-labelledby="profile-setting-helpheading" data-parent="#profile-setting-accordion">
+                    <div class="card-body">
+
+                        <div>
+                            <div class="py-3">
+                                <h5 class="font-size-13 mb-0"><a href="#" class="text-body d-block">FAQs</a></h5>
+                            </div>
+                            <div class="py-3 border-top">
+                                <h5 class="font-size-13 mb-0"><a href="#" class="text-body d-block">Contact</a></h5>
+                            </div>
+                            <div class="py-3 border-top">
+                                <h5 class="font-size-13 mb-0"><a v-on:click="downloadapp('userapp','privacy-policy',item,'Privacy Policy')">Privacy Policy</a></h5>
+                            </div>
+                            <div class="py-3 border-top">
+                                <h5 class="font-size-13 mb-0"><a v-on:click="downloadapp('userapp','terms-conditions',item,'Terms & Conditions')"> Terms & Conditions</a></h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end Help card -->
+        </div>
+        <!-- end profile-setting-accordion -->
+    </div>
+      
+      
       <div class="profile-userbuttons">
         <button type="button" class="btn btn-danger btn-sm" v-on:click="logout">Logout</button>
       </div>
       <!-- END SIDEBAR BUTTONS -->
       <!-- SIDEBAR MENU -->
-      <div class="profile-usermenu">
-        <ul class="nav">
-            <li class="active"><a href="#tran" data-toggle="tab"><strong>Trasaction History</strong></a>|</li>
-            <li><a href="#events" data-toggle="tab"><strong> Orders</strong></a> </li>
-        </ul>
-      </div>
+      
       <!-- END MENU -->
     </div>
   </div>
-  <div class="col-md-9">
-          <div class="profile-content">
+  <div class="col-md-8">
+          <div id="decker1100" class="profile-content">
             <!-- Tab panes -->
-            <div class="tab-content">
-              
+            <div class="row app_header">
+                <div class="app_title">
+                     <h4>{{ appName }}</h4>
+                </div>
+                <div  class="app_close">
+                  <a v-on:click="hide"><i class="fa fa-times"></i></a>
+                </div>
+              </div>
+            <div  id="tabs" class="tab-content">
+                <div class="tab-pane" id="app">
+                      <div  id="appdock" style="padding: 5px;"><h1>Please Wait Loading</h1></div>
+                      
+                    </div>
               <div class="tab-pane active" id="tran">
-                <h1>Tranaction History</h1>
+                
                 <table class="table mb30">
                   <thead>
                     <tr>
@@ -77,34 +294,84 @@
               </div>
               <div class="tab-pane" id="events">
                 <div class="events">
-                  <h1>Orders </h1>
                   <h5 class="subtitle">Order Pending</h5>
                   <div class="row">
-                    <div class="col-sm-6" v-for="itm in items">
-                      <div class="media">
-                       
-                        <img class="pull-left media-object" :src="'components/dock/soss-uploader/service/get/products/'+itm.itemid" alt="100x120" width="0" height="0" style="width: 100px; height: 120px;">
-                        
-                        <div class="media-body event-body">
-                          <h4 class="event-title">{{ itm.name }}</h4>
-                          <small class="text-muted"><i class="fa fa-shield"></i> {{ itm.catogory }}</small>
-                          <small class="text-muted"><i class="fa fa-calendar"></i> {{ itm.purchaseddate }}</small>
-                          <p><strong>Unit Of Mesure: </strong>{{ itm.uom }} | <strong>Quantity: </strong>{{ itm.qty }} | <strong>Total Charged: </strong>{{ itm.price }}</p>
-                          
-                          
-                          <span :class="'pull-right label label-'+status(itm.status)">{{ itm.status }}</span>
-                        </div>
-                      </div><!-- media -->
-                    </div><!-- col-sm-6 -->
                     
+                    <table class="table mb30">
+                        <thead>
+                          <tr>
+                            <th>Number</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Amout</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="t in items_pending">
+                            <td>{{ t.invoiceNo }}</td>
+                            <td>{{ t.invoiceDate }}</td>
+                            <td>{{ t.status }}</td>
+                            <td>{{ t.total | currency }}</td>
+                            <td><button class="btn btn-success btn-sm"v-on:click="navigatepage(t.trantype,t.tranid);">View</button></td>
+                          </tr>
+                         
+                        </tbody>
+                      </table>
                     
                   </div>
                   
                   <br>
                   
-                  <h5 class="subtitle">Orders Completed</h5>
+                  
                   <div class="row">
-        
+                    <h5 class="subtitle">Orders Accepted</h5>
+                    <table class="table mb30">
+                        <thead>
+                          <tr>
+                            <th>Number</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Amout</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="t in items">
+                            <td>{{ t.invoiceNo }}</td>
+                            <td>{{ t.invoiceDate }}</td>
+                            <td>{{ t.status }}</td>
+                            <td>{{ t.total | currency }}</td>
+                            <td><button class="btn btn-success btn-sm"v-on:click="navigatepage(t.trantype,t.tranid);">View</button></td>
+                          </tr>
+                         
+                        </tbody>
+                      </table>
+                  </div>
+
+                  <div class="row">
+                    <h5 class="subtitle">Orders Rejected</h5>
+                    <table class="table mb30">
+                        <thead>
+                          <tr>
+                            <th>Number</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Amout</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="t in items_rejected">
+                            <td>{{ t.invoiceNo }}</td>
+                            <td>{{ t.invoiceDate }}</td>
+                            <td>{{ t.status }}</td>
+                            <td>{{ t.total | currency }}</td>
+                            <td><button class="btn btn-success btn-sm"v-on:click="navigatepage(t.trantype,t.tranid);">View</button></td>
+                          </tr>
+                         
+                        </tbody>
+                      </table>
                   </div>
                   
                 </div><!-- events -->

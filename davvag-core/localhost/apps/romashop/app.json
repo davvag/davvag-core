@@ -1,0 +1,164 @@
+{
+    "components": {
+        "dependencies": {
+            "type":"shell",
+            "location":""
+        },
+        "soss-routes": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-routes-vue": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-validator": {
+            "type":"shell",
+            "location":"shell"
+        },
+        "soss-uploader": {
+            "type":"service",
+            "location":"shell"
+        },
+        "config": {
+            "type":"shell",
+            "location":""
+        },
+        "partial-404": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-about": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-contact": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-cart": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-cart-checkout": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-cart-paycomplete": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-cart-payerror": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-cart-paysuccess": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-cart-payment": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-user": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-user-register-success": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-home": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-mobile-welcome": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-mobile-login": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-forget-password":{
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-reset-password":{
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-rider-orders": {
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "partial-rider-login":{
+            "type":"partial",
+            "location":"domain/partials"
+        },
+        "launcher": {
+            "type":"component",
+            "location":"domain"
+        },
+        "top-menu": {
+            "type":"component",
+            "location":"components"
+        },
+        "left-menu": {
+            "type":"component",
+            "location":"components"
+        },
+        "footer": {
+            "type":"component",
+            "location":"components"
+        },
+        "product-handler": {
+            "type":"service",
+            "location":"domain/handlers"
+        },
+         "order-handler": {
+            "type":"service",
+            "location":"domain/handlers"
+        },
+        "cart-handler": {
+            "type":"service",
+            "location":"domain/handlers"
+        },
+        "uom-handler": {
+            "type":"service",
+            "location":"domain/handlers"
+        },
+        "inventory-handler": {
+            "type":"service",
+            "location":"domain/handlers"
+        },
+        "store-handler": {
+            "type":"service",
+            "location":"domain/handlers"
+        },
+        "rider-handler": {
+            "type":"service",
+            "location":"domain/handlers"
+        },
+        "login-handler": {
+            "type":"service",
+            "location":"domain/handlers"
+        }
+    },
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "product",
+            "onLoad": ["dependencies","order-handler", "product-handler", "uom-handler", "rider-handler", "inventory-handler","login-handler" , "store-handler", "cart-handler" ,"soss-uploader", "soss-routes","soss-routes-vue", "soss-validator", "config"],
+            "firewall" : {
+                "guest" : [],
+                "admin": []
+            }
+        }
+    },
+    "description":{
+        "title": "Raha.lk - Eat healthy",
+        "author":"Daavg",
+        "version":"0.2",
+        "icon":""
+    }
+}

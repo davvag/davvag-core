@@ -31,12 +31,12 @@
                 
                 <div class="signup-info">
                     <div class="logopanel">
-                        <h1><span>[</span> bracket <span>]</span></h1>
+                        <h1><span>[</span> DAVVAG <span>]</span></h1>
                     </div><!-- logopanel -->
                 
                     <div class="mb20"></div>
                 
-                    <h5><strong>Bootstrap 3 Admin Template!</strong></h5>
+                    <h5><strong>About DAVVAG</strong></h5>
                     <p>Bracket is a theme that is perfect if you want to create your own content management, monitoring or any other system for your project.</p>
                     <p>Below are some of the benefits you can have when purchasing this template.</p>
                     <div class="mb20"></div>
@@ -67,71 +67,54 @@
             
             <div class="col-md-6">
                 
-                <form method="post" action="index.html">
+                <form method="post" action="" autocomplete="off">
                     
-                    <h3 class="nomargin">Sign Up</h3>
-                    <p class="mt5 mb20">Already a member? <a href="signin.html"><strong>Sign In</strong></a></p>
+                    <h3 class="nomargin">Register Your Domain</h3>
+                    <p><span class="alert-danger">* required field</span></p>
+                    <span class="alert-danger"> <?php echo $error;?></span>
+                    <?php if (isset($_GET["success"])) if ($_GET["success"] === "false") {?>
+                        <p class="mt5 mb20">Error Registering your Domain</p>
+                    <?php }?>
                 
-                    <label class="control-label">Name</label>
+                    
                     <div class="row mb10">
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" placeholder="Firstname" />
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" placeholder="Lastname" />
-                        </div>
+                        <label class="control-label">Name</label>                        
+                        <input type="text"  name="name" class="form-control" placeholder="This Your Domain Title " value="<?php echo !isset($data->name)?"":$data->name ?>"/>
+                        <span class="alert-danger">* <?php echo $nameError;?></span>
                     </div>
-                    
                     <div class="mb10">
-                        <label class="control-label">Username</label>
-                        <input type="text" class="form-control" />
+                        <label class="control-label">Your Full Name</label>
+                        <input type="text" class="form-control" name="userfullname" placeholder="Your Name " value="<?php echo !isset($data->userfullname)?"":$data->userfullname ?>"/> 
+                        <span class="alert-danger">* <?php echo $fullnameError;?></span>
                     </div>
-                    
                     <div class="mb10">
-                        <label class="control-label">Password</label>
-                        <input type="password" class="form-control" />
+                        <label class="control-label">Company Name</label>
+                        <input type="text" class="form-control" name="organization" placeholder="Name if the Company" value="<?php echo !isset($data->organization)?"":$data->userfvsullname ?>"/>
                     </div>
-                    
                     <div class="mb10">
-                        <label class="control-label">Retype Password</label>
-                        <input type="password" class="form-control" />
+                        <label class="control-label">Domain Name</label>
+                        <input type="text"   class="form-control" value="<?php echo $_SERVER["HTTP_HOST"] ?>" disabled/>
+                        <input type="hidden"  name="domain" class="form-control" value="<?php echo $_SERVER["HTTP_HOST"] ?>"/>
+                        <input type="hidden"  name="requestid" class="form-control" value="<?php echo $_SESSION["regadmin"] ?>"/>
+                        
+                        
                     </div>
                     
-                    <label class="control-label">Birthday</label>
-                    <div class="row mb10">
-                        <div class="col-sm-5">
-                            <select class="select2" data-placeholder="Month">
-                                <option value=""></option>
-                                <option value="January">January</option>
-                                <option value="February">February</option>
-                                <option value="March">March</option>
-                                <option value="April">April</option>
-                                <option value="May">May</option>
-                                <option value="June">June</option>
-                                <option value="July">July</option>
-                                <option value="August">August</option>
-                                <option value="September">September</option>
-                                <option value="October">October</option>
-                                <option value="November">November</option>
-                                <option value="December">December</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control" placeholder="Day" />
-                        </div>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" placeholder="Year" />
-                        </div>
-                    </div>
-                    
+
                     <div class="mb10">
-                        <label class="control-label">Email Address</label>
-                        <input type="text" class="form-control" />
+                        <label class="control-label">Address</label>
+                        <textarea id="address" name="address"  class="form-control" rows="4" ><?php echo !isset($data->address)?"":$data->address ?></textarea>
+                        <span class="alert-danger">* <?php echo $addressError;?></span>
                     </div>
-                    
                     <div class="mb10">
-                        <label class="control-label">Location</label>
-                        <select class="select2-2" data-placeholder="Choose a Country...">
+                        <label class="control-label">City</label>
+                        <input type="text" class="form-control" name="city" value="<?php echo !isset($data->city)?"":$data->city ?>"/>
+                        <span class="alert-danger">* <?php echo $cityError;?></span>
+                    </div>
+
+                    <div class="mb10">
+                        <label class="control-label" >Location</label>
+                        <select class="form-control" data-placeholder="Choose a Country..." name="country" value="<?php echo !isset($data->country)?"":$data->country ?>">
                           <option value=""></option>
                           <option value="United States">United States</option>
                           <option value="United Kingdom">United Kingdom</option>
@@ -385,10 +368,45 @@
                           <option value="Zambia">Zambia</option>
                           <option value="Zimbabwe">Zimbabwe</option>
                         </select>
+                        <span class="alert-danger">* <?php echo $countryError;?></span>
                     </div>
+                    <div class="mb10">
+                        <label class="control-label">Contact No</label>
+                        <input type="number" class="form-control" name="contactno" value="<?php echo !isset($data->contactno)?"":$data->contactno ?>"/>
+                    </div>
+                    <div class="mb10">
+                        <label class="control-label">Company Registration Number</label>
+                        <input type="text" class="form-control" name="campanyregno" value="<?php echo !isset($data->campanyregno)?"":$data->campanyregno ?>"/>
+                    </div>
+                    <div class="mb10">
+                        <label class="control-label">Tax Registration Number</label>
+                        <input type="text" class="form-control" name="taxregno" value="<?php echo !isset($data->taxregno)?"":$data->taxregno ?>"/>
+                    </div>
+                    <div class="mb10">
+                        <label class="control-label">Passport / National ID / Social Security</label>
+                        <input type="text" class="form-control" name="xxxxxxx" autocomplete="nope" value="<?php echo !isset($data->nationalidcardnumber)?"":$data->nationalidcardnumber ?>"/>
+                    </div>
+                    <hr/>
+                    <h4>Admin Login</h4>
+                    <div class="mb10">
+                        <label class="control-label">Email</label>
+                        <input type="text" class="form-control" name="email" value="<?php echo !isset($data->email)?"":$data->email ?>"/>
+                        <span class="alert-danger">* <?php echo $emailError;?></span>
+                    </div>
+                    
+                    <div class="mb10">
+                        <label class="control-label">Password</label>
+                        <input type="password" class="form-control" name="password"/>
+                        <span class="alert-danger">* <?php echo $passWordErrr;?></span>
+                    </div>
+                    <div class="mb10">
+                        <label class="control-label">Retype Password</label>
+                        <input type="password" class="form-control" name="confirmpassword"/>
+                    </div>
+                    
                     <br />
                     
-                    <button class="btn btn-success btn-block">Sign Up</button>     
+                    <input type="submit" class="form-control" name="submit" value="Submit">     
                 </form>
             </div><!-- col-sm-6 -->
             
@@ -396,10 +414,10 @@
         
         <div class="signup-footer">
             <div class="pull-left">
-                &copy; 2014. All Rights Reserved. Bracket Bootstrap 3 Admin Template
+                &copy; 2020. All Rights Reserved. Davvag 
             </div>
             <div class="pull-right">
-                Created By: <a href="http://themepixels.com/" target="_blank">ThemePixels</a>
+               Powered By: <a href="www.davvag.com" target="_blank">DAVVAG-CLOUD V1.0</a>
             </div>
         </div>
         

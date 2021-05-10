@@ -1,0 +1,64 @@
+{
+    "components": {
+        "cms-album-handler": {
+            "type":"service",
+            "location":"services"
+        },"Artical-view": {
+            "type":"component",
+            "location":"components"
+        },
+        "catogory-form": {
+            "type":"component",
+            "location":"components"
+        },
+        "catogory-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "Album-all":{
+            "type":"component",
+            "location":"components"
+        },
+        "Album-form":{
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Davvag Album",
+        "author":"Davvag",
+        "version":"1.0",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "menu",
+            "onLoad": ["cms-album-handler"],
+            "subApps":{
+                "Articles" : {
+                    "route" : "/artical",
+                    "icon" : "appicon.png"
+                },
+                "All Buttons" : {
+                    "route" : "/buttonsall",
+                    "icon" : "appicon.png"
+                }
+            },
+            "routes":{
+                "partials":{
+                    "/cat":"catogory-form",
+                    "/catall":"catogory-all",
+                    "/a" : "Artical-view",
+                    "/albumall":"Album-all",
+                    "/album":"Album-form"
+                }
+            }
+        },"dock":{
+            "subapps":[
+                {"name":"Catogories","path":"catall"}
+                ,{"name":"New Catogory","path":"cat"},{"name":"Albums","path":"albumall"},{"name":"New Album","path":"album"}
+            ]
+        }
+    }
+}

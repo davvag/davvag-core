@@ -1,10 +1,10 @@
 WEBDOCK.component().register(function(exports){
-    var page=0,size=5;
+    var page=0,size=3;
     var routeData={},menuhandler={};
     
     var bindData={
         Articals:[],
-        Products:[],
+        products:[],
         sidebar:[],
         titlepage:{name:"",title:"",caption:""},
         id:0,allloaded:false,loading:false,cards:[]
@@ -39,6 +39,12 @@ WEBDOCK.component().register(function(exports){
                     break;
                 }
                 return a.pop().toLowerCase();
+            }, 
+            navProfile: function(id){
+                window.location="#/app/com_qti_students/profile?id="+id.toString();
+            },
+            navDonate: function(id){
+                window.location="#/app/com_qti_students/donate?id="+id.toString();
             }
         },
         data :bindData
@@ -53,21 +59,7 @@ WEBDOCK.component().register(function(exports){
 
 
             loadData();
-            window.document.body.onscroll = function(e) {
-        
-                //console.log(window.document.body);
-                //console.log("test  " + (window.innerHeight + window.scrollY) +" yo " +document.body.offsetHeight);
-                if ((window.innerHeight + window.scrollY+30) >= document.body.offsetHeight) {
-                    // you're at the bottom of the page
-                    console.log("In the event ...");
-                    if(!bindData.allloaded && !bindData.loading){
-                        //page=page+size;
-                        loadData();
-                        console.log("Bottom of the page products " +bindData.products.length +" pageNumber "+page);
-                    }
-                }
-                //loadproducts();
-            }
+            
             if(sessionStorage.blogheader){
                 bindData.titlepage=JSON.parse(sessionStorage.blogheader);
             }else{
@@ -114,7 +106,7 @@ WEBDOCK.component().register(function(exports){
                 if(bindData.sidebar.length==0){
                     query.push({storename:"d_cms_cat_v1",search:"parentButtonid:0"},{storename:"d_cms_cards_v1",search:"parentButtonid:0"});
                 }
-                query.push({storename:"d_cms_artical_v1_pod_paging",parameters:{page:page.toString(),size:size.toString(),boost:"Y"}});
+                query.push({storename:"profiles_search",parameters:{page:page.toString(),size:size.toString(),search:"",rad:'0',lon:'0',lan:'0',cat:'0'}});
 
             }else{
                 //query.push({storename:"d_cms_artical_v1",search:"catid:"+routeData.pid});
@@ -134,28 +126,18 @@ WEBDOCK.component().register(function(exports){
                             console.log(JSON.stringify(r));
                             if(r.success){
                                 //if(r.result.d_cms_artical_v1!=null){
-                                    if(r.result.d_cms_artical_v1_pod_paging!=null){
+                                    if(r.result.profiles_search!=null){
                                         
-                                        articals=r.result.d_cms_artical_v1_pod_paging;
+                                        bindData.products=r.result.profiles_search;
                                     }
 
-                                    if(r.result.d_cms_artical_v1_pod_bycat_paging!=null){
-                                        articals=r.result.d_cms_artical_v1_pod_bycat_paging;
-                                    }
-                                //}
+                                    
                                 if(r.result.d_cms_cards_v1!=null){
                                     bindData.cards=r.result.d_cms_cards_v1;
                                 }
                                 if(r.result.d_cms_cat_v1!=null){
                                     bindData.sidebar=r.result.d_cms_cat_v1;
                                 }
-                                if(articals.length==0){
-                                    bindData.allloaded=true;
-                                }
-                                articals.forEach(element => {
-                                    bindData.Articals.push(element);
-                                    page++;
-                                });
                                 bindData.loading=false;
 
                             }

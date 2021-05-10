@@ -1,0 +1,19 @@
+{
+    "components": {
+        "i18n": {
+            "type":"service",
+            "location":"services"
+        }
+    },
+    "description":{
+        "title": "Internationalization",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":""
+    },
+    "tags":[],
+    "configuration":{
+        "webdock":{
+        }
+    }
+}

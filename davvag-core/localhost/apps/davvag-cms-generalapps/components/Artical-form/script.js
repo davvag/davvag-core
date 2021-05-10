@@ -14,7 +14,8 @@ WEBDOCK.component().register(function(exports){
         input:"# hed",
         parentButtons:[],
         p_image:[],
-        files:null
+        files:null,
+        p_removed:[]
 
     };
     //hbkLib.onDomLoaded(nicEditors.allTextAreas);
@@ -87,7 +88,16 @@ WEBDOCK.component().register(function(exports){
 
 
     function removeImage(e) {
-        bindData.p_image = [];
+        //const index = array.indexOf(e);
+        if (e > -1) {
+            if(bindData.p_image[e].id!=0){
+                bindData.p_removed.push({id:bindData.p_image[e].id,name:bindData.p_image[e].name,
+                    caption:bindData.p_image[e].caption,default_img:bindData.p_image[e].default_img});
+            }
+            bindData.p_image.splice(e, 1);
+            newfiles.splice(e,1);
+        }
+
     }
 
 
@@ -216,12 +226,7 @@ WEBDOCK.component().register(function(exports){
         bindData.product.content=$("#txtEditor").data("editor").html(); 
         bindData.submitErrors = validator.validate(); 
         var product =bindData.product;
-        /*
-        product.content=escape(bindData.product.content);
-        product.title=escape(bindData.product.title);
-        product.summery=escape(bindData.product.summery);*/
-        //product.tags=escape(bindData.product.tags);
-
+        
         if (!bindData.submitErrors){
             product.content=product.content.split("'").join("~^");
             product.content=product.content.split('"').join("~*");
@@ -230,8 +235,10 @@ WEBDOCK.component().register(function(exports){
                 bindData.product.Images.push({id:bindData.p_image[i].id,name:bindData.p_image[i].name,
                     caption:bindData.p_image[i].caption,default_img:bindData.p_image[i].default_img});
             }
-            //if(!routeData.id)
-                //bindData.product.id=0
+
+            bindData.product.RemovedImages=bindData.p_removed;
+            
+
             var promiseObj = handler.services.SaveArtical(bindData.product);
             //else promiseObj = handler.transformers.insertArtical (bindData.product);
             

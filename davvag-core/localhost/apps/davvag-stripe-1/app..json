@@ -1,0 +1,32 @@
+{
+    "components": {
+        "charge-form":{
+            "type":"component",
+            "location":"apps"
+        },
+        "stripe-ipg-handler":{
+            "type":"service",
+            "location":"service"
+        }
+    },
+    "description":{
+        "title": "Davvag Stripe IGP",
+        "author":"Lasitha Senanayake",
+        "version":"0.8",
+        "icon":"appicon.png"
+    },
+    "tags":["showincms"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "charge-form",
+            "onLoad": ["stripe-ipg-handler"],
+            "routes":{
+                "partials":{
+                    "/checkout" : "partial-cart",
+                    "/checkout-complete" : "partial-cart-checkout",
+                    "/order-complete" : "order-complete"
+                }
+            }
+        }
+    }
+}

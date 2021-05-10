@@ -1,0 +1,34 @@
+{
+    "components": {
+        "payment-selector": {
+            "type":"component",
+            "location":"apps"
+        },
+        "app-handler": {
+            "type":"service",
+            "location":"service"
+        },
+        "test-form":{
+            "type":"component",
+            "location":"apps"
+        }
+    },
+    "description":{
+        "title": "Sampe App",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showincms","showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "payment-selector",
+            "onLoad": ["app-handler"],
+            "routes":{
+                "partials":{
+                    "/test":"test-form"
+                }
+            }
+        }
+    }
+}

@@ -1,4 +1,3 @@
-
 .gedf-wrapper {
     margin-top: 0.97rem;
 }
@@ -85,43 +84,6 @@ a.read-more-link {
 
 
 @media only screen and  (max-width: 576px) { 
-    .hero-image {
-        /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
-        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("banner.jpg");
-    
-        /* Set a specific height */
-        height: 100%;
-    
-        /* Position and center the image to scale nicely on all screens */
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        position: relative;
-        font-family: Lato;
-          color: white;
-          height:100%;
-          text-align: center;
-          padding-top: 5%;
-          text-shadow: 0px 4px 3px rgba(0,0,0,0.4),
-                       0px 8px 13px rgba(0,0,0,0.1),
-                       0px 18px 23px rgba(0,0,0,0.1);
-          padding-bottom: 20%;
-          padding-left: 5%;
-          padding-right: 5%;
-    }
-    
-    .hero-image>h1 {
-        font-weight: 700;
-        font-size: 5em;
-    }
-    html {
-        height: 100%;
-    }
-    .hero-image>hr {
-        width: 700px;
-        border-top: 1px solid #f8f8f8;
-        border-bottom: 1px solid rgba(0,0,0,0.2);
-    }
     .card-body>p{
         font-size: 20px;
         margin-left: 5px;
@@ -148,44 +110,7 @@ a.read-more-link {
     }
 }
 
-@media not screen and  (max-width: 576px) {
-    .hero-image {
-        /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
-        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("banner.jpg");
-    
-        /* Set a specific height */
-        height: 100%;
-    
-        /* Position and center the image to scale nicely on all screens */
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        position: relative;
-        font-family: Lato;
-          color: white;
-          height:100%;
-          text-align: center;
-          padding-top: 5%;
-          text-shadow: 0px 4px 3px rgba(0,0,0,0.4),
-                       0px 8px 13px rgba(0,0,0,0.1),
-                       0px 18px 23px rgba(0,0,0,0.1);
-          padding-bottom: 20%;
-          padding-left: 10rem;
-          padding-right: 10rem;
-    }
-    
-    .hero-image>h1 {
-        font-weight: 700;
-        font-size: 5em;
-    }
-    html {
-        height: 100%;
-    }
-    .hero-image>hr {
-        width: 700px;
-        border-top: 1px solid #f8f8f8;
-        border-bottom: 1px solid rgba(0,0,0,0.2);
-    }
+@media not screen and  (max-width: 576px) { 
     .articalHight{
         height: 150px;
         margin: 7px;
@@ -242,8 +167,68 @@ a.read-more-link {
     transition: all .2s ease-in-out;
 }
 /* The hero image */
+.hero-image {
+    /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(139, 139, 139, 0.5)), url("banner.jpg");
+    padding: 50px;
+    /* Set a specific height */
+    height:50rem;
 
+    /* Position and center the image to scale nicely on all screens */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
 
-.id-soss-routes {
-     min-height:auto; 
+#davvag-img-1 {
+    padding-top: 226px;
+    padding-bottom: 16px;
+    background-image:linear-gradient(rgba(0, 0, 0, 0.5), rgba(139, 139, 139, 0.5)), url("image1.jpg");
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: cover;
+}
+
+#davvag-img-2 {
+    padding-top: 226px;
+    padding-bottom: 16px;
+    background-image:linear-gradient(rgba(0, 0, 0, 0.5), rgba(139, 139, 139, 0.5)), url("image2.jpg");
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: cover;
+}
+
+#davvag-img-3 {
+    padding-top: 226px;
+    padding-bottom: 16px;
+    background-image:linear-gradient(rgba(0, 0, 0, 0.5), rgba(139, 139, 139, 0.5)), url("image3.jpg");
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: cover;
+}
+
+#davvag-img-4 {
+    padding-top: 226px;
+    padding-bottom: 16px;
+    background-image:linear-gradient(rgba(0, 0, 0, 0.5), rgba(139, 139, 139, 0.5)), url("image4.jpg");
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: cover;
+}
+
+.featured_block_inner {
+    width: 90%;
+    position: relative;
+    overflow: hidden;
+    padding: 5px;
+    height: 100px;
+}
+
+.featured_block_inner>h4 {
+    color: white;
 }

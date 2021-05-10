@@ -1,0 +1,52 @@
+{
+    "name" : "soss-routes-vue",
+    "description":"Vue.JS Plugin for Soss Router",
+    "author":"Supun Dissanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "dependencies" : {
+    },
+    "resources": {
+        "js" : [
+            {
+                "tag": "bootstrap",
+                "version" : "latest",
+                "location":"js/bootstrap.min.js"
+            },
+            {
+                "tag": "core.js",
+                "version" : "latest",
+                "location":"js/core-min.js"
+            },
+            {
+                "tag": "md5.js",
+                "version" : "latest",
+                "location":"js/md5-min.js"
+            },
+            {
+                "tag": "toastr.js",
+                "version" : "latest",
+                "location":"js/toastr.min.js"
+            }
+
+        ],
+        "css" : [
+            {
+                "type":"css",
+                "location" : "css/bootstrap.css"
+            },
+            {
+                "type":"css",
+                "location" : "css/font-awesome.min.css"
+            },
+            {
+                "type":"css",
+                "location" : "css/shop-homepage.css"
+            },
+            {
+                "type":"css",
+                "location" : "css/toastr.min.css"
+            }
+        ]
+    }
+}

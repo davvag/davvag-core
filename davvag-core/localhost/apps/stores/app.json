@@ -1,0 +1,34 @@
+{
+    "components": {
+        "store-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "stores-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "stores-form": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Stores",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "stores-all",
+            "onLoad": ["store-handler"],
+            "routes":{
+                "partials":{
+                    "/store" : "stores-form"
+                }
+            }
+        }
+    }
+}

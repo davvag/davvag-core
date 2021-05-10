@@ -1,0 +1,24 @@
+<div class="container">
+  <br/> <br/>
+  <div class="row">
+      <div class="col-md-3 col-sm-3" v-for="item in products">
+          <div class="product-grid">
+              <div class="product-image">
+                  <a :href="'#/app/davvag-album/a?id='+item.id">
+                      <img class="pic-1" :src="'components/dock/soss-uploader/service/get/d_cms_album/'+item.id+'-'+item.imgname">
+                  </a>
+                  <ul class="social">
+                      <li><a :href="'#/app/davvag-album/a?id='+item.id" data-tip="Quick View"><i class="fa fa-search"></i></a></li>
+                      <li><a :href="'https://facebook.com/sharer/sharer.php?u='+escape(getURL(item))" data-tip="Share On Facebook"><i class="fa fa-facebook-square fa-2x"></i></a></li>
+                      <li><a :href="'https://facebook.com/sharer/sharer.php?u='+escape(getURL(item))" data-tip="Share On twitter"><i class="fa fa-twitter-square fa-2x"></i></a></li>
+                      <i class="fab fa-instagram"></i>
+                  </ul>
+              </div>
+              <div class="product-content">
+                  <h3 class="title"><a href="#">{{ item.title }}</a></h3>
+                  <p>{{ item.summery }}</p>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

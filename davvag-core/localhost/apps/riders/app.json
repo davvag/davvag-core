@@ -1,0 +1,34 @@
+{
+    "components": {
+        "rider-handler": {
+            "type":"service",
+            "location":"services"
+        },
+        "riders-all": {
+            "type":"component",
+            "location":"components"
+        },
+        "riders-form": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Riders",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "riders-all",
+            "onLoad": ["rider-handler"],
+            "routes":{
+                "partials":{
+                    "/rider" : "riders-form"
+                }
+            }
+        }
+    }
+}

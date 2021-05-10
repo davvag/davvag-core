@@ -1,0 +1,45 @@
+<div class="container" id="idOrderWizard">
+    <div class="row checkout-top-margin-row">
+
+    </div>
+
+    <div class="col-md-8 text-center" style="margin-top:50px;">
+        <button class="btn btn-success pull-right" :disabled="isBusy" v-on:click="submit">Complete Payment <span class="glyphicon glyphicon-play"></button>
+    </div>
+    <div class="col-md-8 text-center" style="margin-top:50px;color:black;">
+    <!--a v-on:click="submit" style="cursor:pointer;"><div class="fabButton showMobile" style="background-image: url('assets/raha/img/eatit.png');"></div></a-->
+
+        <div class="form-group col-md-4">
+            <div class="thumbnail thumbnail-payoption radio">
+                <img src="assets/raha/img/payment/cod.png">
+                <label><input type="radio" name="optradio" value="cashondelivery" v-model="paymentmode" checked="checked">Cash On Delivery</label>
+            </div>
+        </div>
+        <!-- <div class="form-group col-md-4">
+            <div class="thumbnail thumbnail-payoption radio">
+                <img src="assets/raha/img/payment/visa.png">
+                <label><input type="radio" value="creditcard" v-model="paymentmode" name="optradio">Credit Card</label>
+            </div>
+        </div> -->
+        <!--div class="form-group col-md-4">
+            <div class="thumbnail thumbnail-payoption radio">
+                <img src="assets/raha/img/payment/ez.png">
+                <label><input type="radio" disabled name="optradio">Ez Cash</label>
+            </div>
+        </div-->
+        <div class="form-group col-md-12" style="margin-top:50px;">
+            <button class="btn btn-success pull-right" style="margin-bottom:20px;" :disabled="isBusy" v-on:click="submit">Complete Payment <span class="glyphicon glyphicon-play"></button>
+        </div>
+        <form method="POST" :action="urls.action" id="idPaymentForm" style="visibility:collapsed;">
+            <input type="hidden" name="shopperzReieptId" v-model="receiptId" />
+            <input type="hidden" name ="shopperzPayAmount" v-model="totalPrice"/>
+            <input type="hidden" name ="shopperzComment" value="test"/>
+
+            <input type="hidden" name="shopperzErrorCallbackUrl" v-model="urls.error" />
+            <input type="hidden" name="shopperzCallbackUrl" v-model="urls.success" />
+            <input type="hidden" name="shopperzMerchantId" value="raha-002" />
+            <input type="hidden" name="shopperzAppId" value="app-001" />
+        </form>
+    <div>
+
+</div>
