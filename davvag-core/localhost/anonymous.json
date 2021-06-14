@@ -1,1 +1,0 @@
-{"apps":{"davvag-cms":{"version":"latest"},"userapp":{"version":"latest"},"davvag-cms-generalapps":{"version":"latest"},"davvag-app-manager":{"version":"latest"}},"webdock":{"events":{"onStartup":{"admin":"dock","default":"davvag-cms"}}}}
