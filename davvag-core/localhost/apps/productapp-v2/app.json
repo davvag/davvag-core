@@ -1,0 +1,43 @@
+{
+    "components": {
+        "product": {
+            "type":"service",
+            "location":"services"
+        },
+        "frmproduct-list": {
+            "type":"component",
+            "location":"components"
+        },
+        "frmproduct": {
+            "type":"component",
+            "location":"components"
+        },
+        "newproduct": {
+            "type":"component",
+            "location":"components"
+        },"newproduct_publish": {
+            "type":"component",
+            "location":"components"
+        }
+    },
+    "description":{
+        "title": "Products V2",
+        "author":"Davvag",
+        "version":"0.1",
+        "icon":"appicon.png"
+    },
+    "tags":["showindock"],
+    "configuration":{
+        "webdock":{
+            "startupComponent" : "frmproduct-list",
+            "onLoad": ["product"],
+            "routes":{
+                "partials":{
+                    "/product" : "newproduct",
+                    "/publish":"newproduct_publish"
+                }
+                
+            }
+        }
+    }
+}
