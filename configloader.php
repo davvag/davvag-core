@@ -7,7 +7,7 @@
 
     // Main Config Loading    
     define ("CONFIG_FILE", $configFolder . "/config.json");
-
+    //echo CONFIG_FILE;
     if (file_exists(CONFIG_FILE)){
         $configData = json_decode(file_get_contents(CONFIG_FILE));
         if (isset($configData)){
@@ -28,8 +28,10 @@
         $configData = json_decode(file_get_contents(DOMAIN_CONFIG_FILE));
         if (isset($configData)){
             if (isset($configData->variables)){
-                foreach ($configData->variables as $key => $value)
-                    define($key,$value);
+                foreach ($configData->variables as $key => $value){
+                    if(!defined($key))
+                        define($key,$value);
+                }
             }
         }
     }else{
