@@ -16,12 +16,13 @@
     $componentManager = new ComponentManager();
     $virtualFirewall = new VirtualFirewall();
     $groupid="anonymous";
-            if(isset($_COOKIE["authData"])){
-                $user =json_decode($_COOKIE["authData"]);
-                if(isset($user->group)){
-                    $groupid=$user->group;
-                }
-            }
+    $user=Auth::Autendicate();
+    if(isset($user)){
+                //$user =json_decode($_COOKIE["authData"]);
+        if(isset($user->group)){
+            $groupid=$user->group;
+        }
+    }
     define("GROUPID",$groupid);
     
     Carbite::GET("/object/tenantdescriptor", [$componentManager,"GetTenantDescriptor"]);
