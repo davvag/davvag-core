@@ -4,7 +4,16 @@
 
 class Auth {
     public static function Login ($username, $password){
-        return Auth::getObjectForGetMethod(AUTH_URL . "/login/$username/$password/".AUTH_DOMAIN);
+        $loginData=Auth::getObjectForGetMethod(AUTH_URL . "/login/$username/$password/".AUTH_DOMAIN);
+        if(isset($loginData->token)){
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION["authData"]=$loginData;
+            setcookie("securityToken", $loginData->token, time() + (86400 * 1), "/");
+
+        }
+        return $loginData; 
     }
 
     public static function SocialLogin ($app, $code,$create){
@@ -59,7 +68,20 @@ class Auth {
     }
 
     public static function GetLogout ($token){
-        return Auth::getObjectForGetMethod(AUTH_URL . "/logout/$token");
+        $outObject=Auth::getObjectForGetMethod(AUTH_URL . "/logout/$token");
+        //$outObject = Auth::GetLogout($authdata->token);
+            if(!isset($outObject->error)){
+                session_destroy();
+                unset($_SESSION["authData"]);
+                unset($_COOKIE['securityToken']); 
+                setcookie('securityToken', null, -1, '/'); 
+                //session_regenerate_id();
+                //$outObject = new stdClass();
+                return $outObject;
+            }else{
+                return $outObject;
+            }
+         
     }
 
     public static function GetUserGroups (){
@@ -122,14 +144,25 @@ class Auth {
         return $outObject;
     }
 
-    public static function Autendicate($appname,$appaction,$res){
+    public static function Autendicate($appname=null,$appaction=null,$res=null){
         
-        if(isset($_COOKIE["authData"])){
-            return json_decode($_COOKIE["authData"]);
+        if(isset($_SESSION["authData"])){
+            return $_SESSION["authData"];
         }else{
-            $res->SetError ("Error Authendicating this Action");
-            exit();
-            //return null;
+            if(isset($_COOKIE["securityToken"])){
+                $authObj=self::GetSession($_COOKIE["securityToken"]);
+                if(isset($authObj->token)){
+                    if (session_status() === PHP_SESSION_NONE) {
+                        session_start();
+                    }
+                    $_SESSION["authData"]=$authObj;
+                    return $_SESSION["authData"];
+                }
+            }else{
+                return null;
+            }
+            
+            return null;
         }
     }
 
