@@ -18,7 +18,6 @@
     $groupid="anonymous";
     $user=Auth::Autendicate();
     if(isset($user)){
-                //$user =json_decode($_COOKIE["authData"]);
         if(isset($user->group)){
             $groupid=$user->group;
         }
