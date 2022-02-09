@@ -1,0 +1,20 @@
+{
+    "name" : "Hosting Plugin",
+    "description":"This for hosting ",
+    "author":"Lasitha Senanayake",
+    "version" : "0.1",
+    "gitUrl" : "",
+    "dependency": {
+        "ubuntu":[
+            {
+                "apt_get" : "zip"
+            }
+        ]
+    },
+    "resources": {
+        "files":[
+           
+        ]
+    }
+    
+}
