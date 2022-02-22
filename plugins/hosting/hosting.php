@@ -17,11 +17,11 @@ class Hosting {
                     $backup_location=TENANT_RESOURCE_LOCATION. "/apps/davvag-hosting-console/backups/".$database.".sql";
                     
                     if($dbconfig->mysql_password!="")
-                        $cmd ="mysqldump -h ".$dbconfig->mysql_server." -u ".$dbconfig->mysql_username." -p".$dbconfig->mysql_password." ". $database ." > ".$backup_location;
+                        $cmd ="mysqldump -h ".$dbconfig->mysql_server." -u ".$dbconfig->mysql_username." -p".$dbconfig->mysql_password." ". $database ." > ".escapeshellarg($backup_location);
                     else
-                        $cmd ="mysqldump -h ".$dbconfig->mysql_server." -u ".$dbconfig->mysql_username." ". $database ." > ".$backup_location;
+                        $cmd ="mysqldump -h ".$dbconfig->mysql_server." -u ".$dbconfig->mysql_username." ". $database ." > ".escapeshellarg($backup_location);
                     
-                    exec($cmd);
+                    shell_exec($cmd);
                     if(file_exists($backup_location)){
                         $filename =TENANT_RESOURCE_LOCATION. "/apps/davvag-hosting-console/backups/".$database.".zip";
                         if(file_exists($filename)){unlink($filename);};
