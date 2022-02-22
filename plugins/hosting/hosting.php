@@ -20,8 +20,8 @@ class Hosting {
                         $cmd ="mysqldump -h ".$dbconfig->mysql_server." -u ".$dbconfig->mysql_username." -p".$dbconfig->mysql_password." ". $database ." > ".escapeshellarg($backup_location);
                     else
                         $cmd ="mysqldump -h ".$dbconfig->mysql_server." -u ".$dbconfig->mysql_username." ". $database ." > ".escapeshellarg($backup_location);
-                    return $cmd;
-                    return shell_exec($cmd);
+                    //return $cmd;
+                    exec($cmd);
                     if(file_exists($backup_location)){
                         $filename =TENANT_RESOURCE_LOCATION. "/apps/davvag-hosting-console/backups/".$database.".zip";
                         if(file_exists($filename)){unlink($filename);};
