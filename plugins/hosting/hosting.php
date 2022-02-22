@@ -4,8 +4,8 @@ class Hosting {
     public static function BackupSystem(){
         $backup_location_app=TENANT_RESOURCE_LOCATION. "/apps/davvag-hosting-console/backups/".DATASTORE_DOMAIN."_APP.zip";
         $backup_location_data=TENANT_RESOURCE_LOCATION. "/apps/davvag-hosting-console/backups/".DATASTORE_DOMAIN."_DATA.zip";
-        self::ZIP(TENANT_RESOURCE_LOCATION,$backup_location_app,false);
-        self::ZIP(MEDIA_FOLDER . "/".  DATASTORE_DOMAIN."/",$backup_location_data,false);
+        self::ZIP(TENANT_RESOURCE_LOCATION,$backup_location_app,true);
+        self::ZIP(MEDIA_FOLDER . "/".  DATASTORE_DOMAIN."/",$backup_location_data,true);
     }
     
     public static function BackupDataBase(){
