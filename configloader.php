@@ -42,8 +42,9 @@
     
     if (!isset($configData))
         $configData = new stdClass();
-        
+    
     $GLOBALS["ENGINE_CONFIG"] = $configData;
+    //$GLOBALS["DBConfig"]=
 
     
     if (defined("LOCAL_DEV_HOST")){
