@@ -184,6 +184,64 @@ class mysqlConnector{
         return rtrim($sqlStart,",")+rtrim($sqlend,",").";\n";
     }
 
+    private function convertSQLtype($datatype,$datalength,$isNull, $isAutoIncrement, $decimalPoints,$endCoding){
+		$strValue="";
+		
+		
+        switch($datatype){
+			case "int":
+				$strValue="INT ".(($isNull)?"":"NOT")." NULL ";
+				if ($isAutoIncrement)
+					$strValue .= "AUTO_INCREMENT ";
+				break;
+			case "float":
+				$strValue="FLOAT ".(($isNull)?"":"NOT")." NULL";
+				
+				break;
+			case "double":
+				$strValue="DECIMAL ".(($isNull)?"":"NOT")." NULL";
+				break;
+			case "short":
+				$strValue="LONG ".(($isNull)?"":"NOT")." NULL";
+				break;
+			case "long":
+				$strValue="LONG ".(($isNull)?"":"NOT")." NULL";
+				break;
+			case "decimal":
+				if ($decimalPoints == null)
+					$strValue = "DECIMAL(10,1)";
+				else
+					$strValue = "DECIMAL(" . $decimalPoints . ") ";
+				break;
+			case "java.lang.String":
+				if($datalength==0){
+					$strValue="TEXT ".($endCoding==null || $endCoding==""?"":" CHARACTER SET '"+$endCoding+"' ")." ".(($isNull)?"":"NOT")." NULL";
+				}
+				else if($datalength<3072){
+					if($endCoding==null || $endCoding==""){
+						$strValue="VARCHAR(".($datalength).") ".(($isNull)?"":"NOT")." NULL";
+					}else{
+						$strValue="MEDIUMTEXT ".($endCoding==null || $endCoding==""?"":" CHARACTER SET '".$endCoding+"' ")." "+(($isNull)?"":"NOT")+" NULL";
+					}
+						
+				}else{
+					$strValue="TEXT "+($endCoding==null || $endCoding==""?"":" CHARACTER SET '"+$endCoding+"' ")." ".(($isNull)?"":"NOT")." NULL";
+				}
+				break;
+			case "java.util.Date":
+				$strValue= "DATETIME ".(($isNull)?"":"NOT")." NULL";
+				break;
+			case "boolean":
+				$strValue="VARCHAR(5) ".(($isNull)?"":"NOT")." NULL";
+				break;
+			default:
+				$strValue="TEXT ".(($isNull)?"":"NOT")." NULL";
+				break;
+        
+        }
+		return $strValue;
+	}
+
     private function getValue($field,$value){
         switch($field->dataType){
             case "java.lang.String":
@@ -195,8 +253,21 @@ class mysqlConnector{
             case "float":
                 return (float)$value;
                 break;
+            case "double":
+                return (float)$value;
+                break;
+            case "short":
+                return (int)$value;
+                break;
+            case "long":
+                return (int)$value;
+                break;
+                case "decimal":
             case "java.util.Date":
                 return "'".$value."'";
+                break;
+            case "object":
+                return "'".json_encode($value)."'";
                 break;
             default:
                 return "'".$value."'";
