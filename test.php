@@ -12,11 +12,11 @@
     $ledgertran->tranDate='2013/08/20';
     $ledgertran->description='Invoice No Has been generated';
     $ledgertran->amount=100;
-    var_dump($mysql->Insert("ledger",$ledgertran));
+    echo json_encode($mysql->Insert("ledger",$ledgertran))."<br/>";
     $ledgertran->description='Invoice No Has been generated Updated';
-    var_dump($mysql->Update("ledger",$ledgertran));
+    echo json_encode($mysql->Update("ledger",$ledgertran))."<br/>";
 
-    var_dump($mysql->Query("ledger",""));
+    echo json_encode($mysql->Query("ledger",null))."<br/>";
 
     echo date("YmdHis");
     //var_dump($mysql->Delete("ledger",$ledgertran));

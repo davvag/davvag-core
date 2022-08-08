@@ -59,7 +59,13 @@ class mysqlConnector{
 
     }
 
-    public function Query($namespace,$param,$lastID=0,$sorting="ASC",$pageSize=20,$fromPage=0){
+    public function Query($namespace,$param,$lastID=0,$sorting="asc",$pageSize=20,$fromPage=0){
+        $tableSchema=Schema::Get($namespace);
+        $systemFields=Schema::GetSystemColums();
+        foreach ($systemFields as $key => $value) {
+            # code...
+            array_push($tableSchema->fields,$value);
+        }
         $sql="Select * from ".$namespace;
         if(is_array($param)){
             return null;
@@ -81,9 +87,26 @@ class mysqlConnector{
                 }
             }
 
-            $sql.=($sqlWhere!=""?" where".$sqlWhere:"")." Order by $sorting sysversionid limit $fromPage,$pageSize";
+            $sql.=($sqlWhere!=""?" where".rtrim($sqlWhere,"and"):"")." Order by sysversionid $sorting limit $fromPage,$pageSize";
             if($result=$this->con->query($sql)){
-                return $this->result(true,mysqli_fetch_all($result));
+                //return $this->result(true,mysqli_fetch_all($result));
+                $data =array();
+                while($row = $result ->fetch_array(MYSQLI_ASSOC)){
+                    $item =new stdClass();
+                    foreach ($tableSchema->fields as $key => $value) {
+                        # code...
+                        $item->{$value->fieldName}=$row[$value->fieldName];
+                        
+
+                    }
+                    $item->{"@meta"}=new stdClass();
+                    foreach ($systemFields as $key => $value) {
+                        # code...
+                        $item->{"@meta"}->{$value->fieldName}=$row[$value->fieldName];
+                    }
+                    array_push($data,$item);
+                }
+                return $this->result(true,$data);
             }else{
                 if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
                     $this->createTable($namespace);
