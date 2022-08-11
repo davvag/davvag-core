@@ -5,19 +5,28 @@
     require_once (dirname(__FILE__) . "/configloader.php");
     require_once (dirname(__FILE__) . "/plugins/sossdata_v1/mysqlConnector.php");
     $mysql=new mysqlConnector();
-    $ledgertran =new StdClass;
-    $ledgertran->profileid=2;
-    $ledgertran->tranid=4;
-    $ledgertran->trantype='invoice';
+    $ledgertran =new StdClass();
+    $ledgertran->name="Lasitha";
+    $ledgertran->contactno="12334444";
+    $ledgertran->email='lasitha@gmail.com';
     $ledgertran->tranDate='2013/08/20';
-    $ledgertran->description='Invoice No Has been generated';
-    $ledgertran->amount=100;
-    echo json_encode($mysql->Insert("ledger",$ledgertran))."<br/>";
-    $ledgertran->description='Invoice No Has been generated Updated';
-    echo json_encode($mysql->Update("ledger",$ledgertran))."<br/>";
+    $ledgertran->gender='m';
+    $ledgertran->organization="hey mail";
+    $rs=$mysql->Insert("profile",$ledgertran);
+    //."<br/>";
+    $ledgertran->id=$rs->result->generatedId;
+    $ledgertran->name="Lasitha 1";
+    echo json_encode($mysql->Update("profile",$ledgertran))."<br/>";
 
-    echo json_encode($mysql->Query("ledger",null))."<br/>";
+    echo json_encode($mysql->Query("profile",null))."<br/>";
+    $mainObj = new stdClass();
+    $mainObj->parameters = new stdClass();
+    $mainObj->parameters->page = '0';
+    $mainObj->parameters->size = '10';
+    $mainObj->parameters->search = isset($_GET["q"]) ?  $_GET["q"] : "";
 
+    $resultObj = $mysql->ExecuteRaw("profiles_search", $mainObj);
+    echo json_encode($resultObj)."<br/>";
     echo date("YmdHis");
     //var_dump($mysql->Delete("ledger",$ledgertran));
 

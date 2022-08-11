@@ -59,6 +59,40 @@ class mysqlConnector{
 
     }
 
+    public function ExecuteRaw($namespace,$params){
+        $tableSchema=Schema::Get($namespace);
+        if(isset($tableSchema->rawquery)){
+            $sql = $tableSchema->rawquery->query;
+            foreach ($params->parameters as $key => $value) {
+                $sql=str_replace("$".$key,$value,$sql);
+            }
+            if($result=$this->con->query($sql)){
+                //return $this->result(true,mysqli_fetch_all($result));
+                $data =array();
+                while($row = $result ->fetch_array(MYSQLI_ASSOC)){
+                    $item =new stdClass();
+                    foreach ($tableSchema->fields as $key => $value) {
+                        # code...
+                        $item->{$value->fieldName}=$row[$value->fieldName];
+                        
+
+                    }
+                    //$item->{"@meta"}=new stdClass();
+                    
+                    array_push($data,$item);
+                }
+                return $this->result(true,$data);
+            }else{
+                
+                throw new Exception($this->con->error); 
+                
+            }
+
+        }else{
+            throw new Exception("This not a valied Schema");
+        }
+    }
+
     public function Query($namespace,$param,$lastID=0,$sorting="asc",$pageSize=20,$fromPage=0){
         $tableSchema=Schema::Get($namespace);
         $systemFields=Schema::GetSystemColums();
@@ -68,7 +102,7 @@ class mysqlConnector{
         }
         $sql="Select * from ".$namespace;
         if(is_array($param)){
-            return null;
+            return $this->ExecuteRaw($namespace,$param);
         }else{
             $dived=explode(",",$param);
             $sqlWhere="";
