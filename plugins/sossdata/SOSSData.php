@@ -1,31 +1,44 @@
 <?php
 
-//require_once (dirname(__FILE__) . "/../../configloader.php");
+require_once ("DataStore.php");
 
 class SOSSData {
+
+    private static  $DavvagData=array();
+    
+    private static function getDataSource($tenantId){
+        if(!empty(self::$DavvagData[$tenantId])){
+           return self::$DavvagData[$tenantId];
+        }else{
+            if(isset($GLOBALS["ENGINE_CONFIG"]->DAVVAG_DATA)){
+                if(isset($GLOBALS["ENGINE_CONFIG"]->DAVVAG_DATA->{$tenantId})){
+                    $lib=$GLOBALS["ENGINE_CONFIG"]->DAVVAG_DATA->{$tenantId}->connector;
+                    require_once ($lib."/".$lib.".php");
+                    self::$DavvagData[$tenantId]= new $lib();
+                    return self::$DavvagData[$tenantId];
+                }else{
+                    require_once ("davvagstore/davvagstore.php");
+                    self::$DavvagData[$tenantId]=new davvagstore(); 
+                }
+            }else{
+                require_once ("davvagstore/davvagstore.php");
+                self::$DavvagData[$tenantId]= new davvagstore();
+            }
+        }
+    }
 
     public static function ExecuteRaw ($className, $saveObj, $lastVersionId = null, $tenantId = null){
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
 
-        $wrapper = new stdClass();
-        $wrapper->object = $saveObj;
-        
-        $headerArray = array("Content-Type: application/json", "Host: $tenantId", "executeraw: true");
-        $responseStr = SOSSData::callRest ($tenantId, $className, $wrapper, "POST", $headerArray);
-        return json_decode($responseStr);
+        return self::getDataSource($tenantId)->ExecuteRaw($className, $saveObj, $lastVersionId, $tenantId);
     }
 
     public static function Insert ($className, $saveObj, $tenantId = null){
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
 
-        $wrapper = new stdClass();
-        $wrapper->object = $saveObj;
-
-        $responseStr = SOSSData::callRest ($tenantId, $className, $wrapper, "POST");
-        //var_dump ($responseStr);
-        return json_decode($responseStr);
+        return self::getDataSource($tenantId)->Insert($className, $saveObj, $tenantId);
     }
 
 
@@ -33,11 +46,7 @@ class SOSSData {
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
 
-        $wrapper = new stdClass();
-        $wrapper->object = $saveObj;
-
-        $responseStr = SOSSData::callRest ($tenantId, $className, $wrapper, "PUT");
-        return json_decode($responseStr);
+        return self::getDataSource($tenantId)->Update($className, $saveObj, $tenantId);
     }
 
     public static function Delete ($className, $saveObj, $tenantId = null){
@@ -45,67 +54,21 @@ class SOSSData {
             $tenantId = DATASTORE_DOMAIN;
         
         
-        if(is_array($saveObj)){
-            $responceArray=array();
-            foreach($saveObj as $value){
-                $wrapper = new stdClass();
-                $wrapper->object = $value;
-                $responseStr = SOSSData::callRest ($tenantId, $className, $wrapper, "DELETE");
-                array_push($responceArray,json_decode($responseStr));
-            }
-            return $responceArray;
-        }else{
-            $wrapper = new stdClass();
-            $wrapper->object = $saveObj;
-            $responseStr = SOSSData::callRest ($tenantId, $className, $wrapper, "DELETE");
-            return json_decode($responseStr);
-            //return $saveObj;
-        }
+        return self::getDataSource($tenantId)->Delete($className, $saveObj, $tenantId);
     }
 
-    public static function Query($className, $query, $lastVersionId = null, $tenantId = null){
+    public static function Query($className, $query, $lastVersionId = null,$sorting="asc",$pageSize=20,$fromPage=0, $tenantId = null){
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
 
-        $className = isset($query) ?  "$className?query=$query" : $className;
-        $className = isset($query) ?  "$className&lastversionid=$lastVersionId" : "$className?lastversionid=$lastVersionId";
-        $responseStr = SOSSData::callRest ($tenantId, $className);;
-        return json_decode($responseStr);
+        return self::getDataSource($tenantId)->Query($className, $query, $lastVersionId,$sorting,$pageSize,$fromPage, $tenantId);
     }
 
-    public static function PostQuery($className, $query, $lastVersionId = null, $tenantId = null){
+    public static function Close( $tenantId = null){
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
 
-        $wrapper = new stdClass();
-        $wrapper->queryParams = $query;
-
-        $className = isset($lastVersionId ) ?  "$className?lastversionid=$lastVersionId" : $className;
-
-        $responseStr = SOSSData::callRest ($tenantId, $className, $wrapper, "POST");
-        return json_decode($responseStr);
-    }
-
-    private static function callRest($host, $className, $jsonObj = null, $method="GET", $headerArray=null){
-        $ch = curl_init();
-        $url = OS_URL . "/$className";
-        curl_setopt ($ch, CURLOPT_URL, $url);
-        if (!isset($headerArray))
-            $headerArray = array("Content-Type: application/json", "Host: $host");
-
-        curl_setopt ($ch, CURLOPT_HTTPHEADER, $headerArray);
-        
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-
-        if (isset($jsonObj)){
-            //curl_setopt ($ch, CURLOPT_POST, 1);
-            curl_setopt ($ch, CURLOPT_POSTFIELDS, json_encode($jsonObj));
-        }
-
-        curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-        $response  = curl_exec($ch);
-        curl_close($ch);
-        return $response;
+        return self::getDataSource($tenantId)->Close($tenantId);
     }
 
 }

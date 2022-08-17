@@ -3,7 +3,11 @@ require_once(dirname(__FILE__) . "/schema.php");
 class mysqlConnector{
     private $con=null;
 
-    private function Open($db=null){
+    public function Close(){
+        mysqli_close($this->con);
+    }
+
+    public function Open($db=null){
         if(!defined("DB_CONFIG_FILE")){
             throw new Exception("No database Configuration.");
         }
@@ -32,7 +36,8 @@ class mysqlConnector{
 
     private function ConOK(){
         if($this->con==null){
-            $this->Open();
+            //$this->Open();
+            throw new Exception("connection is not Open");
         }
         if ($this->con->connect_error) {
             throw new Exception($this->con->connect_error);
@@ -83,8 +88,8 @@ class mysqlConnector{
                 }
                 return $this->result(true,$data);
             }else{
-                
-                throw new Exception($this->con->error); 
+                return $this->result(false,null,$this->con->error);
+                //throw new Exception($this->con->error); 
                 
             }
 
@@ -145,7 +150,7 @@ class mysqlConnector{
                 if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
                     $this->createTable($namespace);
                 }else{
-                    throw new Exception($this->con->error); 
+                    return $this->result(false,null,$this->con->error);
                 }
             }
         }

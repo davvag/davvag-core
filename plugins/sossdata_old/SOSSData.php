@@ -4,8 +4,6 @@
 
 class SOSSData {
 
-    
-
     public static function ExecuteRaw ($className, $saveObj, $lastVersionId = null, $tenantId = null){
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
