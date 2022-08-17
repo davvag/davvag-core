@@ -67,4 +67,13 @@
     define ("PLUGIN_PATH", dirname(__FILE__) ."/plugins");
     define ("PLUGIN_PATH_LOCAL", TENANT_RESOURCE_LOCATION . "/plugins");
     define ("SCHEMA_PATH", TENANT_RESOURCE_LOCATION . "/schemas");
+    if(isset($configData->DAVVAG_StartUp)){
+        foreach($configData->DAVVAG_StartUp->plugins as $value){
+            if($value->type=="core"){
+                require_once(PLUGIN_PATH."/".$value->name."/".$value->file);
+            }else{
+                require_once(PLUGIN_PATH_LOCAL."/".$value->name."/".$value->file);
+            }
+        }
+    }
 ?>

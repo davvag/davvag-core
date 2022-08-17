@@ -3,7 +3,8 @@
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
     require_once (dirname(__FILE__) . "/configloader.php");
-    require_once (dirname(__FILE__) . "/plugins/sossdata_v1/SOSSData.php");
+
+    Auth::Login("abc","acc");
     //$mysql=new mysqlConnector();
     $ledgertran =new StdClass();
     $ledgertran->name="Lasitha";
