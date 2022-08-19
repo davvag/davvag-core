@@ -69,10 +69,18 @@
     define ("SCHEMA_PATH", TENANT_RESOURCE_LOCATION . "/schemas");
     if(isset($configData->DAVVAG_StartUp)){
         foreach($configData->DAVVAG_StartUp->plugins as $value){
-            if($value->type=="core"){
-                require_once(PLUGIN_PATH."/".$value->name."/".$value->file);
+            if($value->plugin_location=="global"){
+                if(file_exists(PLUGIN_PATH . $value->location)){
+                    require_once(PLUGIN_PATH."/". $value->location);
+                }else{
+                    echo "Error Loading Global Plugin ".PLUGIN_PATH . $value->location;
+                }
             }else{
-                require_once(PLUGIN_PATH_LOCAL."/".$value->name."/".$value->file);
+                if(file_exists(PLUGIN_PATH_LOCAL . $value->location)){
+                    require_once(PLUGIN_PATH_LOCAL."/". $value->location);
+                }else{
+                    echo "Error Loading Global Plugin ".PLUGIN_PATH . $value->location;
+                }
             }
         }
     }
