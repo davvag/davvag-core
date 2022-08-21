@@ -7,5 +7,10 @@
     },
     "alias":{
         "localhost":["127.0.0.1"]
+    },"DAVVAG_StartUp":{
+        "plugins":[
+            {"name":"sossdata","plugin_location":"global","file":"SOSSData.php","location":"/sossdata/SOSSData.php"},
+            {"name":"auth","plugin_location":"global","file":"auth.php","location":"/auth/auth.php"}
+        ]
     }
 }

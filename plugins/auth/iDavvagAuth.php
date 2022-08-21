@@ -4,6 +4,7 @@ interface iDavvagAuth {
     public function SocialLogin ($app, $code,$create);
     public function GetResetToken ($email);
     public function SaveUser ($user);
+    public function NewDomain ($data);
     public function Join ($domain,$userid,$usergroup);
     public function ResetPassword ($email, $token, $newPassword);
     public function ChangePassword ($oldpassword, $newPassword);

@@ -21,19 +21,20 @@
         header("Location: $protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]pages/install");
         exit();
     }
-
+    $GLOBALS["ENGINE_CONFIG"] = $configData;
     //Domain Config loading
     define ("DOMAIN_CONFIG_FILE", $configFolder .'//davvag-core//'.$_SERVER["HTTP_HOST"]."//config.json");
     if (file_exists(DOMAIN_CONFIG_FILE)){
-        $configData = json_decode(file_get_contents(DOMAIN_CONFIG_FILE));
-        if (isset($configData)){
-            if (isset($configData->variables)){
-                foreach ($configData->variables as $key => $value){
+        $configData2 = json_decode(file_get_contents(DOMAIN_CONFIG_FILE));
+        if (isset($configData2)){
+            if (isset($configData2->variables)){
+                foreach ($configData2->variables as $key => $value){
                     if(!defined($key))
                         define($key,$value);
                 }
             }
         }
+        $GLOBALS["ENGINE_CONFIG_LOCAL"] = $configData2;
     }else{
         //define ("LOCAL_DEV_HOST", "default");
         //exit;
@@ -43,7 +44,7 @@
     if (!isset($configData))
         $configData = new stdClass();
     
-    $GLOBALS["ENGINE_CONFIG"] = $configData;
+    
     //$GLOBALS["DBConfig"]=
 
     

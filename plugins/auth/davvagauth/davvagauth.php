@@ -17,6 +17,11 @@
             return AuthSvr::GetResetToken($email);
         }
 
+        public function NewDomain($data)
+        {
+            return AuthSvr::NewDomain($data);
+        }
+
         public function SaveUser ($user){
             return AuthSvr::SaveUser($user);
         }

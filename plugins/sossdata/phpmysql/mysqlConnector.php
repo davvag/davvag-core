@@ -149,6 +149,7 @@ class mysqlConnector{
             }else{
                 if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
                     $this->createTable($namespace);
+                    return $this->Query($namespace,$param,$lastID,$sorting,$pageSize,$fromPage);
                 }else{
                     return $this->result(false,null,$this->con->error);
                 }
@@ -341,7 +342,15 @@ class mysqlConnector{
         $systemFields=Schema::GetSystemColums();
         foreach ($systemFields as $key => $value) {
             # code...
-            array_push($tableSchema->fields,$value);
+            $can=true;
+            foreach ($tableSchema->fields as $key => $vt) {
+                if($vt->fieldName==$value->fieldName){
+                    $can=false;
+                }
+                # code...
+            }
+            if($can)
+                array_push($tableSchema->fields,$value);
         }
         
         $update=false;
