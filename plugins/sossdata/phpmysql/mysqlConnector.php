@@ -169,6 +169,7 @@ class mysqlConnector{
                 } else {
                     if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
                         $this->createTable($namespace);
+                        return $this->Insert($namespace,$data);
                     }else{
                         throw new Exception($this->con->error); 
                     }
@@ -197,6 +198,7 @@ class mysqlConnector{
 
                     if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
                         $this->createTable($namespace);
+                        return $this->Update($namespace,$data);
                     }else{
                         throw new Exception($this->con->error); 
                     }                    //echo "Error: " . $sql . "<br>" . $this->con->error;
@@ -221,6 +223,7 @@ class mysqlConnector{
                 } else {
                     if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
                         $this->createTable($namespace);
+                        return $this->Delete($namespace,$data);
                     }else{
                        throw new Exception($this->con->error); 
                     }

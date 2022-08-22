@@ -1,11 +1,70 @@
 <?php
 class phpauth implements iDavvagAuth{
-    public function Login ($username, $password){throw new Exception("Not Implemented");}
+    public function Login ($username, $password){
+        $result=SOSSData::Query("users","email:".$username,null,"asc",20,0,AUTH_DOMAIN);
+        $user=null;
+        if(count($result->result)!=0){
+            $user=$result->result[0];
+        }else{
+
+            $result=SOSSData::Query("users","username:".$username,null,"asc",20,0,AUTH_DOMAIN);
+            if(count($result->result)!=0)
+                $user=$result->result[0];
+        }
+        if(!empty($user)){
+            if($user->password==md5($password)){
+                $NotiData=new stdClass();
+                $NotiData->domain=AUTH_DOMAIN;
+                $NotiData->reqdomain=$_SERVER["HTTP_HOST"];
+                $NotiData->ip=$_SERVER['REMOTE_ADDR'];
+                $NotiData->remoteuser=empty($_SERVER['REMOTE_USER'])?"-":$_SERVER['REMOTE_USER'];
+                $NotiData->remotehost=empty($_SERVER['REMOTE_HOST'])?"-":$_SERVER['REMOTE_HOST'];
+                $NotiData->authMode="Davvag Authendication.";
+                Notify::sendEmailMessage($user->name,$user->emial,"auth-login",$NotiData);
+                return $this->createSession($user,$NotiData);
+            }else{
+                return $this->error("email or password Incorrect.");
+            }
+        }else{
+            return $this->error("email or password Incorrect.");
+        }
+
+    }
+
+    private function createSession($user,$ndata){
+        $session =new stdClass();
+        $session->userid=$user->userid;
+        $session->email=$user->email;
+        $session->token=$this->GetNewSessionID();
+        $session->clientIP=$ndata->ip;
+        $session->jwt="";
+        $session->sysgroup=$this->GetUserGroup($session->userid,$ndata->domain);
+        $session->otherdata=$ndata;
+        $r=SOSSData::Insert("sessions",$session,AUTH_DOMAIN);
+        if($r->success){
+            return $session;
+        }else{
+            return null;
+        }
+
+
+    }
+
+    private function GetUserGroup($userid,$domain)
+    {
+        $key=md5($domain."-".$userid);
+        $result=SOSSData::Query("domain_permision","keyid:".$key,null,"asc",20,0,AUTH_DOMAIN);
+        if(count($result->result)>0){
+            return $result->result[0]->groupid;
+        }else{
+            return "Not Autherized";
+        }
+    }
     public function SocialLogin ($app, $code,$create){throw new Exception("Not Implemented");}
     public function GetResetToken ($email){throw new Exception("Not Implemented");}
     public function SaveUser ($user){
         
-        $result=SOSSData::Query("users","email:".$user->email);
+        $result=SOSSData::Query("users","email:".$user->email,null,"asc",20,0,AUTH_DOMAIN);
         if(count($result->result)!=0){
             return $this->error("Already registered");
             //throw new Exception("Already registered");
@@ -13,7 +72,7 @@ class phpauth implements iDavvagAuth{
             $original=$user->password;
             $user->password=md5($user->password);
             $user->userid=$this->GetNewUserID();
-            SOSSData::Insert("users",$user);
+            SOSSData::Insert("users",$user,AUTH_DOMAIN);
             $this->Join(AUTH_DOMAIN, $user->userid,"web_user");
             $NotiData=new stdClass();
             $NotiData->domain=AUTH_DOMAIN;
@@ -32,12 +91,12 @@ class phpauth implements iDavvagAuth{
         if(empty($data->otherdata->usersname) || empty($data->otherdata->password)){
             throw new Exception("Registration Invalied");
         }else{
-            $result=SOSSData::Query("domains","domain:".$data->domain);
+            $result=SOSSData::Query("domains","domain:".$data->domain,null,"asc",20,0,AUTH_DOMAIN);
             if(count($result->result)!=0){
                 return $this->error("Already registered");
                 //throw new Exception("Already registered");
             }else{
-                $result=SOSSData::Query("users","email:".$data->email);
+                $result=SOSSData::Query("users","email:".$data->email,null,"asc",20,0,AUTH_DOMAIN);
                 $user=new stdClass();
                 if(count($result->result)!=0)
                 {
@@ -55,7 +114,7 @@ class phpauth implements iDavvagAuth{
                 $this->Join($data->domain,$user->userid,"sysadmin");
                 unset($data->otherdata->usersname);
                 unset($data->otherdata->password);
-                $result=SOSSData::Insert("domains",$data);
+                $result=SOSSData::Insert("domains",$data,AUTH_DOMAIN);
                 if($result->success){
                     return $data;
                 }else{
@@ -74,12 +133,12 @@ class phpauth implements iDavvagAuth{
         $prm->groupid=$usergroup;
         $prm->keyid=$key;
         
-        $result=SOSSData::Query("domain_permision","keyid:".$key);
+        $result=SOSSData::Query("domain_permision","keyid:".$key,null,"asc",20,0,AUTH_DOMAIN);
         if(count($result->result)!=0)
         {   
-            SOSSData::Update("domain_permision",$prm);
+            SOSSData::Update("domain_permision",$prm,AUTH_DOMAIN);
         }else{
-            SOSSData::Insert("domain_permision",$prm);
+            SOSSData::Insert("domain_permision",$prm,AUTH_DOMAIN);
         }
         return $prm;
     }
@@ -92,7 +151,7 @@ class phpauth implements iDavvagAuth{
     public function GetAccess ($groupid,$app,$type=null,$code=null,$ops=null){throw new Exception("Not Implemented");}
     public function SetAccess ($uapp){throw new Exception("Not Implemented");}
     public function GetDomainAttributes (){
-        $data=SOSSData::Query("domains","domain:".AUTH_DOMAIN);
+        $data=SOSSData::Query("domains","domain:".AUTH_DOMAIN,null,"asc",20,0,AUTH_DOMAIN);
         if($data->success){
             if(count($data->result)!=0){
                 return $data->result[0];
@@ -111,7 +170,7 @@ class phpauth implements iDavvagAuth{
     public function AutendicateDomain($tname,$securityToken,$appname,$operation){throw new Exception("Not Implemented");}
     private function GetNewUserID(){
         $userid=uniqid();
-        $rs=SOSSData::Query("users","userid:".$userid);
+        $rs=SOSSData::Query("users","userid:".$userid,null,"asc",20,0,AUTH_DOMAIN);
         if(count($rs->result)!=0){
             return $this->GetNewUserID();
         }else{
@@ -120,15 +179,18 @@ class phpauth implements iDavvagAuth{
 
     }
 
+    private function GetNewSessionID(){
+        $userid=uniqid();
+        $rs=SOSSData::Query("sessions","token:".$userid,null,"asc",20,0,AUTH_DOMAIN);
+        if(count($rs->result)!=0){
+            return $this->GetNewSessionID();
+        }else{
+            return $userid;
+        }
+
+    }
+
     private function error($message){
-       /* {
-            "timestamp": 1660883255746,
-            "status": 400,
-            "error": "Bad Request",
-            "exception": "com.sossgrid.exceptions.ServiceException",
-            "message": "com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException cannot be cast to com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException",
-            "path": "/login/sss/sss/sss"
-            }*/
         $errorObject=new stdClass();
         $errorObject->timestamp=time();
         $errorObject->status=400;
