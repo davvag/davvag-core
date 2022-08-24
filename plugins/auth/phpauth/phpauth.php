@@ -39,6 +39,7 @@ class phpauth implements iDavvagAuth{
         $session->clientIP=$ndata->ip;
         $session->jwt="";
         $session->sysgroup=$this->GetUserGroup($session->userid,$ndata->domain);
+        $session->group=$session->sysgroup;
         $session->otherdata=$ndata;
         $r=SOSSData::Insert("sessions",$session,AUTH_DOMAIN);
         if($r->success){
@@ -144,11 +145,65 @@ class phpauth implements iDavvagAuth{
     }
     public function ResetPassword ($email, $token, $newPassword){throw new Exception("Not Implemented");}
     public function ChangePassword ($oldpassword, $newPassword){throw new Exception("Not Implemented");}
-    public function GetSession ($token){throw new Exception("Not Implemented");}
+    public function GetSession ($token){
+        $result=SOSSData::Query("sessions","token:".$token,null,"asc",20,0,AUTH_DOMAIN);
+        if(count($result->result)>0)
+        {
+            $session =$result->result[0];
+            $session->group=$session->sysgroup;
+            return $session;
+        }else{
+            return $this->error("Error Session Not ");
+        }
+    }
     public function GetLogout ($token){throw new Exception("Not Implemented");}
     public function GetUserGroups (){throw new Exception("Not Implemented");}
     public function NewUserGroup ($groupid){throw new Exception("Not Implemented");}
-    public function GetAccess ($groupid,$app,$type=null,$code=null,$ops=null){throw new Exception("Not Implemented");}
+    public function GetAccess ($groupid,$app,$type=null,$code=null,$ops=null){
+        if($ops===""){
+            $ops="null";
+        }
+        if(isset($type) && isset($code) && isset($ops)){
+            if($groupid=="sysadmin"){
+                $application=new stdClass();
+                $application->keyid =md5($groupid."-".AUTH_DOMAIN."-".$app."-"."-".$type."-".$code."-".$ops);
+                $application->groupid=$groupid;
+                $application->domain=AUTH_DOMAIN;
+                $application->appCode=$app;
+                $application->type=$type;
+                $application->code =$code;
+                $application->operation=$ops;
+                return $application;
+            }else{
+                $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid.",appCode:".$app.",type:".$type.",code:".$code.",operation:".$ops,null,"asc",20,0,AUTH_DOMAIN);
+                if(count($data->result)>0){
+                    return $data->result[0];
+                }else{
+                    return $this->error("Not Permitted");
+                }
+            }
+        }   
+        else{
+            if($groupid=="sysadmin"){
+                $applist=array();
+                $application=new stdClass();
+                $application->keyid =md5($groupid."-".AUTH_DOMAIN."-".$app.$type.$code.$ops);
+                $application->groupid=$groupid;
+                $application->domain=AUTH_DOMAIN;
+                $application->appCode=$app;
+                $application->type="*";
+                $application->code ="*";
+                $application->operation="*";
+                array_push($applist,$application);
+                return $applist;
+            }else{
+                $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN,null,"asc",1000,0,AUTH_DOMAIN);
+                return $data->result;
+            }
+
+        }
+        //throw new Exception("Not Implemented");
+    }
     public function SetAccess ($uapp){throw new Exception("Not Implemented");}
     public function GetDomainAttributes (){
         $data=SOSSData::Query("domains","domain:".AUTH_DOMAIN,null,"asc",20,0,AUTH_DOMAIN);

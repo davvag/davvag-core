@@ -89,53 +89,55 @@ class CarbiteTransform {
         else $pa = $p;
 
         self::$mappings["$m:$pa"] = $mObj;
-
-        Carbite::HANDLE ($m, $p, function($req,$res){
-            $allParams = array();
-            $tmpParams = $req->Params();
         
-            foreach ($_GET as $key => $value)
-            if (!isset($tmpParams->$key)) 
-                $tmpParams->$key = $value;
-                
-            foreach ($tmpParams as $key => $value)
-                $allParams["@$key"] = $value;
-
-            $mObj = self::$mappings["$req->method:$req->template"];
+            Carbite::HANDLE ($m, $p, function($req,$res){
+                $allParams = array();
+                $tmpParams = $req->Params();
             
-            $mObj->rp = strtr($mObj->rp,$allParams);
-            
-            $rawBody = self::getPostBody();
-            if (isset($mObj->rb)) {
+                foreach ($_GET as $key => $value)
+                if (!isset($tmpParams->$key)) 
+                    $tmpParams->$key = $value;
+                    
+                foreach ($tmpParams as $key => $value)
+                    $allParams["@$key"] = $value;
+    
+                $mObj = self::$mappings["$req->method:$req->template"];
                 
-                if (is_object($mObj->rb))
-                    $mObj->rb = $mObj->rb->getBody($rawBody);
-
-                $mObj->rb = strtr($mObj->rb,$allParams);
-            }
-
-            if (isset($rawBody) && !isset($mObj->rb))
-                $mObj->rb = $rawBody;
-
-
-            $tmpHeaders = array();
-            if (isset($mObj->rh))
-            foreach ($mObj->rh as $key => $value){
-                if (is_int($key)){
-                    array_push($tmpHeaders,$value);
-                }else {
-                    if (isset($allParams[$value]))
-                        array_push($tmpHeaders, "$key: ". $allParams[$value]);
-                    else
-                        array_push($tmpHeaders,"$key: ". $value);
+                $mObj->rp = strtr($mObj->rp,$allParams);
+                
+                $rawBody = self::getPostBody();
+                if (isset($mObj->rb)) {
+                    
+                    if (is_object($mObj->rb))
+                        $mObj->rb = $mObj->rb->getBody($rawBody);
+    
+                    $mObj->rb = strtr($mObj->rb,$allParams);
                 }
-            }
-            $mObj->rh = $tmpHeaders;
-            
-            $res->SetJSON(self::sendRequest($mObj));
-        }, $filter);
-
-    }
+    
+                if (isset($rawBody) && !isset($mObj->rb))
+                    $mObj->rb = $rawBody;
+    
+    
+                $tmpHeaders = array();
+                if (isset($mObj->rh))
+                foreach ($mObj->rh as $key => $value){
+                    if (is_int($key)){
+                        array_push($tmpHeaders,$value);
+                    }else {
+                        if (isset($allParams[$value]))
+                            array_push($tmpHeaders, "$key: ". $allParams[$value]);
+                        else
+                            array_push($tmpHeaders,"$key: ". $value);
+                    }
+                }
+                $mObj->rh = $tmpHeaders;
+                
+                $res->SetJSON(self::sendRequest($mObj));
+            }, $filter);
+    
+        }
+        
+    
 
 }
 

@@ -80,21 +80,69 @@
                         Carbite::SetAttribute("no404",true);
                         
                         foreach ($descObj->transformers as $tk => $ts) {
-                            CarbiteTransform::RESTROUTE($ts->method,$ts->route, 
-                            $ts->destMethod, 
-                            $ts->destUrl,
-                            (isset($ts->bodyTemplate) ? new PostBodyTemplate($ts->bodyTemplate): null), 
-                            (isset($ts->destHeaders) ? $ts->destHeaders :null),
-                            null);
+                            
+                            if($ts->destUrl=="SOSSData"){
+                                $r=explode("/@",$ts->route);
+                                $route=count($r)>0?$r[0]:$req->Params()->route;
+                                if(substr($req->Params()->route,0,strlen($route))==substr($ts->route,0,strlen($route))){
+                                    $rawInput = fopen('php://input', 'r');
+                                    $tempStream = fopen('php://temp', 'r+');
+                                    stream_copy_to_stream($rawInput, $tempStream);
+                                    rewind($tempStream);
+                                    $data= json_decode(stream_get_contents($tempStream));
+                                    switch($ts->destMethod){
+                                        case "insert":
+                                            $outObj=SOSSData::Insert($ts->namespace,$data);
+                                            break;
+                                        case "delete":
+                                            $outObj =SOSSData::Delete($ts->namespace,$data);
+                                            break;
+                                        case "update":
+                                            $outObj =SOSSData::Update($ts->namespace,$data);
+                                            break;
+                                        case "query":
+                                            $query=isset($_GET["query"])?$_GET["query"]:"";
+                                            $lastId=isset($_GET["lastID"])?$_GET["lastID"]:null;
+                                            $sorting=isset($_GET["sorting"])?$_GET["sorting"]:"asc";
+                                            $pagesize=isset($_GET["pageSize"])?$_GET["pageSize"]:20;
+                                            $frompage=isset($_GET["fromPage"])?$_GET["fromPage"]:0;
+                                            //$lastId=isset($_GET["lastID"])?$_GET["lastID"]:null;
+                                            if(count($r)>1){
+                                                $query=$ts->query;
+                                                $rsr=explode("/",substr($req->Params()->route,strlen($route),strlen($req->Params()->route)-strlen($route)));
+                                                for ($i=1; $i <count($r) ; $i++) { 
+                                                    # code...
+                                                    $query=str_replace("@".$r[$i],$rsr[$i],$query);
+                                                    
+                                                }
+                                                //$query=rtrim($query,",");
+                                            }
+                                            $outObj =SOSSData::Query($ts->namespace,$query,$lastId,$sorting,$pagesize,$frompage);
+                                            break;
+                                    }
+                                }
+
+                            }else{
+                                CarbiteTransform::RESTROUTE($ts->method,$ts->route, 
+                                $ts->destMethod, 
+                                $ts->destUrl,
+                                (isset($ts->bodyTemplate) ? new PostBodyTemplate($ts->bodyTemplate): null), 
+                                (isset($ts->destHeaders) ? $ts->destHeaders :null),
+                                null);
+                                $resObj = Carbite::Start();
+                            }
+                            
                         }
 
-                        $resObj = Carbite::Start();
+                        if (isset($outObj)){
+                            writeResponse($res, $outObj->success, $outObj->result);
+                            return;
+                        }
 
                         if (!isset($resObj))
                             $outObj == Resources::$COMPONENT_TRANSFORMER_UNKNOWN;
-
-                    } else
-                        $outObj = Resources::$COMPONENT_TRANSFORMER_NOT_FOUND;
+                        } else
+                            $outObj = Resources::$COMPONENT_TRANSFORMER_NOT_FOUND;
                     
                     if (isset($outObj))
                         writeResponse($res, $success, $outObj);

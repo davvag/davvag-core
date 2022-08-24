@@ -256,14 +256,14 @@ class mysqlConnector{
         foreach($tableSchema->fields as $value){
             if(!empty($value->annotations->isPrimary)){
                 if($value->annotations->isPrimary){
-                    $sqlend.=$value->fieldName."=".$this->getValue($value,$data->{$value->fieldName})." and ";
+                    $sqlend.="`".$value->fieldName."`=".$this->getValue($value,$data->{$value->fieldName})." and ";
                     $primary=true;
                 }
             }
             if(!$primary){
                 if(isset($data->{$value->fieldName})){
                     //$sqlStart.=$value->fieldName."=".$this->getValue($value,$data->{$value->fieldName});
-                    $sqlend.=$value->fieldName."=".$this->getValue($value,$data->{$value->fieldName})." and ";
+                    $sqlend.="`".$value->fieldName."`=".$this->getValue($value,$data->{$value->fieldName})." and ";
                 }
             }
             
@@ -294,11 +294,11 @@ class mysqlConnector{
         foreach($tableSchema->fields as $value){
             if(!empty($value->annotations->isPrimary)){
                 if($value->annotations->isPrimary){
-                    $sqlend.=$value->fieldName."=".$this->getValue($value,$data->{$value->fieldName})." and ";
+                    $sqlend.="`".$value->fieldName."`=".$this->getValue($value,$data->{$value->fieldName})." and ";
                 }
             }
             if(isset($data->{$value->fieldName})){
-                $sqlStart.=$value->fieldName."=".$this->getValue($value,$data->{$value->fieldName}).",";
+                $sqlStart.="`".$value->fieldName."`"."=".$this->getValue($value,$data->{$value->fieldName}).",";
                 //$sqlend.=$this->getValue($value,$data->{$value->fieldName}).",";
             }
             
@@ -329,7 +329,7 @@ class mysqlConnector{
         $sqlend=" values(";
         foreach($tableSchema->fields as $value){
             if(isset($data->{$value->fieldName})){
-                $sqlStart.=$value->fieldName.",";
+                $sqlStart.="`".$value->fieldName."`,";
                 $sqlend.=$this->getValue($value,$data->{$value->fieldName}).",";
             }
         }
@@ -378,7 +378,7 @@ class mysqlConnector{
                         
                     }
                     if(!$has){
-                        $sql.= "ADD ".$value->fieldName. " ". $this->convertSQLtype($value->dataType,(!empty($value->annotations->maxLen)?$value->annotations->maxLen:0),
+                        $sql.= "ADD `".$value->fieldName. "` ". $this->convertSQLtype($value->dataType,(!empty($value->annotations->maxLen)?$value->annotations->maxLen:0),
                             (!empty($value->annotations->isPrimary)?false:true),
                             (!empty($value->annotations->autoIncrement)?$value->annotations->autoIncrement:false),
                             (!empty($value->annotations->decimalPoints)?$value->annotations->decimalPoints:"10,2"),
@@ -386,7 +386,7 @@ class mysqlConnector{
                             $sql.=",\n";
                     }
                     if($alter){
-                        $sql.= "Alter ".$value->fieldName. " ". $this->convertSQLtype($value->dataType,(!empty($value->annotations->maxLen)?$value->annotations->maxLen:0),
+                        $sql.= "Alter `".$value->fieldName. "` ". $this->convertSQLtype($value->dataType,(!empty($value->annotations->maxLen)?$value->annotations->maxLen:0),
                             (!empty($value->annotations->isPrimary)?false:true),
                             (!empty($value->annotations->autoIncrement)?$value->annotations->autoIncrement:false),
                             (!empty($value->annotations->decimalPoints)?$value->annotations->decimalPoints:"10,2"),
@@ -399,23 +399,23 @@ class mysqlConnector{
                 
                 if($sql!=""){
                     $sql=rtrim($sql,",\n");
-                    $sql="Alter Table ".$namespace. " ".$sql.";";
+                    $sql="Alter Table `".$namespace. "` ".$sql.";";
                 }
                 
             }
         }
         else{
-            $sql ="Create Table ".$namespace."(";
+            $sql ="Create Table `".$namespace."`(";
             $primary=" PRIMARY KEY(";
             foreach($tableSchema->fields as $value){
-                $sql.= $value->fieldName. " ". $this->convertSQLtype($value->dataType,(!empty($value->annotations->maxLen)?$value->annotations->maxLen:0),
+                $sql.= "`".$value->fieldName. "` ". $this->convertSQLtype($value->dataType,(!empty($value->annotations->maxLen)?$value->annotations->maxLen:0),
                 (!empty($value->annotations->isPrimary)?false:true),
                 (!empty($value->annotations->autoIncrement)?$value->annotations->autoIncrement:false),
                 (!empty($value->annotations->decimalPoints)?$value->annotations->decimalPoints:"10,2"),
                 (!empty($value->annotations->encoding)?$value->annotations->encoding:false)).",";
                 if(empty($value->annotations->isPrimary)==false){
                     if($value->annotations->isPrimary){
-                        $primary.=$value->fieldName.",";
+                        $primary.="`".$value->fieldName."`,";
                     }
                 }
             }

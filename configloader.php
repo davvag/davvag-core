@@ -46,7 +46,11 @@
     
     
     //$GLOBALS["DBConfig"]=
-
+    if($GLOBALS["ENGINE_CONFIG"]->DEBUG===true){
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+    }
     
     if (defined("LOCAL_DEV_HOST")){
         define ("HOST_NAME", LOCAL_DEV_HOST);
