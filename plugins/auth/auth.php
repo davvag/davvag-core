@@ -122,7 +122,14 @@ class Auth {
     }
 
     public static function GetDomainAttributes (){
-        return self::getAuthSvr()->GetDomainAttributes();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if(empty($_SESSION["DomainAttributes"])){
+            $_SESSION["DomainAttributes"]=self::getAuthSvr()->GetDomainAttributes();
+            
+        }
+        return $_SESSION["DomainAttributes"];
     }
 
 

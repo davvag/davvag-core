@@ -20,7 +20,7 @@ class phpauth implements iDavvagAuth{
                 $NotiData->remoteuser=empty($_SERVER['REMOTE_USER'])?"-":$_SERVER['REMOTE_USER'];
                 $NotiData->remotehost=empty($_SERVER['REMOTE_HOST'])?"-":$_SERVER['REMOTE_HOST'];
                 $NotiData->authMode="Davvag Authendication.";
-                Notify::sendEmailMessage($user->name,$user->emial,"auth-login",$NotiData);
+                Notify::sendEmailMessage($user->name,$user->email,"auth-login",$NotiData);
                 return $this->createSession($user,$NotiData);
             }else{
                 return $this->error("email or password Incorrect.");
@@ -74,7 +74,7 @@ class phpauth implements iDavvagAuth{
             $NotiData->remotehost=empty($_SERVER['REMOTE_HOST'])?"-":$_SERVER['REMOTE_HOST'];
             $NotiData->authMode="Reset Token.";
             $NotiData->resetcode=$this->getResetCode($email);
-            Notify::sendEmailMessage($user->name,$user->emial,"auth-passwordresetcode",$NotiData);
+            Notify::sendEmailMessage($user->name,$user->email,"auth-passwordresetcode",$NotiData);
         }else{
             $this->error("User Not Found.");
         }
@@ -112,7 +112,7 @@ class phpauth implements iDavvagAuth{
             $NotiData->remoteuser=$_SERVER['REMOTE_USER'];
             $NotiData->remotehost=$_SERVER['REMOTE_HOST'];
             $NotiData->password=$original;
-            Notify::sendEmailMessage($user->name,$user->emial,"auth-registeruser",$NotiData);
+            Notify::sendEmailMessage($user->name,$user->email,"auth-registeruser",$NotiData);
 
         }
     
@@ -191,7 +191,7 @@ class phpauth implements iDavvagAuth{
                     $NotiData->remoteuser=$_SERVER['REMOTE_USER'];
                     $NotiData->remotehost=$_SERVER['REMOTE_HOST'];
                     $NotiData->password=$newPassword;
-                    Notify::sendEmailMessage($user->name,$user->emial,"auth-passwordchanged-reset",$NotiData);
+                    Notify::sendEmailMessage($user->name,$user->email,"auth-passwordchanged-reset",$NotiData);
                     $message->success=true;
                     $message->message="Password successfully resetted";
                 }else{
@@ -222,7 +222,7 @@ class phpauth implements iDavvagAuth{
                         $NotiData->remoteuser=$_SERVER['REMOTE_USER'];
                         $NotiData->remotehost=$_SERVER['REMOTE_HOST'];
                         $NotiData->password=$newPassword;
-                        Notify::sendEmailMessage($user->name,$user->emial,"auth-passwordchanged",$NotiData);
+                        Notify::sendEmailMessage($user->name,$user->email,"auth-passwordchanged",$NotiData);
                         $message->success=true;
                         $message->message="Password Changed";
                     }else{
