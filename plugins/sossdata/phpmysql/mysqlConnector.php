@@ -134,7 +134,7 @@ class mysqlConnector{
                     $item =new stdClass();
                     foreach ($tableSchema->fields as $key => $value) {
                         # code...
-                        $item->{$value->fieldName}=$row[$value->fieldName];
+                        $item->{$value->fieldName}=$this->getValueToObject($value,$row[$value->fieldName]);
                         
 
                     }
@@ -159,22 +159,37 @@ class mysqlConnector{
 
     public function Insert($namespace,$data){
         if($this->ConOK()){
+            
             try {
                 $tableSchema=Schema::Get($namespace);
-                $sql= $this->generateInsertSQL($namespace,$tableSchema,$data);
-                if ($this->con->query($sql) === TRUE) {
+                $sqls= $this->generateInsertSQL($namespace,$tableSchema,$data);
+                $genis=array();
+                $success=true;
+                $errorMsg="";
+                foreach ($sqls as $key => $sql) {
+                    # code...
                     $result=new stdClass();
-                    $result->generatedId=mysqli_insert_id($this->con);
-                    return $this->result(true,$result);
-                } else {
-                    if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
-                        $this->createTable($namespace);
-                        return $this->Insert($namespace,$data);
-                    }else{
-                        throw new Exception($this->con->error); 
+                    if ($this->con->query($sql) === TRUE) {
+                        $result->success=true;
+                        $result->generatedId=mysqli_insert_id($this->con);
+                        array_push($genis,$result);
+                    } else {
+                        if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
+                            $this->createTable($namespace);
+                            return $this->Insert($namespace,$data);
+                        }else{
+                            $result->success=false;
+                            $result->success=$this->con->error;
+                            $success=false;
+                            $errorMsg=$this->con->error;
+                            array_push($genis,$result);
+                            //throw new Exception($this->con->error); 
+                        }
+                        //echo "Error: " . $sql . "<br>" . $this->con->error;
                     }
-                    //echo "Error: " . $sql . "<br>" . $this->con->error;
                 }
+                return $this->result($success,count($genis)==1?$genis[0]:$genis,$errorMsg);
+               
             } catch (Exception $e) {
                 return $this->result(false,null,$e->getMessage());
             }
@@ -187,22 +202,31 @@ class mysqlConnector{
         if($this->ConOK()){
             try {
                 $tableSchema=Schema::Get($namespace);
-                $sql= $this->generateUpdateSQL($namespace,$tableSchema,$data);
-                if ($this->con->query($sql) === TRUE) {
-                    //if($this->con-> affected_rows>0)
-                        return $this->result(true,$data);
-                    //else{
-                        //return $this->result(false,$data,"Not Updated");
-                    //}
-                } else {
+                $sqls= $this->generateUpdateSQL($namespace,$tableSchema,$data);
+                $results=array();
+                $success=true;
+                $errorMsg="";
+                foreach ($sqls as $key => $dout) {
+                    # code...
 
-                    if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
-                        $this->createTable($namespace);
-                        return $this->Update($namespace,$data);
-                    }else{
-                        throw new Exception($this->con->error); 
-                    }                    //echo "Error: " . $sql . "<br>" . $this->con->error;
+                    if ($this->con->query($dout->sql) === TRUE) {
+                        array_push($results,$dout->data);
+                    } else {
+    
+                        if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
+                            $this->createTable($namespace);
+                            return $this->Update($namespace,$data);
+                        }else{
+                            $dout->data->{"_ErrorMessage"}=$this->con->error;
+                            $success=false;
+                            $errorMsg=$this->con->error;
+                            array_push($results,$dout->data);
+                            
+                        }
+                    }
                 }
+                return $this->result($success,count($results)==1?$results[0]:$results,$errorMsg);
+                
             }catch(Exception $e){
                 return $this->result(false,null,$e->getMessage());
             }
@@ -213,22 +237,37 @@ class mysqlConnector{
         if($this->ConOK()){
             try {
                 $tableSchema=Schema::Get($namespace);
-                $sql= $this->generateDeleteSQL($namespace,$tableSchema,$data);
-                if ($this->con->query($sql) === TRUE) {
-                    if($this->con-> affected_rows>0)
-                        return $this->result(true,$data);
-                    else{
-                        return $this->result(false,$data,"Not Deleted");
+                $sqls= $this->generateDeleteSQL($namespace,$tableSchema,$data);
+                $results=array();
+                $success=true;
+                $errorMsg="";
+                foreach ($sqls as $key => $dout) {
+                    # code...
+                    if ($this->con->query($dout->sql) === TRUE) {
+                        if($this->con-> affected_rows>0)
+                            array_push($results,$dout->data);
+                            //return $this->result(true,$data);
+                        else{
+                            $success=false;
+                            $dout->data->{"_ErrorMessage"}="Not Deleted";
+                            $errorMsg="Not Deleted";
+                            array_push($results,$dout->data);
+                            //return $this->result(false,$data,"Not Deleted");
+                        }
+                    } else {
+                        if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
+                            $this->createTable($namespace);
+                            return $this->Delete($namespace,$data);
+                        }else{
+                            $success=false;
+                            $dout->data->{"_ErrorMessage"}=$this->con->error;
+                            $errorMsg=$this->con->error;
+                            array_push($results,$dout->data);
+                        }
+                        //echo "Error: " . $sql . "<br>" . $this->con->error;
                     }
-                } else {
-                    if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
-                        $this->createTable($namespace);
-                        return $this->Delete($namespace,$data);
-                    }else{
-                       throw new Exception($this->con->error); 
-                    }
-                    //echo "Error: " . $sql . "<br>" . $this->con->error;
                 }
+                return $this->result($success,count($results)==1?$results[0]:$results,$errorMsg);
             }catch(Exception $e){
                 return $this->result(false,null,$e->getMessage());
             }
@@ -236,14 +275,15 @@ class mysqlConnector{
     }
 
     private function generateDeleteSQL($namespace,$tableSchema,$data){
-        $sql="";
+        $sql=array();
         if(is_array($data)){
             foreach ($data as $key => $value) {
-                # code...
-                $sql.=$this->generateSingleDelete($namespace,$tableSchema,$value);
+                # cod(e...
+                $std=(object)$value;
+                array_push($sql,$this->generateSingleDelete($namespace,$tableSchema,$std));
             }
         }else{
-            $sql.=$this->generateSingleDelete($namespace,$tableSchema,$data);
+            array_push($sql,$this->generateSingleDelete($namespace,$tableSchema,$data));
         }
         return $sql;
 
@@ -271,18 +311,22 @@ class mysqlConnector{
         if(strlen($sqlend)<8){
             throw new Exception("Delete cannot be performed no values will delete the who dataset.");
         }
-        return rtrim($sqlStart,",").rtrim($sqlend,"and ").";\n";
+        $dout=new stdClass();
+        $dout->sql=rtrim($sqlStart,",").rtrim($sqlend,"and ").";\n";
+        $dout->data=$data;
+        return $dout;
     }
 
     private function generateUpdateSQL($namespace,$tableSchema,$data){
-        $sql="";
+        $sql=array();
         if(is_array($data)){
             foreach ($data as $key => $value) {
                 # code...
-                $sql.=$this->generateSingleUpdate($namespace,$tableSchema,$value);
+                $std=(object)$value;
+                array_push($sql,$this->generateSingleUpdate($namespace,$tableSchema,$std));
             }
         }else{
-            $sql.=$this->generateSingleUpdate($namespace,$tableSchema,$data);
+            array_push($sql,$this->generateSingleUpdate($namespace,$tableSchema,$data));
         }
         return $sql;
 
@@ -291,14 +335,15 @@ class mysqlConnector{
     private function generateSingleUpdate($namespace,$tableSchema,$data){
         $sqlStart="Update ".$namespace." SET ";
         $sqlend=" where ";
+        $dout=new stdClass();
         foreach($tableSchema->fields as $value){
             if(!empty($value->annotations->isPrimary)){
                 if($value->annotations->isPrimary){
-                    $sqlend.="`".$value->fieldName."`=".$this->getValue($value,$data->{$value->fieldName})." and ";
+                    $sqlend.="`".$value->fieldName."`=".$this->getValue($value,empty($data->{$value->fieldName})?null:$data->{$value->fieldName})." and ";
                 }
             }
             if(isset($data->{$value->fieldName})){
-                $sqlStart.="`".$value->fieldName."`"."=".$this->getValue($value,$data->{$value->fieldName}).",";
+                $sqlStart.="`".$value->fieldName."`"."=".$this->getValue($value,empty($data->{$value->fieldName})?null:$data->{$value->fieldName}).",";
                 //$sqlend.=$this->getValue($value,$data->{$value->fieldName}).",";
             }
             
@@ -308,18 +353,21 @@ class mysqlConnector{
             return null;
         }
         $sqlStart.="sysversionid=".date("YmdHis").",sysupdated=".time();
-        return rtrim($sqlStart,",").rtrim($sqlend,"and ").";\n";
+        $dout->sql=rtrim($sqlStart,",").rtrim($sqlend,"and ").";\n";
+        $dout->data=$data;
+        return $dout;
     }
 
     private function generateInsertSQL($namespace,$tableSchema,$data){
-        $sql="";
+        $sql=array();
         if(is_array($data)){
             foreach ($data as $key => $value) {
                 # code...
-                $sql.=$this->generateSingleInsert($namespace,$tableSchema,$value);
+                $std=(object)$value;
+                array_push($sql,$this->generateSingleInsert($namespace,$tableSchema,$std));
             }
         }else{
-            $sql.=$this->generateSingleInsert($namespace,$tableSchema,$data);
+            array_push($sql,$this->generateSingleInsert($namespace,$tableSchema,$data));
         }
         return $sql;
     }
@@ -501,6 +549,39 @@ class mysqlConnector{
         }
 		return $strValue;
 	}
+
+    private function getValueToObject($field,$value){
+        switch($field->dataType){
+            case "java.lang.String":
+                return $value;
+                break;
+            case "int":
+                return (int)$value;
+                break;
+            case "float":
+                return (float)$value;
+                break;
+            case "double":
+                return (float)$value;
+                break;
+            case "short":
+                return (int)$value;
+                break;
+            case "long":
+                return (int)$value;
+                break;
+                case "decimal":
+            case "java.util.Date":
+                return $value;
+                break;
+            case "object":
+                return json_decode($value);
+                break;
+            default:
+                return $value;
+              break;
+        }
+    }
 
     private function getValue($field,$value){
         switch($field->dataType){
