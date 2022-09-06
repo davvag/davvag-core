@@ -107,12 +107,13 @@ class phpauth implements iDavvagAuth{
             $this->Join(AUTH_DOMAIN, $user->userid,"web_user");
             $NotiData=new stdClass();
             $NotiData->domain=AUTH_DOMAIN;
-            $NotiData->reqdomain=$_SERVER["HTTP_HOST"];
-            $NotiData->ip=$_SERVER['REMOTE_ADDR'];
-            $NotiData->remoteuser=$_SERVER['REMOTE_USER'];
-            $NotiData->remotehost=$_SERVER['REMOTE_HOST'];
+            $NotiData->reqdomain=empty($_SERVER["HTTP_HOST"])?"":$_SERVER["HTTP_HOST"];
+            $NotiData->ip=empty($_SERVER["REMOTE_ADDR"])?"":$_SERVER['REMOTE_ADDR'];
+            $NotiData->remoteuser=empty($_SERVER["REMOTE_USER"])?"":$_SERVER['REMOTE_USER'];
+            $NotiData->remotehost=empty($_SERVER["REMOTE_HOST"])?"":$_SERVER['REMOTE_HOST'];
             $NotiData->password=$original;
             Notify::sendEmailMessage($user->name,$user->email,"auth-registeruser",$NotiData);
+            return $user;
 
         }
     
@@ -127,29 +128,43 @@ class phpauth implements iDavvagAuth{
                 return $this->error("Already registered");
                 //throw new Exception("Already registered");
             }else{
-                $result=SOSSData::Query("users","email:".$data->email,null,"asc",20,0,AUTH_DOMAIN);
-                $user=new stdClass();
-                if(count($result->result)!=0)
-                {
-                    $user=$result->result[0];
-                }else{
-                    $user->username=$data->otherdata->usersname;
-                    $user->password=$data->otherdata->password;
-                    $user->name=$data->userfullname;
-                    $user->email=$data->email;
-                    //$data->otherdata->userid=
-                    $userSave=$this->SaveUser($user);
-                }
-                $data->otherdata->userid=$user->userid;
-                $data->createdUser=$user->userid;
-                $this->Join($data->domain,$user->userid,"sysadmin");
-                unset($data->otherdata->usersname);
-                unset($data->otherdata->password);
-                $result=SOSSData::Insert("domains",$data,AUTH_DOMAIN);
+                $result = SOSSData::Insert ("profile", $data);
                 if($result->success){
-                    return $data;
-                }else{
-                    return $this->error($result->message);
+                    $data->otherdata->profileid=$result->result->generatedId;
+                    $data->id=$result->result->generatedId;
+                    $result=SOSSData::Query("users","email:".$data->email,null,"asc",20,0,AUTH_DOMAIN);
+                    $user=new stdClass();
+                    if(count($result->result)!=0)
+                    {
+                        $user=$result->result[0];
+                    }else{
+                        $user->username=$data->otherdata->usersname;
+                        $user->password=$data->otherdata->password;
+                        $user->name=$data->userfullname;
+                        $user->email=$data->email;
+                        //$data->otherdata->userid= 
+                        $user=$this->SaveUser($user);
+                    }
+                    $data->otherdata->userid=$user->userid;
+                    $data->createdUser=$user->userid;
+                    $this->Join($data->domain,$user->userid,"sysadmin");
+                    unset($data->otherdata->usersname);
+                    unset($data->otherdata->password);
+                    $result=SOSSData::Insert("domains",$data,AUTH_DOMAIN);
+                    if($result->success){
+                        $data->linkeduserid=$user->userid;
+                        $data->userid=$user->userid;
+                        //$data->id_number=$data->xxxxxxxnationalidcardnumber;
+                        $data->name=$data->userfullname;
+                        //$data->tid=$d->domain;
+                        $data->catorgory=empty($data->organization)?"User":"Company";
+                        $data->mainid=1;
+                        $data->mainprofileid=0;
+                        $result = SOSSData::Update ("profile", $data);
+                        return $data;
+                    }else{
+                        return $this->error($result->message);
+                    }
                 }
             }
             
@@ -300,14 +315,19 @@ class phpauth implements iDavvagAuth{
         $uapp=count($uapps)>0?(object)$uapps[0]:null;
         $groupid=isset($uapp)?$uapp->groupid:"";
         $saveObject=array();
-        $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid,null,"asc",20,0,AUTH_DOMAIN);
-        SOSSData::Delete("usergroup_permission",$data->result,AUTH_DOMAIN);
+        $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid,null,"asc",100,0,AUTH_DOMAIN);
+        while(count($data->result)!=0){
+            SOSSData::Delete("usergroup_permission",$data->result,AUTH_DOMAIN);
+            $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid,null,"asc",100,0,AUTH_DOMAIN);
+
+        }
         foreach ($uapps as $key => $app) {
             # code...
             $application=(object)$app;
             if($application->groupid!=$groupid)
                 $application->groupid=$groupid;
             $application->domain=AUTH_DOMAIN;
+            $application->operation=$application->operation==""?"null":$application->operation;
             $application->keyid =md5($application->groupid."-".AUTH_DOMAIN."-".$application->appCode."-"."-".$application->type."-".$application->code."-".$application->operation);
             array_push($saveObject,$application);
         }

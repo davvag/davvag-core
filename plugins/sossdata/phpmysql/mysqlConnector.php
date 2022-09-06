@@ -1,41 +1,45 @@
-<?php 
+<?php
 require_once(dirname(__FILE__) . "/schema.php");
-class mysqlConnector{
-    private $con=null;
+class mysqlConnector
+{
+    private $con = null;
 
-    public function Close(){
+    public function Close()
+    {
         mysqli_close($this->con);
     }
 
-    public function Open($db=null){
-        if(!defined("DB_CONFIG_FILE")){
+    public function Open($db = null)
+    {
+        if (!defined("DB_CONFIG_FILE")) {
             throw new Exception("No database Configuration.");
         }
-        if (file_exists(DB_CONFIG_FILE)){
+        if (file_exists(DB_CONFIG_FILE)) {
             $configData = json_decode(file_get_contents(DB_CONFIG_FILE));
-            if($db==null){
-                $dbname=$configData->init_db.str_replace(".","_",DATASTORE_DOMAIN);
-            }else{
-                $dbname=$configData->init_db.str_replace(".","_",$db);
+            if ($db == null) {
+                $dbname = $configData->init_db . str_replace(".", "_", DATASTORE_DOMAIN);
+            } else {
+                $dbname = $configData->init_db . str_replace(".", "_", $db);
             }
             $this->con = new mysqli($configData->mysql_server, $configData->mysql_username, $configData->mysql_password, $dbname);
             if ($this->con->connect_error) {
-                
+
                 //die("Connection failed: " . $this->con->connect_error);
-                if(preg_match('/Unknown database/i',$this->con->connect_error)){
-                    $this->createDatabase($configData->mysql_server,$configData->mysql_username, $configData->mysql_password, $dbname);
+                if (preg_match('/Unknown database/i', $this->con->connect_error)) {
+                    $this->createDatabase($configData->mysql_server, $configData->mysql_username, $configData->mysql_password, $dbname);
                     $this->Open();
-                }else{
+                } else {
                     throw new Exception($this->con->connect_error);
                 }
             }
-        }else{
+        } else {
             throw new Exception("Configuration file missing.");
         }
     }
 
-    private function ConOK(){
-        if($this->con==null){
+    private function ConOK()
+    {
+        if ($this->con == null) {
             //$this->Open();
             throw new Exception("connection is not Open");
         }
@@ -45,15 +49,16 @@ class mysqlConnector{
         return true;
     }
 
-    private function createDatabase($servername,$username,$password,$dbname){
+    private function createDatabase($servername, $username, $password, $dbname)
+    {
         $conn = new mysqli($servername, $username, $password);
         // Check connection
         if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+            die("Connection failed: " . $conn->connect_error);
         }
 
         // Create database
-        $sql = "CREATE DATABASE ".$dbname;
+        $sql = "CREATE DATABASE " . $dbname;
         if ($conn->query($sql) === TRUE) {
             return true;
         } else {
@@ -61,416 +66,451 @@ class mysqlConnector{
         }
 
         $conn->close();
-
     }
 
-    public function ExecuteRaw($namespace,$params){
-        $tableSchema=Schema::Get($namespace);
-        if(isset($tableSchema->rawquery)){
-            $sql = $tableSchema->rawquery->query;
-            foreach ($params->parameters as $key => $value) {
-                $sql=str_replace("$".$key,$value,$sql);
-            }
-            if($result=$this->con->query($sql)){
-                //return $this->result(true,mysqli_fetch_all($result));
-                $data =array();
-                while($row = $result ->fetch_array(MYSQLI_ASSOC)){
-                    $item =new stdClass();
-                    foreach ($tableSchema->fields as $key => $value) {
-                        # code...
-                        $item->{$value->fieldName}=$row[$value->fieldName];
-                        
+    public function ExecuteRaw($namespace, $params)
+    {
+        try{
+            $tableSchema = Schema::Get($namespace);
+            if (isset($tableSchema->rawquery)) {
+                $sql = $tableSchema->rawquery->query;
+                foreach ($params->parameters as $key => $value) {
+                    $sql = str_replace("$" . $key, $value, $sql);
+                }
+                if ($result = $this->con->query($sql)) {
+                    //return $this->result(true,mysqli_fetch_all($result));
+                    $data = array();
+                    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+                        $item = new stdClass();
+                        foreach ($tableSchema->fields as $key => $value) {
+                            # code...
+                            $item->{$value->fieldName} = $row[$value->fieldName];
+                        }
+                        //$item->{"@meta"}=new stdClass();
 
+                        array_push($data, $item);
                     }
-                    //$item->{"@meta"}=new stdClass();
+                    return $this->result(true, $data);
+                } else {
+                    if (mysqli_errno($this->con) == 1305) {
+                        $this->ExcuteMySQLScript($namespace);
+                    } else {
+                        return $this->result(false, null, $this->con->error);
+                    }
                     
-                    array_push($data,$item);
-                }
-                return $this->result(true,$data);
-            }else{
-                return $this->result(false,null,$this->con->error);
-                //throw new Exception($this->con->error); 
-                
-            }
+                    //throw new Exception($this->con->error); 
 
-        }else{
-            throw new Exception("This not a valied Schema");
+                }
+            } else {
+                throw new Exception("This not a valied Schema");
+            }
+        }catch(Exception $e){
+            return $this->result(false, null, $e->getMessage());
         }
     }
 
-    public function Query($namespace,$param,$lastID=0,$sorting="asc",$pageSize=20,$fromPage=0){
-        $tableSchema=Schema::Get($namespace);
-        $systemFields=Schema::GetSystemColums();
-        foreach ($systemFields as $key => $value) {
-            # code...
-            array_push($tableSchema->fields,$value);
-        }
-        $sql="Select * from ".$namespace;
-        if(is_array($param)){
-            return $this->ExecuteRaw($namespace,$param);
-        }else{
-            $dived=explode(",",$param);
-            $sqlWhere="";
-            foreach ($dived as $key => $value) {
+    public function Query($namespace, $param, $lastID = 0, $sorting = "asc", $pageSize = 20, $fromPage = 0)
+    {
+        try {
+            $tableSchema = Schema::Get($namespace);
+            $systemFields = Schema::GetSystemColums();
+            foreach ($systemFields as $key => $value) {
                 # code...
-                $field=explode(":",$value);
-                if(count($field)==2){
-                    $sqlWhere.=" ".$field[0]."='".$field[1]."' and";
-                }
+                array_push($tableSchema->fields, $value);
             }
-            if($lastID!=0){
-                if($sorting =="ASC"){
-                    $sqlWhere.=" sysversionid >".$lastID;
-                }else{
-                    $sqlWhere.=" sysversionid <".$lastID;
-                }
-            }
+            $sql = "Select * from " . $namespace;
+            if (is_array($param)) {
+                return $this->ExecuteRaw($namespace, $param);
+            } else {
+                $dived = explode(",", $param);
+                $sqlWhere = "";
+                foreach ($dived as $key => $value) {
+                    # code...
+                    $field = explode(":", $value);
+                    if (count($field) == 2) {
 
-            $sql.=($sqlWhere!=""?" where".rtrim($sqlWhere,"and"):"")." Order by sysversionid $sorting limit $fromPage,$pageSize";
-            if($result=$this->con->query($sql)){
-                //return $this->result(true,mysqli_fetch_all($result));
-                $data =array();
-                while($row = $result ->fetch_array(MYSQLI_ASSOC)){
-                    $item =new stdClass();
-                    foreach ($tableSchema->fields as $key => $value) {
-                        # code...
-                        $item->{$value->fieldName}=$this->getValueToObject($value,$row[$value->fieldName]);
-                        
-
+                        $sqlWhere .= " " . $field[0] . "='" . $field[1] . "' and";
                     }
-                    $item->{"@meta"}=new stdClass();
-                    foreach ($systemFields as $key => $value) {
-                        # code...
-                        $item->{"@meta"}->{$value->fieldName}=$row[$value->fieldName];
-                    }
-                    array_push($data,$item);
                 }
-                return $this->result(true,$data);
-            }else{
-                if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
-                    $this->createTable($namespace);
-                    return $this->Query($namespace,$param,$lastID,$sorting,$pageSize,$fromPage);
-                }else{
-                    return $this->result(false,null,$this->con->error);
+                if ($lastID != 0) {
+                    if ($sorting == "ASC") {
+                        $sqlWhere .= " sysversionid >" . $lastID;
+                    } else {
+                        $sqlWhere .= " sysversionid <" . $lastID;
+                    }
+                }
+
+                $sql .= ($sqlWhere != "" ? " where" . rtrim($sqlWhere, "and") : "") . " Order by sysversionid $sorting limit $fromPage,$pageSize";
+                if ($result = $this->con->query($sql)) {
+                    //return $this->result(true,mysqli_fetch_all($result));
+                    $data = array();
+                    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+                        $item = new stdClass();
+                        foreach ($tableSchema->fields as $key => $value) {
+                            # code...
+                            $item->{$value->fieldName} = $this->getValueToObject($value, $row[$value->fieldName]);
+                        }
+                        $item->{"@meta"} = new stdClass();
+                        foreach ($systemFields as $key => $value) {
+                            # code...
+                            $item->{"@meta"}->{$value->fieldName} = $row[$value->fieldName];
+                        }
+                        array_push($data, $item);
+                    }
+                    return $this->result(true, $data);
+                } else {
+                    if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
+                        $this->createTable($namespace);
+                        return $this->Query($namespace, $param, $lastID, $sorting, $pageSize, $fromPage);
+                    } else {
+                        return $this->result(false, null, $this->con->error);
+                    }
                 }
             }
+        } catch (Exception $e) {
+            //throw $th;
+            return $this->result(false, null, $e->getMessage());
         }
+        
     }
 
-    public function Insert($namespace,$data){
-        if($this->ConOK()){
-            
+    public function Insert($namespace, $data)
+    {
+        if ($this->ConOK()) {
+
             try {
-                $tableSchema=Schema::Get($namespace);
-                $sqls= $this->generateInsertSQL($namespace,$tableSchema,$data);
-                $genis=array();
-                $success=true;
-                $errorMsg="";
+                $tableSchema = Schema::Get($namespace);
+                $sqls = $this->generateInsertSQL($namespace, $tableSchema, $data);
+                $genis = array();
+                $success = true;
+                $errorMsg = "";
                 foreach ($sqls as $key => $sql) {
                     # code...
-                    $result=new stdClass();
+                    $result = new stdClass();
                     if ($this->con->query($sql) === TRUE) {
-                        $result->success=true;
-                        $result->generatedId=mysqli_insert_id($this->con);
-                        array_push($genis,$result);
+                        $result->success = true;
+                        $result->generatedId = mysqli_insert_id($this->con);
+                        array_push($genis, $result);
                     } else {
-                        if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
+                        if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
                             $this->createTable($namespace);
-                            return $this->Insert($namespace,$data);
-                        }else{
-                            $result->success=false;
-                            $result->success=$this->con->error;
-                            $success=false;
-                            $errorMsg=$this->con->error;
-                            array_push($genis,$result);
+                            return $this->Insert($namespace, $data);
+                        } else {
+                            $result->success = false;
+                            $result->success = $this->con->error;
+                            $success = false;
+                            $errorMsg = $this->con->error;
+                            array_push($genis, $result);
                             //throw new Exception($this->con->error); 
                         }
                         //echo "Error: " . $sql . "<br>" . $this->con->error;
                     }
                 }
-                return $this->result($success,count($genis)==1?$genis[0]:$genis,$errorMsg);
-               
+                return $this->result($success, count($genis) == 1 ? $genis[0] : $genis, $errorMsg);
             } catch (Exception $e) {
-                return $this->result(false,null,$e->getMessage());
+                return $this->result(false, null, $e->getMessage());
             }
         }
-    
     }
 
 
-    public function Update($namespace,$data){
-        if($this->ConOK()){
+    public function Update($namespace, $data)
+    {
+        if ($this->ConOK()) {
             try {
-                $tableSchema=Schema::Get($namespace);
-                $sqls= $this->generateUpdateSQL($namespace,$tableSchema,$data);
-                $results=array();
-                $success=true;
-                $errorMsg="";
+                $tableSchema = Schema::Get($namespace);
+                $sqls = $this->generateUpdateSQL($namespace, $tableSchema, $data);
+                $results = array();
+                $success = true;
+                $errorMsg = "";
                 foreach ($sqls as $key => $dout) {
                     # code...
 
                     if ($this->con->query($dout->sql) === TRUE) {
-                        array_push($results,$dout->data);
+                        array_push($results, $dout->data);
                     } else {
-    
-                        if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
+
+                        if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
                             $this->createTable($namespace);
-                            return $this->Update($namespace,$data);
-                        }else{
-                            $dout->data->{"_ErrorMessage"}=$this->con->error;
-                            $success=false;
-                            $errorMsg=$this->con->error;
-                            array_push($results,$dout->data);
-                            
+                            return $this->Update($namespace, $data);
+                        } else {
+                            $dout->data->{"_ErrorMessage"} = $this->con->error;
+                            $success = false;
+                            $errorMsg = $this->con->error;
+                            array_push($results, $dout->data);
                         }
                     }
                 }
-                return $this->result($success,count($results)==1?$results[0]:$results,$errorMsg);
-                
-            }catch(Exception $e){
-                return $this->result(false,null,$e->getMessage());
+                return $this->result($success, count($results) == 1 ? $results[0] : $results, $errorMsg);
+            } catch (Exception $e) {
+                return $this->result(false, null, $e->getMessage());
             }
         }
     }
 
-    public function Delete($namespace,$data){
-        if($this->ConOK()){
+    public function Delete($namespace, $data)
+    {
+        if ($this->ConOK()) {
             try {
-                $tableSchema=Schema::Get($namespace);
-                $sqls= $this->generateDeleteSQL($namespace,$tableSchema,$data);
-                $results=array();
-                $success=true;
-                $errorMsg="";
+                $tableSchema = Schema::Get($namespace);
+                $sqls = $this->generateDeleteSQL($namespace, $tableSchema, $data);
+                $results = array();
+                $success = true;
+                $errorMsg = "";
                 foreach ($sqls as $key => $dout) {
                     # code...
                     if ($this->con->query($dout->sql) === TRUE) {
-                        if($this->con-> affected_rows>0)
-                            array_push($results,$dout->data);
-                            //return $this->result(true,$data);
-                        else{
-                            $success=false;
-                            $dout->data->{"_ErrorMessage"}="Not Deleted";
-                            $errorMsg="Not Deleted";
-                            array_push($results,$dout->data);
+                        if ($this->con->affected_rows > 0)
+                            array_push($results, $dout->data);
+                        //return $this->result(true,$data);
+                        else {
+                            $success = false;
+                            $dout->data->{"_ErrorMessage"} = "Not Deleted";
+                            $errorMsg = "Not Deleted";
+                            array_push($results, $dout->data);
                             //return $this->result(false,$data,"Not Deleted");
                         }
                     } else {
-                        if(mysqli_errno($this->con)==1146 || mysqli_errno($this->con)==1054){
+                        if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
                             $this->createTable($namespace);
-                            return $this->Delete($namespace,$data);
-                        }else{
-                            $success=false;
-                            $dout->data->{"_ErrorMessage"}=$this->con->error;
-                            $errorMsg=$this->con->error;
-                            array_push($results,$dout->data);
+                            return $this->Delete($namespace, $data);
+                        } else {
+                            $success = false;
+                            $dout->data->{"_ErrorMessage"} = $this->con->error;
+                            $errorMsg = $this->con->error;
+                            array_push($results, $dout->data);
                         }
                         //echo "Error: " . $sql . "<br>" . $this->con->error;
                     }
                 }
-                return $this->result($success,count($results)==1?$results[0]:$results,$errorMsg);
-            }catch(Exception $e){
-                return $this->result(false,null,$e->getMessage());
+                return $this->result($success, count($results) == 1 ? $results[0] : $results, $errorMsg);
+            } catch (Exception $e) {
+                return $this->result(false, null, $e->getMessage());
             }
         }
     }
 
-    private function generateDeleteSQL($namespace,$tableSchema,$data){
-        $sql=array();
-        if(is_array($data)){
+    private function ExcuteMySQLScript($namespace){
+        if (file_exists(TENANT_RESOURCE_LOCATION."/schemas/mysqlquery/".$namespace.".sql")){
+            $s = file_get_contents(TENANT_RESOURCE_LOCATION."/schemas/mysqlquery/".$namespace.".sql");
+            $sqls=explode("DELIMITER $$",$s);
+            //self::$Schema[$name]=$s;
+            foreach ($sqls as $sql) {
+                if ($this->con->query($sql) === TRUE) {
+                   
+                } else {
+                    echo "Error: " . $sql . "<br>" . $this->con->error;
+                }
+                # code...
+            }
+        }
+    }
+
+    private function generateDeleteSQL($namespace, $tableSchema, $data)
+    {
+        $sql = array();
+        if (is_array($data)) {
             foreach ($data as $key => $value) {
                 # cod(e...
-                $std=(object)$value;
-                array_push($sql,$this->generateSingleDelete($namespace,$tableSchema,$std));
+                $std = (object)$value;
+                array_push($sql, $this->generateSingleDelete($namespace, $tableSchema, $std));
             }
-        }else{
-            array_push($sql,$this->generateSingleDelete($namespace,$tableSchema,$data));
+        } else {
+            array_push($sql, $this->generateSingleDelete($namespace, $tableSchema, $data));
         }
         return $sql;
-
     }
 
-    private function generateSingleDelete($namespace,$tableSchema,$data){
-        $sqlStart="Delete From ".$namespace." ";
-        $sqlend=" where ";
-        $primary=false;
-        foreach($tableSchema->fields as $value){
-            if(!empty($value->annotations->isPrimary)){
-                if($value->annotations->isPrimary){
-                    $sqlend.="`".$value->fieldName."`=".$this->getValue($value,$data->{$value->fieldName})." and ";
-                    $primary=true;
+    private function generateSingleDelete($namespace, $tableSchema, $data)
+    {
+        $sqlStart = "Delete From " . $namespace . " ";
+        $sqlend = " where ";
+        $primary = false;
+        foreach ($tableSchema->fields as $value) {
+            if (!empty($value->annotations->isPrimary)) {
+                if ($value->annotations->isPrimary) {
+                    $sqlend .= "`" . $value->fieldName . "`=" . $this->getValue($value, $data->{$value->fieldName}) . " and ";
+                    $primary = true;
                 }
             }
-            if(!$primary){
-                if(isset($data->{$value->fieldName})){
+            if (!$primary) {
+                if (isset($data->{$value->fieldName})) {
                     //$sqlStart.=$value->fieldName."=".$this->getValue($value,$data->{$value->fieldName});
-                    $sqlend.="`".$value->fieldName."`=".$this->getValue($value,$data->{$value->fieldName})." and ";
+                    $sqlend .= "`" . $value->fieldName . "`=" . $this->getValue($value, $data->{$value->fieldName}) . " and ";
                 }
             }
-            
         }
-        if(strlen($sqlend)<8){
+        if (strlen($sqlend) < 8) {
             throw new Exception("Delete cannot be performed no values will delete the who dataset.");
         }
-        $dout=new stdClass();
-        $dout->sql=rtrim($sqlStart,",").rtrim($sqlend,"and ").";\n";
-        $dout->data=$data;
+        $dout = new stdClass();
+        $dout->sql = rtrim($sqlStart, ",") . rtrim($sqlend, "and ") . ";\n";
+        $dout->data = $data;
         return $dout;
     }
 
-    private function generateUpdateSQL($namespace,$tableSchema,$data){
-        $sql=array();
-        if(is_array($data)){
+    private function generateUpdateSQL($namespace, $tableSchema, $data)
+    {
+        $sql = array();
+        if (is_array($data)) {
             foreach ($data as $key => $value) {
                 # code...
-                $std=(object)$value;
-                array_push($sql,$this->generateSingleUpdate($namespace,$tableSchema,$std));
+                $std = (object)$value;
+                array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, $std));
             }
-        }else{
-            array_push($sql,$this->generateSingleUpdate($namespace,$tableSchema,$data));
+        } else {
+            array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, $data));
         }
         return $sql;
-
     }
 
-    private function generateSingleUpdate($namespace,$tableSchema,$data){
-        $sqlStart="Update ".$namespace." SET ";
-        $sqlend=" where ";
-        $dout=new stdClass();
-        foreach($tableSchema->fields as $value){
-            if(!empty($value->annotations->isPrimary)){
-                if($value->annotations->isPrimary){
-                    $sqlend.="`".$value->fieldName."`=".$this->getValue($value,empty($data->{$value->fieldName})?null:$data->{$value->fieldName})." and ";
+    private function generateSingleUpdate($namespace, $tableSchema, $data)
+    {
+        $sqlStart = "Update " . $namespace . " SET ";
+        $sqlend = " where ";
+        $dout = new stdClass();
+        foreach ($tableSchema->fields as $value) {
+            if (!empty($value->annotations->isPrimary)) {
+                if ($value->annotations->isPrimary) {
+                    $sqlend .= "`" . $value->fieldName . "`=" . $this->getValue($value, empty($data->{$value->fieldName}) ? null : $data->{$value->fieldName}) . " and ";
                 }
             }
-            if(isset($data->{$value->fieldName})){
-                $sqlStart.="`".$value->fieldName."`"."=".$this->getValue($value,empty($data->{$value->fieldName})?null:$data->{$value->fieldName}).",";
+            if (isset($data->{$value->fieldName})) {
+                $sqlStart .= "`" . $value->fieldName . "`" . "=" . $this->getValue($value, empty($data->{$value->fieldName}) ? null : $data->{$value->fieldName}) . ",";
                 //$sqlend.=$this->getValue($value,$data->{$value->fieldName}).",";
             }
-            
         }
-        if(strlen($sqlend)<8){
+        if (strlen($sqlend) < 8) {
             throw new Exception("No Primary value was set to update.");
             return null;
         }
-        $sqlStart.="sysversionid=".date("YmdHis").",sysupdated=".time();
-        $dout->sql=rtrim($sqlStart,",").rtrim($sqlend,"and ").";\n";
-        $dout->data=$data;
+        $sqlStart .= "sysversionid=" . date("YmdHis") . ",sysupdated=" . time();
+        $dout->sql = rtrim($sqlStart, ",") . rtrim($sqlend, "and ") . ";\n";
+        $dout->data = $data;
         return $dout;
     }
 
-    private function generateInsertSQL($namespace,$tableSchema,$data){
-        $sql=array();
-        if(is_array($data)){
+    private function generateInsertSQL($namespace, $tableSchema, $data)
+    {
+        $sql = array();
+        if (is_array($data)) {
             foreach ($data as $key => $value) {
                 # code...
-                $std=(object)$value;
-                array_push($sql,$this->generateSingleInsert($namespace,$tableSchema,$std));
+                $std = (object)$value;
+                array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, $std));
             }
-        }else{
-            array_push($sql,$this->generateSingleInsert($namespace,$tableSchema,$data));
+        } else {
+            array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, $data));
         }
         return $sql;
     }
 
-    private function generateSingleInsert($namespace,$tableSchema,$data){
-        $sqlStart="insert into ".$namespace."(";
-        $sqlend=" values(";
-        foreach($tableSchema->fields as $value){
-            if(isset($data->{$value->fieldName})){
-                $sqlStart.="`".$value->fieldName."`,";
-                $sqlend.=$this->getValue($value,$data->{$value->fieldName}).",";
+    private function generateSingleInsert($namespace, $tableSchema, $data)
+    {
+        $sqlStart = "insert into " . $namespace . "(";
+        $sqlend = " values(";
+        foreach ($tableSchema->fields as $value) {
+            if (isset($data->{$value->fieldName})) {
+                $sqlStart .= "`" . $value->fieldName . "`,";
+                $sqlend .= $this->getValue($value, $data->{$value->fieldName}) . ",";
             }
         }
 
-        $sqlStart.="sysversionid,syscreated";
-        $sqlend.=date("YmdHis").",".time();
+        $sqlStart .= "sysversionid,syscreated";
+        $sqlend .= date("YmdHis") . "," . time();
 
-        return rtrim($sqlStart,",").")".rtrim($sqlend,",").");\n";
+        return rtrim($sqlStart, ",") . ")" . rtrim($sqlend, ",") . ");\n";
     }
 
-    private function createTable($namespace){
-        $tableSchema=Schema::Get($namespace);
-        $systemFields=Schema::GetSystemColums();
+    private function createTable($namespace)
+    {
+        $tableSchema = Schema::Get($namespace);
+        $systemFields = Schema::GetSystemColums();
         foreach ($systemFields as $key => $value) {
             # code...
-            $can=true;
+            $can = true;
             foreach ($tableSchema->fields as $key => $vt) {
-                if($vt->fieldName==$value->fieldName){
-                    $can=false;
+                if ($vt->fieldName == $value->fieldName) {
+                    $can = false;
                 }
                 # code...
             }
-            if($can)
-                array_push($tableSchema->fields,$value);
+            if ($can)
+                array_push($tableSchema->fields, $value);
         }
-        
-        $update=false;
-        if ($result = $this->con->query("SHOW TABLES LIKE '".$namespace."'")) {
-            if($result->num_rows == 1) {
-                $update=true;
-            }
-        }
-        $sql="";
-        if($update){
-            if ($result = $this->con->query("DESCRIBE ".$namespace."")) {
-                $colums=mysqli_fetch_all($result);
 
-                    
-                foreach($tableSchema->fields as $value){
-                    $has=false;
-                    $alter=false;
-                    foreach ($colums as $key => $row) {
-                        if(strtolower( $row[0])==strtolower($value->fieldName)){
-                            $has=true;                            
-                        }
-                        
-                    }
-                    if(!$has){
-                        $sql.= "ADD `".$value->fieldName. "` ". $this->convertSQLtype($value->dataType,(!empty($value->annotations->maxLen)?$value->annotations->maxLen:0),
-                            (!empty($value->annotations->isPrimary)?false:true),
-                            (!empty($value->annotations->autoIncrement)?$value->annotations->autoIncrement:false),
-                            (!empty($value->annotations->decimalPoints)?$value->annotations->decimalPoints:"10,2"),
-                            (!empty($value->annotations->encoding)?$value->annotations->encoding:false))."";
-                            $sql.=",\n";
-                    }
-                    if($alter){
-                        $sql.= "Alter `".$value->fieldName. "` ". $this->convertSQLtype($value->dataType,(!empty($value->annotations->maxLen)?$value->annotations->maxLen:0),
-                            (!empty($value->annotations->isPrimary)?false:true),
-                            (!empty($value->annotations->autoIncrement)?$value->annotations->autoIncrement:false),
-                            (!empty($value->annotations->decimalPoints)?$value->annotations->decimalPoints:"10,2"),
-                            (!empty($value->annotations->encoding)?$value->annotations->encoding:false))."";
-                            $sql.=",\n";
-                    }
-                        
-                }
-                    
-                
-                if($sql!=""){
-                    $sql=rtrim($sql,",\n");
-                    $sql="Alter Table `".$namespace. "` ".$sql.";";
-                }
-                
+        $update = false;
+        if ($result = $this->con->query("SHOW TABLES LIKE '" . $namespace . "'")) {
+            if ($result->num_rows == 1) {
+                $update = true;
             }
         }
-        else{
-            $sql ="Create Table `".$namespace."`(";
-            $primary=" PRIMARY KEY(";
-            foreach($tableSchema->fields as $value){
-                $sql.= "`".$value->fieldName. "` ". $this->convertSQLtype($value->dataType,(!empty($value->annotations->maxLen)?$value->annotations->maxLen:0),
-                (!empty($value->annotations->isPrimary)?false:true),
-                (!empty($value->annotations->autoIncrement)?$value->annotations->autoIncrement:false),
-                (!empty($value->annotations->decimalPoints)?$value->annotations->decimalPoints:"10,2"),
-                (!empty($value->annotations->encoding)?$value->annotations->encoding:false)).",";
-                if(empty($value->annotations->isPrimary)==false){
-                    if($value->annotations->isPrimary){
-                        $primary.="`".$value->fieldName."`,";
+        $sql = "";
+        if ($update) {
+            if ($result = $this->con->query("DESCRIBE " . $namespace . "")) {
+                $colums = mysqli_fetch_all($result);
+
+
+                foreach ($tableSchema->fields as $value) {
+                    $has = false;
+                    $alter = false;
+                    foreach ($colums as $key => $row) {
+                        if (strtolower($row[0]) == strtolower($value->fieldName)) {
+                            $has = true;
+                        }
+                    }
+                    if (!$has) {
+                        $sql .= "ADD `" . $value->fieldName . "` " . $this->convertSQLtype(
+                            $value->dataType,
+                            (!empty($value->annotations->maxLen) ? $value->annotations->maxLen : 0),
+                            (!empty($value->annotations->isPrimary) ? false : true),
+                            (!empty($value->annotations->autoIncrement) ? $value->annotations->autoIncrement : false),
+                            (!empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2"),
+                            (!empty($value->annotations->encoding) ? $value->annotations->encoding : false)
+                        ) . "";
+                        $sql .= ",\n";
+                    }
+                    if ($alter) {
+                        $sql .= "Alter `" . $value->fieldName . "` " . $this->convertSQLtype(
+                            $value->dataType,
+                            (!empty($value->annotations->maxLen) ? $value->annotations->maxLen : 0),
+                            (!empty($value->annotations->isPrimary) ? false : true),
+                            (!empty($value->annotations->autoIncrement) ? $value->annotations->autoIncrement : false),
+                            (!empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2"),
+                            (!empty($value->annotations->encoding) ? $value->annotations->encoding : false)
+                        ) . "";
+                        $sql .= ",\n";
+                    }
+                }
+
+
+                if ($sql != "") {
+                    $sql = rtrim($sql, ",\n");
+                    $sql = "Alter Table `" . $namespace . "` " . $sql . ";";
+                }
+            }
+        } else {
+            $sql = "Create Table `" . $namespace . "`(";
+            $primary = " PRIMARY KEY(";
+            foreach ($tableSchema->fields as $value) {
+                $sql .= "`" . $value->fieldName . "` " . $this->convertSQLtype(
+                    $value->dataType,
+                    (!empty($value->annotations->maxLen) ? $value->annotations->maxLen : 0),
+                    (!empty($value->annotations->isPrimary) ? false : true),
+                    (!empty($value->annotations->autoIncrement) ? $value->annotations->autoIncrement : false),
+                    (!empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2"),
+                    (!empty($value->annotations->encoding) ? $value->annotations->encoding : false)
+                ) . ",";
+                if (empty($value->annotations->isPrimary) == false) {
+                    if ($value->annotations->isPrimary) {
+                        $primary .= "`" . $value->fieldName . "`,";
                     }
                 }
             }
             //$sql=rtrim($sql,",\n");
-            $sql.=rtrim($primary,",")."));";
+            $sql .= rtrim($primary, ",") . "));";
         }
-        if($sql!=""){
+        if ($sql != "") {
             if ($this->con->query($sql) === TRUE) {
                 return true;
             } else {
@@ -478,80 +518,79 @@ class mysqlConnector{
                 return false;
             }
         }
-
     }
 
-    private function result($suessfull,$data=null,$message=""){
-        $result=new stdClass();
-        $result->success=$suessfull;
-        if($suessfull){
-            $result->result=$data;
-        }else{
-            $result->message=$message;
+    private function result($suessfull, $data = null, $message = "")
+    {
+        $result = new stdClass();
+        $result->success = $suessfull;
+        if ($suessfull) {
+            $result->result = $data;
+        } else {
+            $result->message = $message;
         }
         return $result;
     }
 
-    private function convertSQLtype($datatype,$datalength,$isNull, $isAutoIncrement, $decimalPoints,$endCoding){
-		$strValue="";
-		
-		
-        switch($datatype){
-			case "int":
-				$strValue="INT ".(($isNull)?"":"NOT")." NULL ";
-				if ($isAutoIncrement)
-					$strValue .= "AUTO_INCREMENT ";
-				break;
-			case "float":
-				$strValue="FLOAT ".(($isNull)?"":"NOT")." NULL";
-				
-				break;
-			case "double":
-				$strValue="DECIMAL ".(($isNull)?"":"NOT")." NULL";
-				break;
-			case "short":
-				$strValue="LONG ".(($isNull)?"":"NOT")." NULL";
-				break;
-			case "long":
-				$strValue="LONG ".(($isNull)?"":"NOT")." NULL";
-				break;
-			case "decimal":
-				if ($decimalPoints == null)
-					$strValue = "DECIMAL(10,1)";
-				else
-					$strValue = "DECIMAL(" . $decimalPoints . ") ";
-				break;
-			case "java.lang.String":
-				if($datalength==0){
-					$strValue="TEXT ".($endCoding==null || $endCoding==""?"":" CHARACTER SET '".$endCoding."' ")." ".(($isNull)?"":"NOT")." NULL";
-				}
-				else if($datalength<3072){
-					if($endCoding==null || $endCoding==""){
-						$strValue="VARCHAR(".($datalength).") ".(($isNull)?"":"NOT")." NULL";
-					}else{
-						$strValue="MEDIUMTEXT ".($endCoding==null || $endCoding==""?"":" CHARACTER SET '".$endCoding."' ")." ".(($isNull)?"":"NOT")." NULL";
-					}
-						
-				}else{
-					$strValue="TEXT ".($endCoding==null || $endCoding==""?"":" CHARACTER SET '".$endCoding."' ")." ".(($isNull)?"":"NOT")." NULL";
-				}
-				break;
-			case "java.util.Date":
-				$strValue= "DATETIME ".(($isNull)?"":"NOT")." NULL";
-				break;
-			case "boolean":
-				$strValue="VARCHAR(5) ".(($isNull)?"":"NOT")." NULL";
-				break;
-			default:
-				$strValue="TEXT ".(($isNull)?"":"NOT")." NULL";
-				break;
-        
-        }
-		return $strValue;
-	}
+    private function convertSQLtype($datatype, $datalength, $isNull, $isAutoIncrement, $decimalPoints, $endCoding)
+    {
+        $strValue = "";
 
-    private function getValueToObject($field,$value){
-        switch($field->dataType){
+
+        switch ($datatype) {
+            case "int":
+                $strValue = "INT " . (($isNull) ? "" : "NOT") . " NULL ";
+                if ($isAutoIncrement)
+                    $strValue .= "AUTO_INCREMENT ";
+                break;
+            case "float":
+                $strValue = "FLOAT " . (($isNull) ? "" : "NOT") . " NULL";
+
+                break;
+            case "double":
+                $strValue = "DECIMAL " . (($isNull) ? "" : "NOT") . " NULL";
+                break;
+            case "short":
+                $strValue = "LONG " . (($isNull) ? "" : "NOT") . " NULL";
+                break;
+            case "long":
+                $strValue = "LONG " . (($isNull) ? "" : "NOT") . " NULL";
+                break;
+            case "decimal":
+                if ($decimalPoints == null)
+                    $strValue = "DECIMAL(10,1)";
+                else
+                    $strValue = "DECIMAL(" . $decimalPoints . ") ";
+                break;
+            case "java.lang.String":
+                if ($datalength == 0) {
+                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL";
+                } else if ($datalength < 3072) {
+                    if ($endCoding == null || $endCoding == "") {
+                        $strValue = "VARCHAR(" . ($datalength) . ") " . (($isNull) ? "" : "NOT") . " NULL";
+                    } else {
+                        $strValue = "MEDIUMTEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL";
+                    }
+                } else {
+                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL";
+                }
+                break;
+            case "java.util.Date":
+                $strValue = "DATETIME " . (($isNull) ? "" : "NOT") . " NULL";
+                break;
+            case "boolean":
+                $strValue = "VARCHAR(5) " . (($isNull) ? "" : "NOT") . " NULL";
+                break;
+            default:
+                $strValue = "TEXT " . (($isNull) ? "" : "NOT") . " NULL";
+                break;
+        }
+        return $strValue;
+    }
+
+    private function getValueToObject($field, $value)
+    {
+        switch ($field->dataType) {
             case "java.lang.String":
                 return $value;
                 break;
@@ -570,7 +609,7 @@ class mysqlConnector{
             case "long":
                 return (int)$value;
                 break;
-                case "decimal":
+            case "decimal":
             case "java.util.Date":
                 return $value;
                 break;
@@ -579,14 +618,15 @@ class mysqlConnector{
                 break;
             default:
                 return $value;
-              break;
+                break;
         }
     }
 
-    private function getValue($field,$value){
-        switch($field->dataType){
+    private function getValue($field, $value)
+    {
+        switch ($field->dataType) {
             case "java.lang.String":
-                return "'".$value."'";
+                return "'" . $value . "'";
                 break;
             case "int":
                 return (int)$value;
@@ -603,20 +643,16 @@ class mysqlConnector{
             case "long":
                 return (int)$value;
                 break;
-                case "decimal":
+            case "decimal":
             case "java.util.Date":
-                return "'".$value."'";
+                return "'" . $value . "'";
                 break;
             case "object":
-                return "'".json_encode($value)."'";
+                return "'" . json_encode($value) . "'";
                 break;
             default:
-                return "'".$value."'";
-              break;
+                return "'" . $value . "'";
+                break;
         }
     }
-
-    
-
 }
-?>
