@@ -180,10 +180,12 @@ class mysqlConnector
 
             try {
                 $tableSchema = Schema::Get($namespace);
+                $data = clone($data);
                 $sqls = $this->generateInsertSQL($namespace, $tableSchema, $data);
                 $genis = array();
                 $success = true;
                 $errorMsg = "";
+                
                 foreach ($sqls as $key => $sql) {
                     # code...
                     $result = new stdClass();
@@ -219,10 +221,12 @@ class mysqlConnector
         if ($this->ConOK()) {
             try {
                 $tableSchema = Schema::Get($namespace);
+                $data = clone($data);
                 $sqls = $this->generateUpdateSQL($namespace, $tableSchema, $data);
                 $results = array();
                 $success = true;
                 $errorMsg = "";
+                
                 foreach ($sqls as $key => $dout) {
                     # code...
 
@@ -252,6 +256,7 @@ class mysqlConnector
     {
         if ($this->ConOK()) {
             try {
+                $data = clone($data);
                 $tableSchema = Schema::Get($namespace);
                 $sqls = $this->generateDeleteSQL($namespace, $tableSchema, $data);
                 $results = array();

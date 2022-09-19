@@ -185,7 +185,7 @@ class Carbite {
 		$out = $res->Get();		
 
 		if (isset($out)){
-			if (is_object($out) || is_array($out)){$ct = "application/json"; $out = json_encode($out, JSON_PRETTY_PRINT);}
+			if (is_object($out) || is_array($out)){$ct = "application/json"; $out = json_encode($out);}
 			else {if (strlen($out) > 0) if ($out[0] == '{') $ct = "application/json";}
 		}
 
