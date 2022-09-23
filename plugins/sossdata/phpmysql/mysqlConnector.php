@@ -140,12 +140,21 @@ class mysqlConnector
                     }
                 }
 
-                $sql .= ($sqlWhere != "" ? " where" . rtrim($sqlWhere, "and") : "") . " Order by sysversionid $sorting limit $fromPage,$pageSize";
+                $sql .= ($sqlWhere != "" ? " where" . rtrim($sqlWhere, "and") : "");
+                $sqlCount ="Select count(*) from ($sql) tmp1982";
+                $sql.= " Order by sysversionid $sorting limit $fromPage,$pageSize";
                 if ($result = $this->con->query($sql)) {
                     //return $this->result(true,mysqli_fetch_all($result));
-                    $data = array();
+                    if ($rCount = $this->con->query($sqlCount)){
+                        $r = $rCount -> fetch_row();
+                        $data = array();
+                        $numberOfRecords=(int)$r[0];
+                    }else{
+                        $numberOfRecords=0;
+                    }
                     while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
                         $item = new stdClass();
+                        
                         foreach ($tableSchema->fields as $key => $value) {
                             # code...
                             $item->{$value->fieldName} = $this->getValueToObject($value, $row[$value->fieldName]);
@@ -157,7 +166,7 @@ class mysqlConnector
                         }
                         array_push($data, $item);
                     }
-                    return $this->result(true, $data);
+                    return $this->result(true, $data,"",$numberOfRecords,$fromPage,$pageSize);
                 } else {
                     if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
                         $this->createTable($namespace);
@@ -525,12 +534,24 @@ class mysqlConnector
         }
     }
 
-    private function result($suessfull, $data = null, $message = "")
+    private function result($suessfull, $data = null, $message = "",$numberOfRecords=null,$pageNumber=null,$pagesize=null)
     {
         $result = new stdClass();
         $result->success = $suessfull;
         if ($suessfull) {
             $result->result = $data;
+            if(isset($pageNumber)){
+                $result->pageNumber=$pageNumber;
+            }
+            if(isset($numberOfRecords)){
+                $result->numberOfRecords=$numberOfRecords;
+            }
+            if(isset($pageSize)){
+                $result->pageSize=$pageSize;
+            }
+            if(!empty($message)){
+                $result->message = $message;
+            }
         } else {
             $result->message = $message;
         }
