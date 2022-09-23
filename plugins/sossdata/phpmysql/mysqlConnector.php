@@ -114,6 +114,7 @@ class mysqlConnector
         try {
             $tableSchema = Schema::Get($namespace);
             $systemFields = Schema::GetSystemColums();
+            $param=urldecode($param);
             foreach ($systemFields as $key => $value) {
                 # code...
                 array_push($tableSchema->fields, $value);
@@ -189,7 +190,6 @@ class mysqlConnector
 
             try {
                 $tableSchema = Schema::Get($namespace);
-                $data = clone($data);
                 $sqls = $this->generateInsertSQL($namespace, $tableSchema, $data);
                 $genis = array();
                 $success = true;
@@ -230,7 +230,6 @@ class mysqlConnector
         if ($this->ConOK()) {
             try {
                 $tableSchema = Schema::Get($namespace);
-                $data = clone($data);
                 $sqls = $this->generateUpdateSQL($namespace, $tableSchema, $data);
                 $results = array();
                 $success = true;
@@ -265,7 +264,7 @@ class mysqlConnector
     {
         if ($this->ConOK()) {
             try {
-                $data = clone($data);
+                
                 $tableSchema = Schema::Get($namespace);
                 $sqls = $this->generateDeleteSQL($namespace, $tableSchema, $data);
                 $results = array();
@@ -326,11 +325,11 @@ class mysqlConnector
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 # cod(e...
-                $std = (object)$value;
+                $std = (object)clone($value);
                 array_push($sql, $this->generateSingleDelete($namespace, $tableSchema, $std));
             }
         } else {
-            array_push($sql, $this->generateSingleDelete($namespace, $tableSchema, $data));
+            array_push($sql, $this->generateSingleDelete($namespace, $tableSchema, clone($data)));
         }
         return $sql;
     }
@@ -369,11 +368,11 @@ class mysqlConnector
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 # code...
-                $std = (object)$value;
+                $std = (object)clone($value);
                 array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, $std));
             }
         } else {
-            array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, $data));
+            array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, clone($data)));
         }
         return $sql;
     }
@@ -410,11 +409,11 @@ class mysqlConnector
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 # code...
-                $std = (object)$value;
+                $std = (object)clone($value);
                 array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, $std));
             }
         } else {
-            array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, $data));
+            array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, clone($data)));
         }
         return $sql;
     }
@@ -637,7 +636,7 @@ class mysqlConnector
                 break;
             case "decimal":
             case "java.util.Date":
-                return $value;
+                return date('m-d-Y H:i:s', strtotime($value));
                 break;
             case "object":
                 return json_decode($value);
@@ -671,7 +670,7 @@ class mysqlConnector
                 break;
             case "decimal":
             case "java.util.Date":
-                return "'" . $value . "'";
+                return "'" . date('Y-m-d H:i:s', strtotime($value)) . "'";
                 break;
             case "object":
                 return "'" . json_encode($value) . "'";
