@@ -1,6 +1,6 @@
 <?php
 class CReq {
-
+ 
 	public function Params(){return $this->p;}
 	public function Query(){return $this->qP;}
 	public function Headers(){return $this->hP;}
