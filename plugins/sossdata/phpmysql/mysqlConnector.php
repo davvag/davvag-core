@@ -303,6 +303,10 @@ class mysqlConnector
         }
     }
 
+    public function SetViewObject($objectID=0){
+        
+    }
+
     private function ExcuteMySQLScript($namespace){
         if (file_exists(TENANT_RESOURCE_LOCATION."/schemas/mysqlquery/".$namespace.".sql")){
             $s = file_get_contents(TENANT_RESOURCE_LOCATION."/schemas/mysqlquery/".$namespace.".sql");

@@ -32,6 +32,10 @@
             $key2->fieldName="sysupdated";
             $key2->dataType="int";
             array_push($fields,$key2);
+            $key3=new stdClass();
+            $key3->fieldName="sysviewobject";
+            $key3->dataType="int";
+            array_push($fields,$key3);
             return $fields;
         }
     }

@@ -73,6 +73,10 @@ class DAVVAG_Data {
         return json_decode($responseStr);
     }
 
+    public static function SetViewObject($objectID,$tenantId){
+
+    }
+
     public static function PostQuery($className, $query, $lastVersionId = null, $tenantId = null){
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
