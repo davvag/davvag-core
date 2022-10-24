@@ -158,12 +158,12 @@ class mysqlConnector
                         
                         foreach ($tableSchema->fields as $key => $value) {
                             # code...
-                            $item->{$value->fieldName} = $this->getValueToObject($value, $row[$value->fieldName]);
+                            $item->{$value->fieldName} = $this->getValueToObject($value, isset($row[$value->fieldName])?$row[$value->fieldName]:0);
                         }
                         $item->{"@meta"} = new stdClass();
                         foreach ($systemFields as $key => $value) {
                             # code...
-                            $item->{"@meta"}->{$value->fieldName} = $row[$value->fieldName];
+                            $item->{"@meta"}->{$value->fieldName} = isset($row[$value->fieldName])?$row[$value->fieldName]:0;
                         }
                         array_push($data, $item);
                     }
