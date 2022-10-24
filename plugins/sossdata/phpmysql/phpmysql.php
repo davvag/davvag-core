@@ -40,6 +40,10 @@
         
       }
 
+      public function SetViewObject($objectID=0,$tenantId){
+        return $this->getCon($tenantId)->SetViewObject($viewObjects);
+      }
+
       public function Close($tenantId)
       {
         $this->getCon($tenantId)->Close();

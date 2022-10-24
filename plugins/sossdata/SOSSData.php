@@ -71,6 +71,14 @@ class SOSSData {
         return self::getDataSource($tenantId)->Close($tenantId);
     }
 
+    public static function SetViewObject( $userIds=null,$userGroups=null,$viewObjects=null,$tenantId=null){
+        if ($tenantId == null)
+            $tenantId = DATASTORE_DOMAIN;
+        
+        $viewObject=0;
+        return self::getDataSource($tenantId)->SetViewObject($viewObject,$tenantId);
+    }
+
 }
 
 ?>

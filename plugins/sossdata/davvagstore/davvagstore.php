@@ -31,6 +31,10 @@
         
       }
 
+      public function SetViewObject($objectID=0,$tenantId=null){
+        return DAVVAG_Data::SetViewObject($objectID,$tenantId=null);
+      }
+
       public function Close($tenantId)
       {
         //$this->getCon($tenantId)->Close();

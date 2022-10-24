@@ -45,12 +45,7 @@
         $configData = new stdClass();
     
     
-    //$GLOBALS["DBConfig"]=
-    if($GLOBALS["ENGINE_CONFIG"]->DEBUG===true){
-        ini_set('display_errors', 1);
-        ini_set('display_startup_errors', 1);
-        error_reporting(E_ALL);
-    }
+    
     
     if (defined("LOCAL_DEV_HOST")){
         define ("HOST_NAME", LOCAL_DEV_HOST);
@@ -74,19 +69,29 @@
     define ("SCHEMA_PATH", TENANT_RESOURCE_LOCATION . "/schemas");
     if(isset($configData->DAVVAG_StartUp)){
         foreach($configData->DAVVAG_StartUp->plugins as $value){
-            if($value->plugin_location=="global"){
-                if(file_exists(PLUGIN_PATH . $value->location)){
-                    require_once(PLUGIN_PATH."/". $value->location);
+            try{
+                if($value->plugin_location=="global"){
+                    if(file_exists(PLUGIN_PATH . $value->location)){
+                        require_once(PLUGIN_PATH."/". $value->location);
+                    }else{
+                        echo "Error Loading Global Plugin ".PLUGIN_PATH . $value->location;
+                    }
                 }else{
-                    echo "Error Loading Global Plugin ".PLUGIN_PATH . $value->location;
+                    if(file_exists(PLUGIN_PATH_LOCAL . $value->location)){
+                        require_once(PLUGIN_PATH_LOCAL."/". $value->location);
+                    }else{
+                        echo "Error Loading Global Plugin ".PLUGIN_PATH . $value->location;
+                    }
                 }
-            }else{
-                if(file_exists(PLUGIN_PATH_LOCAL . $value->location)){
-                    require_once(PLUGIN_PATH_LOCAL."/". $value->location);
-                }else{
-                    echo "Error Loading Global Plugin ".PLUGIN_PATH . $value->location;
-                }
+            }catch(Exception $e){
+
             }
         }
+    }
+    //$GLOBALS["DBConfig"]=
+    if($GLOBALS["ENGINE_CONFIG"]->DEBUG===true){
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
     }
 ?>
