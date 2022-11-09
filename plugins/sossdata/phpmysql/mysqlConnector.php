@@ -369,14 +369,28 @@ class mysqlConnector
     private function generateUpdateSQL($namespace, $tableSchema, $data)
     {
         $sql = array();
+        $user=Auth::Autendicate();
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 # code...
                 $std = (object)clone($value);
+                if(empty($std->sysviewobject)){
+                    $std->sysviewobject=0;
+                }
+                if(isset($user->userid)){
+                    $std->syslastupdatedby=$user->userid;
+                }
                 array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, $std));
             }
         } else {
-            array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, clone($data)));
+            $std = (object)clone($data);
+            if(empty($std->sysviewobject)){
+                $std->sysviewobject=0;
+            }
+            if(isset($user->userid)){
+                $std->syslastupdatedby=$user->userid;
+            }
+            array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, $std));
         }
         return $sql;
     }
@@ -401,7 +415,7 @@ class mysqlConnector
             throw new Exception("No Primary value was set to update.");
             return null;
         }
-        $sqlStart .= "sysversionid=" . date("YmdHis") . ",sysupdated=" . time();
+        $sqlStart .= "sysversionid=" . date("YmdHis") . ",sysupdated=" . time().",sysviewobject=".$data->sysviewobject.",syslastupdatedby='".(isset($data->syslastupdatedby)?$data->syslastupdatedby:"anonymous")."'";
         $dout->sql = rtrim($sqlStart, ",") . rtrim($sqlend, "and ") . ";\n";
         $dout->data = $data;
         return $dout;
@@ -410,14 +424,28 @@ class mysqlConnector
     private function generateInsertSQL($namespace, $tableSchema, $data)
     {
         $sql = array();
+        $user=Auth::Autendicate();
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 # code...
                 $std = (object)clone($value);
+                if(empty($std->sysviewobject)){
+                    $std->sysviewobject=0;
+                }
+                if(isset($user->userid)){
+                    $std->syscreatedby=$user->userid;
+                }
                 array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, $std));
             }
         } else {
-            array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, clone($data)));
+            $std = (object)clone($data);
+            if(empty($std->sysviewobject)){
+                $std->sysviewobject=0;
+            }
+            if(isset($user->userid)){
+                $std->syscreatedby=$user->userid;
+            }
+            array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, $std));
         }
         return $sql;
     }
@@ -433,8 +461,8 @@ class mysqlConnector
             }
         }
 
-        $sqlStart .= "sysversionid,syscreated";
-        $sqlend .= date("YmdHis") . "," . time();
+        $sqlStart .= "sysversionid,syscreated,syscreatedby,sysviewobject";
+        $sqlend .= date("YmdHis") . "," . time().",'".(isset($data->syscreatedby)?$data->syscreatedby:"anonymous")."',".$data->sysviewobject;
 
         return rtrim($sqlStart, ",") . ")" . rtrim($sqlend, ",") . ");\n";
     }

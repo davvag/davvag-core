@@ -38,11 +38,17 @@
             array_push($fields,$key3);
             $key3=new stdClass();
             $key3->fieldName="syscreatedby";
-            $key3->dataType="int";
+            $key3->dataType="string";
+            $key3->annotations=new stdClass();
+            $key3->annotations->isPrimary=false;
+            $key3->annotations->maxLen=100;
             array_push($fields,$key3);
             $key3=new stdClass();
             $key3->fieldName="syslastupdatedby";
-            $key3->dataType="int";
+            $key3->dataType="string";
+            $key3->annotations=new stdClass();
+            $key3->annotations->isPrimary=false;
+            $key3->annotations->maxLen=100;
             array_push($fields,$key3);
             return $fields;
         }
