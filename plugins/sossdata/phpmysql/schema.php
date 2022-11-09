@@ -36,6 +36,14 @@
             $key3->fieldName="sysviewobject";
             $key3->dataType="int";
             array_push($fields,$key3);
+            $key3=new stdClass();
+            $key3->fieldName="syscreatedby";
+            $key3->dataType="int";
+            array_push($fields,$key3);
+            $key3=new stdClass();
+            $key3->fieldName="syslastupdatedby";
+            $key3->dataType="int";
+            array_push($fields,$key3);
             return $fields;
         }
     }
