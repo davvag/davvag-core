@@ -57,11 +57,11 @@ class SOSSData {
         return self::getDataSource($tenantId)->Delete($className, $saveObj, $tenantId);
     }
 
-    public static function Query($className, $query, $lastVersionId = null,$sorting="asc",$pageSize=20,$fromPage=0, $tenantId = null){
+    public static function Query($className, $query, $lastVersionId = null,$sorting="asc",$pageSize=20,$fromPage=0, $tenantId = null,$viewObject=true){
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
 
-        return self::getDataSource($tenantId)->Query($className, $query, $lastVersionId,$sorting,$pageSize,$fromPage, $tenantId);
+        return self::getDataSource($tenantId)->Query($className, $query, $lastVersionId,$sorting,$pageSize,$fromPage, $tenantId,$viewObject);
     }
 
     public static function Close( $tenantId = null){

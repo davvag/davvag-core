@@ -3,7 +3,7 @@ require_once(dirname(__FILE__) . "/schema.php");
 class mysqlConnector
 {
     private $con = null;
-
+    
     public function Close()
     {
         mysqli_close($this->con);
@@ -109,7 +109,7 @@ class mysqlConnector
         }
     }
 
-    public function Query($namespace, $param, $lastID = 0, $sorting = "asc", $pageSize = 20, $fromPage = 0)
+    public function Query($namespace, $param, $lastID = 0, $sorting = "asc", $pageSize = 20, $fromPage = 0,$vieObject=true)
     {
         try {
             $tableSchema = Schema::Get($namespace);
@@ -140,8 +140,13 @@ class mysqlConnector
                         $sqlWhere .= " sysversionid <" . $lastID;
                     }
                 }
-
-                $sql .= ($sqlWhere != "" ? " where" . rtrim($sqlWhere, "and") : "");
+                if($vieObject){
+                    $sqlView =($sqlWhere != "" ?" and":" where")." sysviewobject in(" .implode(",",Auth::ViewObjects()).")";
+                }else{
+                    $sqlView ="";
+                }
+                
+                $sql .= ($sqlWhere != "" ? " where" . rtrim($sqlWhere, "and") : "").$sqlView;
                 $sqlCount ="Select count(*) from ($sql) tmp1982";
                 $sql.= " Order by sysversionid $sorting limit $fromPage,$pageSize";
                 if ($result = $this->con->query($sql)) {
@@ -461,8 +466,8 @@ class mysqlConnector
             }
         }
 
-        $sqlStart .= "sysversionid,syscreated,syscreatedby,sysviewobject";
-        $sqlend .= date("YmdHis") . "," . time().",'".(isset($data->syscreatedby)?$data->syscreatedby:"anonymous")."',".$data->sysviewobject;
+        $sqlStart .= "sysversionid,syscreated";
+        $sqlend .= date("YmdHis") . "," . time();
 
         return rtrim($sqlStart, ",") . ")" . rtrim($sqlend, ",") . ");\n";
     }
@@ -511,7 +516,8 @@ class mysqlConnector
                             (!empty($value->annotations->isPrimary) ? false : true),
                             (!empty($value->annotations->autoIncrement) ? $value->annotations->autoIncrement : false),
                             (!empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2"),
-                            (!empty($value->annotations->encoding) ? $value->annotations->encoding : false)
+                            (!empty($value->annotations->encoding) ? $value->annotations->encoding : false),
+                            (!empty($value->annotations->default) ? $value->annotations->default : null)
                         ) . "";
                         $sql .= ",\n";
                     }
@@ -522,7 +528,8 @@ class mysqlConnector
                             (!empty($value->annotations->isPrimary) ? false : true),
                             (!empty($value->annotations->autoIncrement) ? $value->annotations->autoIncrement : false),
                             (!empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2"),
-                            (!empty($value->annotations->encoding) ? $value->annotations->encoding : false)
+                            (!empty($value->annotations->encoding) ? $value->annotations->encoding : false),
+                            (!empty($value->annotations->default) ? $value->annotations->default : null)
                         ) . "";
                         $sql .= ",\n";
                     }
@@ -589,29 +596,28 @@ class mysqlConnector
         return $result;
     }
 
-    private function convertSQLtype($datatype, $datalength, $isNull, $isAutoIncrement, $decimalPoints, $endCoding)
+    private function convertSQLtype($datatype, $datalength, $isNull, $isAutoIncrement, $decimalPoints, $endCoding,$default=null)
     {
         $strValue = "";
 
-
         switch ($datatype) {
             case "int":
-                $strValue = "INT " . (($isNull) ? "" : "NOT") . " NULL ";
+                $strValue = "INT " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 if ($isAutoIncrement)
                     $strValue .= "AUTO_INCREMENT ";
                 break;
             case "float":
-                $strValue = "FLOAT " . (($isNull) ? "" : "NOT") . " NULL";
+                $strValue = "FLOAT " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
 
                 break;
             case "double":
-                $strValue = "DECIMAL " . (($isNull) ? "" : "NOT") . " NULL";
+                $strValue = "DECIMAL " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "short":
-                $strValue = "LONG " . (($isNull) ? "" : "NOT") . " NULL";
+                $strValue = "LONG " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "long":
-                $strValue = "LONG " . (($isNull) ? "" : "NOT") . " NULL";
+                $strValue = "LONG " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "decimal":
                 if ($decimalPoints == null)
@@ -621,25 +627,25 @@ class mysqlConnector
                 break;
             case "java.lang.String":
                 if ($datalength == 0) {
-                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL";
+                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 } else if ($datalength < 3072) {
                     if ($endCoding == null || $endCoding == "") {
                         $strValue = "VARCHAR(" . ($datalength) . ") " . (($isNull) ? "" : "NOT") . " NULL";
                     } else {
-                        $strValue = "MEDIUMTEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL";
+                        $strValue = "MEDIUMTEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                     }
                 } else {
-                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL";
+                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 }
                 break;
             case "java.util.Date":
-                $strValue = "DATETIME " . (($isNull) ? "" : "NOT") . " NULL";
+                $strValue = "DATETIME " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "boolean":
-                $strValue = "VARCHAR(5) " . (($isNull) ? "" : "NOT") . " NULL";
+                $strValue = "VARCHAR(5) " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             default:
-                $strValue = "TEXT " . (($isNull) ? "" : "NOT") . " NULL";
+                $strValue = "TEXT " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 break;
         }
         return $strValue;

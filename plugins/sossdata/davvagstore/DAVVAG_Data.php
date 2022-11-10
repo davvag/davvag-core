@@ -63,7 +63,7 @@ class DAVVAG_Data {
         }
     }
 
-    public static function Query($className, $query, $lastVersionId = null, $sorting = "asc",$pageSize=20,$fromPage=0, $tenantId = null){
+    public static function Query($className, $query, $lastVersionId = null, $sorting = "asc",$pageSize=20,$fromPage=0, $tenantId = null,$viewObject=true){
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
 

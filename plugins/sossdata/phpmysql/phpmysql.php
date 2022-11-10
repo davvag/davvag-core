@@ -34,14 +34,14 @@
         return $this->getCon($tenantId)->Delete($className,$saveObj);
       }
 
-      public function Query($className, $query, $lastVersionId = null, $sorting = "asc",$pageSize=20,$fromPage=0, $tenantId = null)
+      public function Query($className, $query, $lastVersionId = null, $sorting = "asc",$pageSize=20,$fromPage=0, $tenantId = null,$viewObject=true)
       {
-        return $this->getCon($tenantId)->Query($className,$query,$lastVersionId,$sorting,$pageSize,$fromPage);
+        return $this->getCon($tenantId)->Query($className,$query,$lastVersionId,$sorting,$pageSize,$fromPage,$viewObject);
         
       }
 
       public function SetViewObject($objectID=0,$tenantId){
-        return $this->getCon($tenantId)->SetViewObject($viewObjects);
+        return $this->getCon($tenantId)->SetViewObject($objectID);
       }
 
       public function Close($tenantId)

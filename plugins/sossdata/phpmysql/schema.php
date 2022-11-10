@@ -35,6 +35,9 @@
             $key3=new stdClass();
             $key3->fieldName="sysviewobject";
             $key3->dataType="int";
+            $key3->annotations=new stdClass();
+            $key3->annotations->default="0";
+           
             array_push($fields,$key3);
             $key3=new stdClass();
             $key3->fieldName="syscreatedby";

@@ -75,6 +75,9 @@ class Auth {
             if(!isset($outObject->error)){
                 session_destroy();
                 unset($_SESSION["authData"]);
+                unset($_SESSION["viewObjects"]);
+                unset($_SESSION["viewObjects_e"]);
+                unset($_SESSION["viewObjects_f"]);
                 unset($_COOKIE['securityToken']); 
                 setcookie('securityToken', null, -1, '/'); 
                 //session_regenerate_id();
@@ -208,6 +211,144 @@ class Auth {
         $response  = curl_exec($ch);
         curl_close($ch);
         return $response;
+    }
+    public static function FullAccessViewObjects(){
+        if(isset($_SESSION["viewObjects_f"])){
+            return $_SESSION["viewObjects_f"];
+        }else{
+            self::ViewObjects();
+            return $_SESSION["viewObjects_f"];
+        }
+    }
+
+    public static function EditableViewObjects(){
+        if(isset($_SESSION["viewObjects_e"])){
+            return $_SESSION["viewObjects_e"];
+        }else{
+            self::ViewObjects();
+            return $_SESSION["viewObjects_e"];
+        }
+    }
+
+    public static function ViewObjects(){
+        
+        $user=self::Autendicate();
+        $viewObjects=array(0);
+        $editable=array(0);
+        $fullaccess=array(0);
+        if(isset($_SESSION["viewObjects"])){
+            return $_SESSION["viewObjects"];
+        }
+        if(isset($user->userid)){
+           $viewObjects= CacheData::getObjects($user->userid,"viewObjects");
+           if(isset($viewObjects)){
+                $editable= CacheData::getObjects($user->userid."_e","viewObjects");
+                $fullaccess= CacheData::getObjects($user->userid."_f","viewObjects");
+                
+                //return $viewObjects;
+           }else{
+                $viewObjects=array(0);
+                $res=SOSSData::Query("user_object","owner:".$user->userid,null,"asc",100,0,null,false);
+                foreach ($res->result as $key => $value) {
+                    # code...
+                    array_push($viewObjects,$value->viewObjectID);
+                    array_push($editable,$value->viewObjectID);
+                    array_push($fullaccess,$value->viewObjectID);
+                }
+
+                $res=SOSSData::Query("user_view_objects","item_type:user,item_value:".$user->userid,null,"asc",100,0,null,false);
+                foreach ($res->result as $key => $value) {
+                    # code...
+                   if(!in_array($value->viewObjectID,$viewObjects)){
+                        array_push($viewObjects,$value->viewObjectID);
+                        switch($value->item_permision){
+                            case "Edit":
+                                array_push($editable,$value->viewObjectID);
+                                break;
+                            case "Full":
+                                array_push($editable,$value->viewObjectID);
+                                array_push($fullaccess,$value->viewObjectID);
+                                break;
+                        }
+                   }
+                }
+
+                $res=SOSSData::Query("user_view_objects","item_type:group,item_value:".$user->group,null,"asc",100,0,null,false);
+                foreach ($res->result as $key => $value) {
+                    # code...
+                   if(!in_array($value->viewObjectID,$viewObjects)){
+                        array_push($viewObjects,$value->viewObjectID);
+                        switch($value->item_permision){
+                            case "Edit":
+                                array_push($editable,$value->viewObjectID);
+                                break;
+                            case "Full":
+                                array_push($editable,$value->viewObjectID);
+                                array_push($fullaccess,$value->viewObjectID);
+                                break;
+                        }
+                   }
+                }
+
+                $res=SOSSData::Query("user_view_objects","item_type:user,item_value:*",null,"asc",100,0,null,false);
+                foreach ($res->result as $key => $value) {
+                    # code...
+                   if(!in_array($value->viewObjectID,$viewObjects)){
+                        array_push($viewObjects,$value->viewObjectID);
+                        switch($value->item_permision){
+                            case "Edit":
+                                array_push($editable,$value->viewObjectID);
+                                break;
+                            case "Full":
+                                array_push($editable,$value->viewObjectID);
+                                array_push($fullaccess,$value->viewObjectID);
+                                break;
+                        }
+                   }
+                }
+                CacheData::setObjects($user->userid,"viewObjects",$viewObjects);
+                CacheData::setObjects($user->userid."_e","viewObjects",$editable);
+                CacheData::setObjects($user->userid."_f","viewObjects",$fullaccess);
+                //return $viewObjects;
+           }
+        }else{
+            $viewObjects= CacheData::getObjects("anonymous","viewObjects");
+            if(isset($viewObjects)){
+                $editable= CacheData::getObjects("anonymous_e","viewObjects");
+                $fullaccess= CacheData::getObjects("anonymous_f","viewObjects");
+                //return $viewObjects;
+            }else{
+                $viewObjects=array(0);
+                $res=SOSSData::Query("user_view_objects","item_type:group,item_value:anonymous",null,"asc",100,0,null,false);
+                    foreach ($res->result as $key => $value) {
+                        # code...
+                    if(!in_array($value->viewObjectID,$viewObjects)){
+                            array_push($viewObjects,$value->viewObjectID);
+                            switch($value->item_permision){
+                                case "Edit":
+                                    array_push($editable,$value->viewObjectID);
+                                    break;
+                                case "Full":
+                                    array_push($editable,$value->viewObjectID);
+                                    array_push($fullaccess,$value->viewObjectID);
+                                    break;
+                            }
+                    }
+                    }
+                    CacheData::setObjects("anonymous","viewObjects",$viewObjects);
+                    CacheData::setObjects("anonymous_e","viewObjects",$editable);
+                    CacheData::setObjects("anonymous_f","viewObjects",$fullaccess);
+            //return $viewObjects;
+            }
+        }
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION["viewObjects"]=$viewObjects;
+        $_SESSION["viewObjects_e"]=$editable;
+        $_SESSION["viewObjects_f"]=$fullaccess;
+        
+        
     }
 
 }
