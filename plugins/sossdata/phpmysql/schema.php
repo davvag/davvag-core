@@ -4,7 +4,7 @@
 
         public static function Get($name){
             if(isset(self::$Schema[$name])){
-                return self::$Schema[$name];
+                return clone(self::$Schema[$name]);
             }else{
                 if (file_exists(TENANT_RESOURCE_LOCATION."/schemas/".$name.".json")){
                     $s = json_decode(file_get_contents(TENANT_RESOURCE_LOCATION."/schemas/".$name.".json"));
@@ -39,20 +39,20 @@
             $key3->annotations->default="0";
            
             array_push($fields,$key3);
-            $key3=new stdClass();
-            $key3->fieldName="syscreatedby";
-            $key3->dataType="string";
-            $key3->annotations=new stdClass();
-            $key3->annotations->isPrimary=false;
-            $key3->annotations->maxLen=100;
-            array_push($fields,$key3);
-            $key3=new stdClass();
-            $key3->fieldName="syslastupdatedby";
-            $key3->dataType="string";
-            $key3->annotations=new stdClass();
-            $key3->annotations->isPrimary=false;
-            $key3->annotations->maxLen=100;
-            array_push($fields,$key3);
+            $key4=new stdClass();
+            $key4->fieldName="syscreatedby";
+            $key4->dataType="string";
+            $key4->annotations=new stdClass();
+            $key4->annotations->isPrimary=false;
+            $key4->annotations->maxLen=100;
+            array_push($fields,$key4);
+            $key5=new stdClass();
+            $key5->fieldName="syslastupdatedby";
+            $key5->dataType="string";
+            $key5->annotations=new stdClass();
+            $key5->annotations->isPrimary=false;
+            $key5->annotations->maxLen=100;
+            array_push($fields,$key5);
             return $fields;
         }
     }

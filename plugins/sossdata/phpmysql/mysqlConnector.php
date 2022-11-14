@@ -94,6 +94,7 @@ class mysqlConnector
                 } else {
                     if (mysqli_errno($this->con) == 1305) {
                         $this->ExcuteMySQLScript($namespace);
+                        return $this->ExecuteRaw($namespace, $params);
                     } else {
                         return $this->result(false, null, $this->con->error);
                     }
@@ -112,7 +113,7 @@ class mysqlConnector
     public function Query($namespace, $param, $lastID = 0, $sorting = "asc", $pageSize = 20, $fromPage = 0,$vieObject=true)
     {
         try {
-            $tableSchema = Schema::Get($namespace);
+            $tableSchema = clone(Schema::Get($namespace));
             $systemFields = Schema::GetSystemColums();
             $param=urldecode($param);
             foreach ($systemFields as $key => $value) {
@@ -384,6 +385,8 @@ class mysqlConnector
                 }
                 if(isset($user->userid)){
                     $std->syslastupdatedby=$user->userid;
+                }else{
+                    $std->syslastupdatedby="anonymous";
                 }
                 array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, $std));
             }
@@ -394,6 +397,8 @@ class mysqlConnector
             }
             if(isset($user->userid)){
                 $std->syslastupdatedby=$user->userid;
+            }else{
+                $std->syslastupdatedby="anonymous";
             }
             array_push($sql, $this->generateSingleUpdate($namespace, $tableSchema, $std));
         }
@@ -439,6 +444,8 @@ class mysqlConnector
                 }
                 if(isset($user->userid)){
                     $std->syscreatedby=$user->userid;
+                }else{
+                    $std->syscreatedby="anonymous";
                 }
                 array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, $std));
             }
@@ -449,6 +456,8 @@ class mysqlConnector
             }
             if(isset($user->userid)){
                 $std->syscreatedby=$user->userid;
+            }else{
+                $std->syscreatedby="anonymous";
             }
             array_push($sql, $this->generateSingleInsert($namespace, $tableSchema, $std));
         }
@@ -466,15 +475,15 @@ class mysqlConnector
             }
         }
 
-        $sqlStart .= "sysversionid,syscreated";
-        $sqlend .= date("YmdHis") . "," . time();
+        $sqlStart .= "sysversionid,syscreated,syscreatedby,sysviewobject";
+        $sqlend .= date("YmdHis") . "," . time().",'".$data->syscreatedby."',".$data->sysviewobject;
 
         return rtrim($sqlStart, ",") . ")" . rtrim($sqlend, ",") . ");\n";
     }
 
     private function createTable($namespace)
     {
-        $tableSchema = Schema::Get($namespace);
+        $tableSchema = clone(Schema::Get($namespace));
         $systemFields = Schema::GetSystemColums();
         foreach ($systemFields as $key => $value) {
             # code...

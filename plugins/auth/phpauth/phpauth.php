@@ -1,13 +1,13 @@
 <?php
 class phpauth implements iDavvagAuth{
     public function Login ($username, $password){
-        $result=SOSSData::Query("users","email:".$username,null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("users","email:".$username,null,"asc",20,0,AUTH_DOMAIN,false);
         $user=null;
         if(count($result->result)!=0){
             $user=$result->result[0];
         }else{
 
-            $result=SOSSData::Query("users","username:".$username,null,"asc",20,0,AUTH_DOMAIN);
+            $result=SOSSData::Query("users","username:".$username,null,"asc",20,0,AUTH_DOMAIN,false);
             if(count($result->result)!=0)
                 $user=$result->result[0];
         }
@@ -54,7 +54,7 @@ class phpauth implements iDavvagAuth{
     private function GetUserGroup($userid,$domain)
     {
         $key=md5($domain."-".$userid);
-        $result=SOSSData::Query("domain_permision","keyid:".$key,null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("domain_permision","keyid:".$key,null,"asc",20,0,AUTH_DOMAIN,false);
         if(count($result->result)>0){
             return $result->result[0]->groupid;
         }else{
@@ -63,7 +63,7 @@ class phpauth implements iDavvagAuth{
     }
     public function SocialLogin ($app, $code,$create){throw new Exception("Not Implemented");}
     public function GetResetToken ($email){
-        $result=SOSSData::Query("users","email:".$email,null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("users","email:".$email,null,"asc",20,0,AUTH_DOMAIN,false);
         $user =$result->success?(count($result->result)>0?$result->result[0]:null):null;
         if(!empty($user)){
             $NotiData=new stdClass();
@@ -81,7 +81,7 @@ class phpauth implements iDavvagAuth{
     }
 
     private function getResetCode($email){
-        $result=SOSSData::Query("passwordresets","email:".$email,null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("passwordresets","email:".$email,null,"asc",20,0,AUTH_DOMAIN,false);
         $passrest=new stdClass();
             $passrest->email=$email;
             $passrest->message=uniqid();
@@ -95,7 +95,7 @@ class phpauth implements iDavvagAuth{
     }
     public function SaveUser ($user){
         
-        $result=SOSSData::Query("users","email:".$user->email,null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("users","email:".$user->email,null,"asc",20,0,AUTH_DOMAIN,false);
         if(count($result->result)!=0){
             return $this->error("Already registered");
             //throw new Exception("Already registered");
@@ -103,17 +103,21 @@ class phpauth implements iDavvagAuth{
             $original=$user->password;
             $user->password=md5($user->password);
             $user->userid=$this->GetNewUserID();
-            SOSSData::Insert("users",$user,AUTH_DOMAIN);
+            $r=SOSSData::Insert("users",$user,AUTH_DOMAIN);
+            if($r->success){
             $this->Join(AUTH_DOMAIN, $user->userid,"web_user");
-            $NotiData=new stdClass();
-            $NotiData->domain=AUTH_DOMAIN;
-            $NotiData->reqdomain=empty($_SERVER["HTTP_HOST"])?"":$_SERVER["HTTP_HOST"];
-            $NotiData->ip=empty($_SERVER["REMOTE_ADDR"])?"":$_SERVER['REMOTE_ADDR'];
-            $NotiData->remoteuser=empty($_SERVER["REMOTE_USER"])?"":$_SERVER['REMOTE_USER'];
-            $NotiData->remotehost=empty($_SERVER["REMOTE_HOST"])?"":$_SERVER['REMOTE_HOST'];
-            $NotiData->password=$original;
-            Notify::sendEmailMessage($user->name,$user->email,"auth-registeruser",$NotiData);
-            return $user;
+                $NotiData=new stdClass();
+                $NotiData->domain=AUTH_DOMAIN;
+                $NotiData->reqdomain=empty($_SERVER["HTTP_HOST"])?"":$_SERVER["HTTP_HOST"];
+                $NotiData->ip=empty($_SERVER["REMOTE_ADDR"])?"":$_SERVER['REMOTE_ADDR'];
+                $NotiData->remoteuser=empty($_SERVER["REMOTE_USER"])?"":$_SERVER['REMOTE_USER'];
+                $NotiData->remotehost=empty($_SERVER["REMOTE_HOST"])?"":$_SERVER['REMOTE_HOST'];
+                $NotiData->password=$original;
+                Notify::sendEmailMessage($user->name,$user->email,"auth-registeruser",$NotiData);
+                return $user;
+            }else{
+                return $this->error($r->message);
+            }
 
         }
     
@@ -123,7 +127,7 @@ class phpauth implements iDavvagAuth{
         if(empty($data->otherdata->usersname) || empty($data->otherdata->password)){
             throw new Exception("Registration Invalied");
         }else{
-            $result=SOSSData::Query("domains","domain:".$data->domain,null,"asc",20,0,AUTH_DOMAIN);
+            $result=SOSSData::Query("domains","domain:".$data->domain,null,"asc",20,0,AUTH_DOMAIN,false);
             if(count($result->result)!=0){
                 return $this->error("Already registered");
                 //throw new Exception("Already registered");
@@ -132,7 +136,7 @@ class phpauth implements iDavvagAuth{
                 if($result->success){
                     $data->otherdata->profileid=$result->result->generatedId;
                     $data->id=$result->result->generatedId;
-                    $result=SOSSData::Query("users","email:".$data->email,null,"asc",20,0,AUTH_DOMAIN);
+                    $result=SOSSData::Query("users","email:".$data->email,null,"asc",20,0,AUTH_DOMAIN,false);
                     $user=new stdClass();
                     if(count($result->result)!=0)
                     {
@@ -179,7 +183,7 @@ class phpauth implements iDavvagAuth{
         $prm->groupid=$usergroup;
         $prm->keyid=$key;
         
-        $result=SOSSData::Query("domain_permision","keyid:".$key,null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("domain_permision","keyid:".$key,null,"asc",20,0,AUTH_DOMAIN,false);
         if(count($result->result)!=0)
         {   
             SOSSData::Update("domain_permision",$prm,AUTH_DOMAIN);
@@ -190,11 +194,11 @@ class phpauth implements iDavvagAuth{
     }
 
     public function ResetPassword ($email, $token, $newPassword){
-        $result=SOSSData::Query("passwordresets","email:".$email,null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("passwordresets","email:".$email,null,"asc",20,0,AUTH_DOMAIN,false);
         $message=new stdClass();
         if(count($result->result)>0){
             if($result->result[0]->message==$token){
-                $users=SOSSData::Query("users","email".$email,null,"asc",20,0,AUTH_DOMAIN);
+                $users=SOSSData::Query("users","email".$email,null,"asc",20,0,AUTH_DOMAIN,false);
                 if(count($users->result)>0){
                     $user=$users->result[0];
                     $user->password=md5($newPassword);
@@ -224,7 +228,7 @@ class phpauth implements iDavvagAuth{
     public function ChangePassword ($oldpassword, $newPassword){
         $message=new stdClass();
         if(isset($_SESSION["authData"])){
-            $users=SOSSData::Query("users","userid".$_SESSION["authData"]->userid,null,"asc",20,0,AUTH_DOMAIN);
+            $users=SOSSData::Query("users","userid".$_SESSION["authData"]->userid,null,"asc",20,0,AUTH_DOMAIN,false);
                 if(count($users->result)>0){
                     $user=$users->result[0];
                     if($user->password==md5($oldpassword)){
@@ -252,7 +256,7 @@ class phpauth implements iDavvagAuth{
         return $message;
     }
     public function GetSession ($token){
-        $result=SOSSData::Query("sessions","token:".$token,null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("sessions","token:".$token,null,"asc",20,0,AUTH_DOMAIN,false);
         if(count($result->result)>0)
         {
             $session =$result->result[0];
@@ -273,7 +277,7 @@ class phpauth implements iDavvagAuth{
         
     }
     public function GetUserGroups (){
-        $result=SOSSData::Query("usergroups","",null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("usergroups","",null,"asc",20,0,AUTH_DOMAIN,false);
         if(count($result->result)==0){
             $usergroups=array();
             $group=new stdClass();
@@ -299,7 +303,7 @@ class phpauth implements iDavvagAuth{
 
     }
     public function NewUserGroup ($groupid){
-        $result=SOSSData::Query("usergroups","groupid:".$groupid,null,"asc",20,0,AUTH_DOMAIN);
+        $result=SOSSData::Query("usergroups","groupid:".$groupid,null,"asc",20,0,AUTH_DOMAIN,false);
         if(count($result->result)==0){
             $group=new stdClass();
             $group->groupid=$groupid;
@@ -315,10 +319,10 @@ class phpauth implements iDavvagAuth{
         $uapp=count($uapps)>0?(object)$uapps[0]:null;
         $groupid=isset($uapp)?$uapp->groupid:"";
         $saveObject=array();
-        $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid,null,"asc",100,0,AUTH_DOMAIN);
+        $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid,null,"asc",100,0,AUTH_DOMAIN,false);
         while(count($data->result)!=0){
-            SOSSData::Delete("usergroup_permission",$data->result,AUTH_DOMAIN);
-            $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid,null,"asc",100,0,AUTH_DOMAIN);
+            SOSSData::Delete("usergroup_permission",$data->result,AUTH_DOMAIN,false);
+            $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid,null,"asc",100,0,AUTH_DOMAIN,false);
 
         }
         foreach ($uapps as $key => $app) {
@@ -350,7 +354,7 @@ class phpauth implements iDavvagAuth{
                 $application->operation=$ops;
                 return $application;
             }else{
-                $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid.",appCode:".$app.",type:".$type.",code:".$code.",operation:".$ops,null,"asc",20,0,AUTH_DOMAIN);
+                $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN.",groupid:".$groupid.",appCode:".$app.",type:".$type.",code:".$code.",operation:".$ops,null,"asc",20,0,AUTH_DOMAIN,false);
                 if(count($data->result)>0){
                     return $data->result[0];
                 }else{
@@ -372,7 +376,7 @@ class phpauth implements iDavvagAuth{
                 array_push($applist,$application);
                 return $applist;
             }else{
-                $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN,null,"asc",1000,0,AUTH_DOMAIN);
+                $data=SOSSData::Query("usergroup_permission","domain:".AUTH_DOMAIN,null,"asc",1000,0,AUTH_DOMAIN,false);
                 return $data->result;
             }
 
@@ -381,7 +385,7 @@ class phpauth implements iDavvagAuth{
     }
 
     public function GetDomainAttributes (){
-        $data=SOSSData::Query("domains","domain:".AUTH_DOMAIN,null,"asc",20,0,AUTH_DOMAIN);
+        $data=SOSSData::Query("domains","domain:".AUTH_DOMAIN,null,"asc",20,0,AUTH_DOMAIN,false);
         if($data->success){
             if(count($data->result)!=0){
                 return $data->result[0];
@@ -400,7 +404,7 @@ class phpauth implements iDavvagAuth{
     public function AutendicateDomain($tname,$securityToken,$appname,$operation){throw new Exception("Not Implemented");}
     private function GetNewUserID(){
         $userid=uniqid();
-        $rs=SOSSData::Query("users","userid:".$userid,null,"asc",20,0,AUTH_DOMAIN);
+        $rs=SOSSData::Query("users","userid:".$userid,null,"asc",20,0,AUTH_DOMAIN,false);
         if(count($rs->result)!=0){
             return $this->GetNewUserID();
         }else{
@@ -411,7 +415,7 @@ class phpauth implements iDavvagAuth{
 
     private function GetNewSessionID(){
         $userid=uniqid();
-        $rs=SOSSData::Query("sessions","token:".$userid,null,"asc",20,0,AUTH_DOMAIN);
+        $rs=SOSSData::Query("sessions","token:".$userid,null,"asc",20,0,AUTH_DOMAIN,false);
         if(count($rs->result)!=0){
             return $this->GetNewSessionID();
         }else{
