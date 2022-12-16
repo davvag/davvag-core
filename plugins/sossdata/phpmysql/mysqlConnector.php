@@ -3,6 +3,7 @@ require_once(dirname(__FILE__) . "/schema.php");
 class mysqlConnector
 {
     private $con = null;
+    private $retry=0;
     
     public function Close()
     {
@@ -93,7 +94,12 @@ class mysqlConnector
                     return $this->result(true, $data);
                 } else {
                     if (mysqli_errno($this->con) == 1305) {
+                        if($this->retry>0){
+                            return $this->result(false, null, $this->con->error);
+                        }
+                        $this->retry++;
                         $this->ExcuteMySQLScript($namespace);
+                        $this->retry=0;
                         return $this->ExecuteRaw($namespace, $params);
                     } else {
                         return $this->result(false, null, $this->con->error);
@@ -176,7 +182,12 @@ class mysqlConnector
                     return $this->result(true, $data,"",$numberOfRecords,$fromPage,$pageSize);
                 } else {
                     if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
+                        if($this->retry>0){
+                            return $this->result(false, null, $this->con->error);
+                        }
+                        $this->retry++;
                         $this->createTable($namespace);
+                        $this->retry=0;
                         return $this->Query($namespace, $param, $lastID, $sorting, $pageSize, $fromPage);
                     } else {
                         return $this->result(false, null, $this->con->error);
@@ -210,7 +221,12 @@ class mysqlConnector
                         array_push($genis, $result);
                     } else {
                         if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
+                            if($this->retry>0){
+                                return $this->result(false, null, $this->con->error);
+                            }
+                            $this->retry++;
                             $this->createTable($namespace);
+                            $this->retry=0;
                             return $this->Insert($namespace, $data);
                         } else {
                             $result->success = false;
@@ -249,7 +265,12 @@ class mysqlConnector
                     } else {
 
                         if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
+                            if($this->retry>0){
+                                return $this->result(false, null, $this->con->error);
+                            }
+                            $this->retry++;
                             $this->createTable($namespace);
+                            $this->retry=0;
                             return $this->Update($namespace, $data);
                         } else {
                             $dout->data->{"_ErrorMessage"} = $this->con->error;
@@ -291,7 +312,12 @@ class mysqlConnector
                         }
                     } else {
                         if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
+                            if($this->retry>0){
+                                return $this->result(false, null, $this->con->error);
+                            }
+                            $this->retry++;
                             $this->createTable($namespace);
+                            $this->retry=0;
                             return $this->Delete($namespace, $data);
                         } else {
                             $success = false;
