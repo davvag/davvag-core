@@ -136,8 +136,18 @@ class mysqlConnector
                     # code...
                     $field = explode(":", $value);
                     if (count($field) == 2) {
-
-                        $sqlWhere .= " " . $field[0] . "='" . $field[1] . "' and";
+                        $hasKey=false;
+                        foreach ($tableSchema->fields as $k1 => $v1) {
+                            # code...
+                            if($field[0]==$v1->fieldName){
+                                $hasKey=true;
+                            }
+                        }
+                        if($hasKey){
+                            $sqlWhere .= " " . $field[0] . "='" . $field[1] . "' and";
+                        }else{
+                            throw new Exception("Colomn [".$field[0]."]not found ");
+                        }
                     }
                 }
                 if ($lastID != 0) {
