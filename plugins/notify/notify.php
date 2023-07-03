@@ -1,5 +1,5 @@
 <?php
-    require_once(PLUGIN_PATH . "/phpmailer/PHPMailerAutoload.php");
+    require_once("vendor/autoload.php");
     class Notify{
       private static $emailconfig;
       private static $globals;
