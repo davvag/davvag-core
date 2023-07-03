@@ -25,7 +25,7 @@
         return DAVVAG_Data::Delete($className, $saveObj, $tenantId);
       }
 
-      public function Query($className, $query, $lastVersionId = null, $sorting = "asc",$pageSize=20,$fromPage=0, $tenantId = null)
+      public function Query($className, $query, $lastVersionId = null, $sorting = "asc",$pageSize=20,$fromPage=0, $tenantId = null,$viewObject=true)
       {
         return DAVVAG_Data::Query($className, $query, $lastVersionId, $sorting,$pageSize,$fromPage, $tenantId);
         
