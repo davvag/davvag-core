@@ -1,5 +1,6 @@
 <?php
-    require_once("vendor/autoload.php");
+    require_once("/vendor/autoload.php");
+    //PHPMailer();
     class Notify{
       private static $emailconfig;
       private static $globals;
@@ -30,7 +31,7 @@
             $config=str_replace("@email",$email,$config);
             $subject=self::getValue("subject",$config);
             $body=self::getValue("body",$config);
-            $mail = new PHPMailer();
+            $mail = new PHPMailer\PHPMailer\PHPMailer();
            //echo self::$emailconfig->username."-".self::$emailconfig->host."-".self::$emailconfig->port."-".self::$emailconfig->password."-";
             $mail->IsSMTP(); // set mailer to use SMTP
             $mail->SMTPDebug  = 0;
