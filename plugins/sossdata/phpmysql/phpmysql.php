@@ -40,7 +40,7 @@
         
       }
 
-      public function SetViewObject($objectID=0,$tenantId){
+      public function SetViewObject($objectID=0,$tenantId=0){
         return $this->getCon($tenantId)->SetViewObject($objectID);
       }
 
