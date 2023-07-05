@@ -193,20 +193,20 @@ class mysqlConnector
                 } else {
                     if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
                         if($this->retry>0){
-                            return $this->result(false, null, $this->con->error);
+                            return $this->result(false, [], $this->con->error);
                         }
                         $this->retry++;
                         $this->createTable($namespace);
                         $this->retry=0;
                         return $this->Query($namespace, $param, $lastID, $sorting, $pageSize, $fromPage);
                     } else {
-                        return $this->result(false, null, $this->con->error);
+                        return $this->result(false, [], $this->con->error);
                     }
                 }
             }
         } catch (Exception $e) {
             //throw $th;
-            return $this->result(false, null, $e->getMessage());
+            return $this->result(false, [], $e->getMessage());
         }
         
     }
