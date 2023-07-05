@@ -622,7 +622,7 @@ class mysqlConnector
         $result = new stdClass();
         $result->success = $suessfull;
         if ($suessfull) {
-            $result->result = $data;
+            $result->result = isset($data)?$data:[];
             if(isset($pageNumber)){
                 $result->pageNumber=$pageNumber;
             }
