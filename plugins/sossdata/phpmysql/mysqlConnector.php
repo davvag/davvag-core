@@ -562,7 +562,7 @@ class mysqlConnector
                             (!empty($value->annotations->autoIncrement) ? $value->annotations->autoIncrement : false),
                             (!empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2"),
                             (!empty($value->annotations->encoding) ? $value->annotations->encoding : false),
-                            (!empty($value->annotations->default) ? $value->annotations->default : null)
+                            (isset($value->annotations->default) ? $value->annotations->default : null)
                         ) . "";
                         $sql .= ",\n";
                     }
@@ -574,7 +574,7 @@ class mysqlConnector
                             (!empty($value->annotations->autoIncrement) ? $value->annotations->autoIncrement : false),
                             (!empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2"),
                             (!empty($value->annotations->encoding) ? $value->annotations->encoding : false),
-                            (!empty($value->annotations->default) ? $value->annotations->default : null)
+                            (isset($value->annotations->default) ? $value->annotations->default : null)
                         ) . "";
                         $sql .= ",\n";
                     }
