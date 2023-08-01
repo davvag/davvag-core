@@ -25,7 +25,7 @@ class DAVVAG_Data {
 
         $responseStr = self::callRest ($tenantId, $className, $wrapper, "POST");
         //var_dump ($responseStr);
-        return json_decode($responseStr);
+        return json_decode($responseStr)==null?(object)array("sucess"=>false,"message"=>$responseStr):json_decode($responseStr);
     }
 
 
@@ -37,7 +37,7 @@ class DAVVAG_Data {
         $wrapper->object = $saveObj;
 
         $responseStr = self::callRest ($tenantId, $className, $wrapper, "PUT");
-        return json_decode($responseStr);
+        return json_decode($responseStr)==null?(object)array("sucess"=>false,"message"=>$responseStr):json_decode($responseStr);
     }
 
     public static function Delete ($className, $saveObj, $tenantId = null){
@@ -70,7 +70,7 @@ class DAVVAG_Data {
         $className = isset($query) ?  "$className?query=$query" : $className;
         $className = isset($query) ?  "$className&lastversionid=$lastVersionId" : "$className?lastversionid=$lastVersionId";
         $responseStr = self::callRest ($tenantId, $className);;
-        return json_decode($responseStr);
+        return json_decode($responseStr)==null?(object)array("sucess"=>false,"message"=>$responseStr):json_decode($responseStr);
     }
 
     public static function SetViewObject($objectID,$tenantId){
@@ -87,7 +87,7 @@ class DAVVAG_Data {
         $className = isset($lastVersionId ) ?  "$className?lastversionid=$lastVersionId" : $className;
 
         $responseStr = self::callRest ($tenantId, $className, $wrapper, "POST");
-        return json_decode($responseStr);
+        return json_decode($responseStr)==null?(object)array("sucess"=>false,"message"=>$responseStr):json_decode($responseStr);
     }
 
     private static function callRest($host, $className, $jsonObj = null, $method="GET", $headerArray=null){
