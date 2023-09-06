@@ -206,7 +206,7 @@ class mysqlConnector
             }
         } catch (Exception $e) {
             //throw $th;
-            return $this->result(false, [], $e->getMessage());
+            return $this->result(false, [], $e->getMessage() ." ERROR NO".mysqli_errno($this->con));
         }
         
     }
