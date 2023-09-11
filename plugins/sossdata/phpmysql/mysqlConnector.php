@@ -665,10 +665,10 @@ class mysqlConnector
                 $strValue = "DECIMAL " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "short":
-                $strValue = "LONG " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "BIGINT " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "long":
-                $strValue = "LONG " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "BIGINT " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "decimal":
                 if ($decimalPoints == null)
