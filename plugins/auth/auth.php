@@ -129,7 +129,12 @@ class Auth {
             session_start();
         }
         if(empty($_SESSION["DomainAttributes"])){
-            $_SESSION["DomainAttributes"]=self::getAuthSvr()->GetDomainAttributes();
+            $domain=self::getAuthSvr()->GetDomainAttributes();
+            if(isset($domain->domain))
+                $_SESSION["DomainAttributes"]=self::getAuthSvr()->GetDomainAttributes();
+            else{
+                return $domain;
+            }
             
         }
         return $_SESSION["DomainAttributes"];
