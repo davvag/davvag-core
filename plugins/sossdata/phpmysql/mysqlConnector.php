@@ -85,7 +85,7 @@ class mysqlConnector
                         $item = new stdClass();
                         foreach ($tableSchema->fields as $key => $value) {
                             # code...
-                            $item->{$value->fieldName} = $row[$value->fieldName];
+                            $item->{$value->fieldName} = isset($row[$value->fieldName])?$row[$value->fieldName]:$value->fieldName." NOt Found.";
                         }
                         //$item->{"@meta"}=new stdClass();
 
@@ -158,7 +158,13 @@ class mysqlConnector
                     }
                 }
                 if($vieObject){
-                    $sqlView =($sqlWhere != "" ?" and":" where")." sysviewobject in(" .implode(",",Auth::ViewObjects()).")";
+                    $objs=Auth::ViewObjects();
+                    if(is_array($objs && count($objs)>0)){
+                        $sqlView =($sqlWhere != "" ?" and":" where")." sysviewobject in(" .implode(",",$objs).")";
+                    }
+                    else{
+                        $sqlView ="";
+                    }
                 }else{
                     $sqlView ="";
                 }
@@ -700,7 +706,7 @@ class mysqlConnector
     {
         switch ($field->dataType) {
             case "java.lang.String":
-                return $value;
+                return iconv(mb_detect_encoding($value, mb_detect_order(), true), "UTF-8", $value);;
                 break;
             case "int":
                 return (int)$value;
