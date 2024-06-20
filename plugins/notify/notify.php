@@ -26,6 +26,7 @@
             
             foreach ($data as $propertyToSet => $value) {
               try{
+              if(!is_object($value))
               $config=str_replace("@".$propertyToSet,(string)$value,$config);
               }catch(Exception $Ex){}
             }
