@@ -23,8 +23,11 @@
             foreach (self::$globals as $propertyToSet => $value) {
               $config=str_replace("@".$propertyToSet,$value,$config);
             }
+            
             foreach ($data as $propertyToSet => $value) {
-              $config=str_replace("@".$propertyToSet,$value,$config);
+              try{
+              $config=str_replace("@".$propertyToSet,(string)$value,$config);
+              }catch(Exception $Ex){}
             }
     
             $config=str_replace("@name",$name,$config);
