@@ -5,7 +5,14 @@
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
-    
+    // Allow requests from any origin (for testing)
+    header("Access-Control-Allow-Origin: *");
+
+    // Allow specific methods
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+
+    // Allow specific headers
+    header("Access-Control-Allow-Headers: Content-Type, Authorization");
     require_once ("../configloader.php");
     require_once (dirname(__FILE__) . "/common.php");
     require_once (dirname(__FILE__) . "/resources.php");
