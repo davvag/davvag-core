@@ -6,7 +6,7 @@ class CacheData{
     public static function getObjects($lastVersionId,$className){
         
         $tenantId = DATASTORE_DOMAIN;
-        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN . "/".$className;
+        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN ."/".CacheData::getUID(). "/".$className;
             
         if (!file_exists($path))
               mkdir($path, 0777, true);
@@ -35,7 +35,7 @@ class CacheData{
     public static function getObjects_fullcache($lastVersionId,$className){
         
         $tenantId = DATASTORE_DOMAIN;
-        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN . "/".$className;
+        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN."/".CacheData::getUID() . "/".$className;
             
         if (!file_exists($path))
               mkdir($path, 0777, true);
@@ -61,7 +61,7 @@ class CacheData{
         if($className==""){
             return;
         }
-        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN . "/$className";
+        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN."/".CacheData::getUID() . "/$className";
         if (file_exists($path)){
             array_map('unlink', glob("$path/*.*"));
             rmdir($path);
@@ -70,7 +70,7 @@ class CacheData{
     public static function setObjects($lastVersionId,$className, $saveObj){
         
         $tenantId = $_SERVER["HTTP_HOST"];
-        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN . "/$className";
+        $path = MEDIA_FOLDER . "/cache/".  DATASTORE_DOMAIN ."/".CacheData::getUID(). "/$className";
             
         if (!file_exists($path))
               mkdir($path, 0777, true);
@@ -82,6 +82,17 @@ class CacheData{
         fwrite ($f, $string, strlen($string));
         fclose($f);
         
+    }
+
+    public static function getUID(){
+        if (class_exists('Auth')) {
+            $user=Auth::Autendicate();
+            if(isset($user)){
+                return $user->userid;
+            }
+        }else{
+            return "global";
+        }
     }
 }
 
