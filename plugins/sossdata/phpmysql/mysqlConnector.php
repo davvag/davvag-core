@@ -159,7 +159,7 @@ class mysqlConnector
                 }
                 if($vieObject){
                     $objs=Auth::ViewObjects();
-                    if(is_array($objs && count($objs)>0)){
+                    if(is_array($objs) && count($objs)>0){
                         $sqlView =($sqlWhere != "" ?" and":" where")." sysviewobject in(" .implode(",",$objs).")";
                     }
                     else{
