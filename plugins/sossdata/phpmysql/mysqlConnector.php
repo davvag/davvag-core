@@ -116,7 +116,7 @@ class mysqlConnector
         }
     }
 
-    public function Query($namespace, $param, $lastID = 0, $sorting = "asc", $pageSize = 20, $fromPage = 0,$vieObject=true)
+    public function Query($namespace, $param, $lastID = 0, $sorting = "DESC", $pageSize = 20, $fromPage = 0,$vieObject=true)
     {
         try {
             $tableSchema = clone(Schema::Get($namespace));
