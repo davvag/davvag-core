@@ -4,6 +4,7 @@ DAVVAG is a PHP-based, tenant-aware application framework. It separates shared f
 
 This README is written as the first-stop guide for AI agents doing development in this repository. For deeper reference, read:
 
+- `docs/README.md` for the structured documentation index.
 - `DAVVAG_PROJECT_STRUCTURE.md` for the full framework-level map.
 - `DAVVAG_TENATE_STRUCTURE.md` for the scanned tenant/domain structure under `davvag-core/localhost`.
 
@@ -87,6 +88,108 @@ DB_CONFIG_FILE
 
 Before making tenant changes, confirm the effective `TENANT_RESOURCE_LOCATION`. The checked-in root config may point outside the repository depending on `RESOURCE_LOCATION` and `LOCAL_DEV_HOST`.
 
+## Create a Tenant Folder
+
+Tenant folders are created inside the root `davvag-core/` tenant container. The folder name should match the domain or host name that DAVVAG resolves through `HOST_NAME`.
+
+Examples:
+
+```text
+davvag-core/localhost
+davvag-core/example.com
+davvag-core/apps.davvag.com
+```
+
+Minimum new tenant structure:
+
+```text
+davvag-core/example.com/
+  apps/
+  davvag-flow/
+  global/
+    config/
+    templetes/
+      app/
+      email/
+  plugins/
+  schemas/
+  tenant.json
+  config.json
+  anonymous.json
+  web_user.json
+  sysadmin.json
+```
+
+The root config must resolve this tenant. There are two common paths:
+
+1. Set `LOCAL_DEV_HOST` in root `config.json` to `example.com`.
+2. Use an actual virtual host where `$_SERVER["HTTP_HOST"]` is `example.com`.
+
+`configloader.php` calculates:
+
+```text
+TENANT_RESOURCE_LOCATION = RESOURCE_LOCATION / HOST_NAME
+```
+
+So if:
+
+```json
+{
+  "variables": {
+    "RESOURCE_LOCATION": "C:\\xampp\\htdocs\\git\\davvag-core\\davvag-core",
+    "LOCAL_DEV_HOST": "example.com"
+  }
+}
+```
+
+then the tenant path becomes:
+
+```text
+C:\xampp\htdocs\git\davvag-core\davvag-core\example.com
+```
+
+Minimum `tenant.json`:
+
+```json
+{
+  "apps": {
+    "my-new-app": {
+      "version": "latest"
+    }
+  },
+  "webdock": {
+    "events": {
+      "onStartup": {
+        "admin": "my-new-app",
+        "default": "my-new-app"
+      }
+    }
+  }
+}
+```
+
+Minimum group file, for example `sysadmin.json`:
+
+```json
+{
+  "apps": {
+    "my-new-app": {
+      "version": "latest"
+    }
+  },
+  "webdock": {
+    "events": {
+      "onStartup": {
+        "admin": "my-new-app",
+        "default": "my-new-app"
+      }
+    }
+  }
+}
+```
+
+Create `anonymous.json` and `web_user.json` with only the apps those groups should see.
+
 ## Tenant Structure
 
 Tenant folders live under `davvag-core/`. In this checkout, the main scanned tenant is:
@@ -164,6 +267,78 @@ Component paths are descriptor-driven:
 {TENANT_RESOURCE_LOCATION}/apps/{appCode}/{location}/{componentName}/component.json
 ```
 
+## Create a New Application
+
+Create the app folder inside the tenant:
+
+```text
+davvag-core/example.com/apps/my-new-app
+```
+
+Recommended structure:
+
+```text
+apps/my-new-app/
+  app.json
+  app.php
+  components/
+    main-view/
+      component.json
+      script.js
+      partial.html
+      main-view.css
+  services/
+    api/
+      component.json
+      script.js
+      service.php
+```
+
+`app.json` template:
+
+```json
+{
+  "components": {
+    "main-view": {
+      "type": "component",
+      "location": "components"
+    },
+    "api": {
+      "type": "service",
+      "location": "services"
+    }
+  },
+  "description": {
+    "title": "My New App",
+    "author": "DAVVAG",
+    "version": "0.1",
+    "icon": "appicon.png"
+  },
+  "tags": ["showindock"],
+  "configuration": {
+    "webdock": {
+      "startupComponent": "main-view",
+      "onLoad": ["api"],
+      "routes": {
+        "partials": {
+          "/": "main-view"
+        }
+      }
+    }
+  }
+}
+```
+
+After creating the folder, register the app in:
+
+```text
+davvag-core/example.com/tenant.json
+davvag-core/example.com/sysadmin.json
+davvag-core/example.com/web_user.json
+```
+
+Use `anonymous.json` only if the app should be public.
+
 ## Component Types
 
 Frontend components usually include:
@@ -234,6 +409,86 @@ POST /components/{app}/{component}/service/Save  -> postSave($req, $res)
 
 If the method-specific handler does not exist, `ComponentManager` tries `__handle($req, $res)`.
 
+## Create a Service
+
+Create:
+
+```text
+apps/my-new-app/services/api/component.json
+apps/my-new-app/services/api/script.js
+apps/my-new-app/services/api/service.php
+```
+
+`component.json`:
+
+```json
+{
+  "name": "api",
+  "description": "Application API service",
+  "author": "DAVVAG",
+  "version": "0.1",
+  "resources": {
+    "files": [
+      {
+        "type": "mainScript",
+        "location": "script.js"
+      }
+    ]
+  },
+  "serviceHandler": {
+    "file": "service.php",
+    "class": "my_new_app\\ApiService",
+    "methods": {
+      "Save": {
+        "method": "POST"
+      },
+      "List": {
+        "method": "GET"
+      }
+    }
+  },
+  "transformers": {}
+}
+```
+
+`script.js` can be minimal for service-only components:
+
+```javascript
+WEBDOCK.component().register(function (exports) {
+});
+```
+
+`service.php`:
+
+```php
+<?php
+namespace my_new_app;
+
+require_once(PLUGIN_PATH . "/sossdata/SOSSData.php");
+
+class ApiService {
+    public function postSave($req, $res) {
+        $data = $req->Body(true);
+        return SOSSData::Insert("my_new_app_items", $data);
+    }
+
+    public function getList($req, $res) {
+        $query = isset($_GET["query"]) ? $_GET["query"] : "";
+        return SOSSData::Query("my_new_app_items", $query);
+    }
+}
+?>
+```
+
+The class name must match `serviceHandler.class`, including namespace. The method name must match the HTTP verb and handler name.
+
+Service test URLs:
+
+```text
+POST /components/my-new-app/api/service/Save
+GET  /components/my-new-app/api/service/List
+```
+
 ## Component API Routes
 
 Common routes:
@@ -296,6 +551,78 @@ email:user@example.com,status:Active
 
 Security note: the current MySQL connector builds SQL strings directly. Validate and escape user-controlled input before adding public write or query endpoints.
 
+## Create Database Structure
+
+Create schema files in the active tenant:
+
+```text
+davvag-core/example.com/schemas/my_new_app_items.json
+```
+
+Schema template:
+
+```json
+{
+  "fields": [
+    {
+      "fieldName": "id",
+      "dataType": "int",
+      "annotations": {
+        "isPrimary": true,
+        "autoIncrement": true
+      }
+    },
+    {
+      "fieldName": "title",
+      "dataType": "java.lang.String",
+      "annotations": {
+        "maxLen": 255,
+        "encoding": "utf8"
+      }
+    },
+    {
+      "fieldName": "status",
+      "dataType": "java.lang.String",
+      "annotations": {
+        "maxLen": 50,
+        "default": "Active"
+      }
+    },
+    {
+      "fieldName": "metadata",
+      "dataType": "object",
+      "annotations": {
+        "maxLen": 2000
+      }
+    }
+  ]
+}
+```
+
+Common data types:
+
+```text
+int
+float
+double
+short
+long
+decimal
+java.lang.String
+java.util.Date
+boolean
+object
+```
+
+Use the schema namespace in service code:
+
+```php
+SOSSData::Insert("my_new_app_items", $data);
+SOSSData::Query("my_new_app_items", "status:Active");
+```
+
+The MySQL connector can create missing tables from schema files when the namespace is first used.
+
 ## Auth and Permissions
 
 Core auth flow:
@@ -348,6 +675,115 @@ Workflow files resolve to:
 {TENANT_RESOURCE_LOCATION}/davvag-flow/{namespace}/{flowid}.json
 ```
 
+## Create a Workflow
+
+Create workflow folders inside the tenant:
+
+```text
+davvag-core/example.com/davvag-flow/my-new-app/
+```
+
+Create:
+
+```text
+davvag-flow/my-new-app/create-item.json
+```
+
+Workflow template that calls an app service:
+
+```json
+{
+  "name": "Create Item Workflow",
+  "start_up_node": "save-item",
+  "inputData": [
+    {
+      "name": "title",
+      "datatype": "string"
+    },
+    {
+      "name": "status",
+      "datatype": "string"
+    }
+  ],
+  "save-item": {
+    "urntype": "service",
+    "appCode": "my-new-app",
+    "componentCode": "api",
+    "method": {
+      "type": "post",
+      "name": "Save",
+      "params": [
+        {
+          "name": "postData",
+          "type": "object",
+          "value": "inputData"
+        }
+      ],
+      "return": true,
+      "returnobj": "savedItem"
+    },
+    "success": "build-result",
+    "fail": "nodefail"
+  },
+  "build-result": {
+    "urntype": "create_object",
+    "method": {
+      "type": "create_object",
+      "name": "Result",
+      "return": true,
+      "returnobj": "result"
+    },
+    "variables": [
+      {
+        "name": "message",
+        "value": "Item saved"
+      },
+      {
+        "name": "item",
+        "type": "object",
+        "value": "scopData.outData.savedItem"
+      }
+    ],
+    "fail": "nodefail"
+  },
+  "nodefail": {
+    "urntype": "class",
+    "file": "test.php",
+    "class": "test",
+    "method": {
+      "name": "fail",
+      "params": [
+        {
+          "inputData": "title"
+        }
+      ],
+      "return": true,
+      "returnobj": "failed"
+    }
+  }
+}
+```
+
+Run from PHP:
+
+```php
+require_once(PLUGIN_PATH_LOCAL . "/davvag-flow/flow.php");
+
+$input = new \stdClass();
+$input->title = "Test";
+$input->status = "Active";
+
+$result = \DavvagFlow::Execute("my-new-app", "create-item", $input);
+```
+
+Workflow node types in the tenant-local implementation:
+
+| Node type | Purpose |
+| --- | --- |
+| `service` | Call a DAVVAG app service component. |
+| `class` | Call an activity class from `plugins/davvag-flow/lib`. |
+| `create_object` | Build an object from workflow variables. |
+
 ## Plugin Model
 
 Global framework plugins live in:
@@ -397,15 +833,36 @@ Before editing:
 
 When adding a new app:
 
-1. Create `{TENANT_RESOURCE_LOCATION}/apps/{appCode}`.
-2. Add `app.json`.
-3. Add `app.php` if launchable.
-4. Add component and service folders.
-5. Register components in `app.json`.
-6. Register the app in `tenant.json`.
-7. Add the app to relevant group JSON files.
-8. Add schemas under `schemas/` for new datastore namespaces.
-9. Test descriptor, file, service, and transform endpoints.
+1. Create the tenant if needed, for example `davvag-core/example.com`.
+2. Confirm config resolves to that tenant through `RESOURCE_LOCATION` and `HOST_NAME`.
+3. Create `{TENANT_RESOURCE_LOCATION}/apps/{appCode}`.
+4. Add `app.json`.
+5. Add `app.php` if launchable.
+6. Add component and service folders.
+7. Register components in `app.json`.
+8. Register the app in `tenant.json`.
+9. Add the app to relevant group JSON files.
+10. Add schemas under `schemas/` for new datastore namespaces.
+11. Add workflows under `davvag-flow/` when needed.
+12. Test descriptor, file, service, workflow, and transform endpoints.
+
+Minimal end-to-end recipe:
+
+```text
+[ ] davvag-core/example.com/tenant.json
+[ ] davvag-core/example.com/config.json
+[ ] davvag-core/example.com/sysadmin.json
+[ ] davvag-core/example.com/apps/my-new-app/app.json
+[ ] davvag-core/example.com/apps/my-new-app/app.php
+[ ] davvag-core/example.com/apps/my-new-app/components/main-view/component.json
+[ ] davvag-core/example.com/apps/my-new-app/components/main-view/script.js
+[ ] davvag-core/example.com/apps/my-new-app/components/main-view/partial.html
+[ ] davvag-core/example.com/apps/my-new-app/services/api/component.json
+[ ] davvag-core/example.com/apps/my-new-app/services/api/script.js
+[ ] davvag-core/example.com/apps/my-new-app/services/api/service.php
+[ ] davvag-core/example.com/schemas/my_new_app_items.json
+[ ] davvag-core/example.com/davvag-flow/my-new-app/create-item.json
+```
 
 ## Deployment Notes
 
