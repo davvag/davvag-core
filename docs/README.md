@@ -18,6 +18,7 @@ Start here, then read the topic file that matches your task.
 | [08-auth-sessions-permissions.md](08-auth-sessions-permissions.md) | Auth flow, sessions, cookies, user groups, and access checks. |
 | [09-deployment.md](09-deployment.md) | Apache, cPanel, PHP, CORS, media, and database deployment notes. |
 | [10-ai-agent-playbook.md](10-ai-agent-playbook.md) | Step-by-step instructions for AI agents generating framework code. |
+| [11-app-developer-guide.md](11-app-developer-guide.md) | App development guide covering `SOSSData`, datastore adapters, schemas, and service usage. |
 
 ## Existing Reference Docs
 
@@ -58,5 +59,5 @@ Tenant folders hold apps, workflows, schemas, local plugins, templates, and grou
 3. Read [03-application-development.md](03-application-development.md).
 4. For backend work, read [04-components-and-services.md](04-components-and-services.md) and [05-database-schemas.md](05-database-schemas.md).
 5. For automation logic, read [06-workflows.md](06-workflows.md).
-6. Before deployment, read [08-auth-sessions-permissions.md](08-auth-sessions-permissions.md) and [09-deployment.md](09-deployment.md).
-
+6. For datastore adapter details and app patterns, read [11-app-developer-guide.md](11-app-developer-guide.md).
+7. Before deployment, read [08-auth-sessions-permissions.md](08-auth-sessions-permissions.md) and [09-deployment.md](09-deployment.md).

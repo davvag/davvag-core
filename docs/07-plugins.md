@@ -121,7 +121,7 @@ $title = \MyPlugin::normalizeTitle($data->title);
 | Plugin | Purpose |
 | --- | --- |
 | `auth` | Authentication and authorization facade. |
-| `sossdata` | Data access facade. |
+| `sossdata` | Data access facade that routes to tenant-specific datastore adapters. |
 | `phpcache` | JSON file cache. |
 | `notify` | Email notification wrapper. |
 | `davvag-flow` | Workflow execution. |
@@ -129,6 +129,55 @@ $title = \MyPlugin::normalizeTitle($data->title);
 | `hosting` | Backup helpers. |
 | `mpdf`, `fpdf`, `fpdm` | PDF tools. |
 | `phpspreadsheet` | Spreadsheet tools. |
+
+## SOSSData Plugin
+
+`plugins/sossdata/SOSSData.php` is the framework entry point for data storage and retrieval.
+
+It does three jobs:
+
+1. Resolves the correct adapter for the current tenant.
+2. Caches the adapter instance in memory for reuse.
+3. Exposes a stable API for insert, update, delete, query, raw query, close, and view-object setup.
+
+The adapter selection flow is:
+
+```text
+SOSSData -> tenant connector config -> adapter class -> datastore operations
+```
+
+Default behavior:
+
+- If the tenant has a configured connector, DAVVAG loads `plugins/sossdata/{connector}/{connector}.php`.
+- If not, DAVVAG falls back to `plugins/sossdata/davvagstore/davvagstore.php`.
+- Every adapter must implement `iDataStore`.
+
+Example adapter:
+
+```text
+plugins/sossdata/phpmysql/phpmysql.php
+class phpmysql implements iDataStore
+```
+
+The `phpmysql` adapter uses tenant schema files under `schemas/` to auto-create and update storage structures.
+
+## Schema-Aware Storage
+
+When `SOSSData::Insert()`, `Update()`, `Delete()`, or `Query()` is called, the selected adapter typically reads:
+
+```text
+{TENANT_RESOURCE_LOCATION}/schemas/{namespace}.json
+```
+
+That schema drives:
+
+- column creation;
+- type conversion;
+- system column injection;
+- default values;
+- query-time object mapping.
+
+For app-level examples, use `docs/05-database-schemas.md` and `docs/11-app-developer-guide.md`.
 
 ## Security
 
@@ -151,4 +200,3 @@ Do not put secrets in plugin source. Put secrets in protected config files or en
 5. Use declared component dependencies for tenant-local plugins.
 6. Use root plugins for framework-wide behavior.
 7. Use tenant plugins for domain-specific reusable behavior.
-

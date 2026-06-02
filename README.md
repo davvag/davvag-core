@@ -5,6 +5,7 @@ DAVVAG is a PHP-based, tenant-aware application framework. It separates shared f
 This README is written as the first-stop guide for AI agents doing development in this repository. For deeper reference, read:
 
 - `docs/README.md` for the structured documentation index.
+- `docs/11-app-developer-guide.md` for the app-building and datastore guide.
 - `DAVVAG_PROJECT_STRUCTURE.md` for the full framework-level map.
 - `DAVVAG_TENATE_STRUCTURE.md` for the scanned tenant/domain structure under `davvag-core/localhost`.
 
@@ -63,7 +64,7 @@ Note: the source method is spelled `SOSSPlatform::intialize()`.
 | `components/component_manager.php` | Resolves app/component descriptors and dispatches services or transformers. |
 | `components/common.php` | Shared response, CORS, access, and REST helper functions. |
 | `plugins/auth/auth.php` | Authentication facade. |
-| `plugins/sossdata/SOSSData.php` | Data access facade. |
+| `plugins/sossdata/SOSSData.php` | Tenant-aware data access facade that routes to the configured datastore adapter. |
 | `lib/webdock.js` | Frontend component loader and service caller. |
 
 ## Important Constants
@@ -516,7 +517,7 @@ Responses are usually wrapped as:
 
 ## Data Model
 
-Use `SOSSData` for framework-compatible data access:
+Use `SOSSData` for framework-compatible data access. It is a facade, not a database driver by itself:
 
 ```php
 SOSSData::Insert($namespace, $object);
@@ -526,13 +527,32 @@ SOSSData::Query($namespace, $query);
 SOSSData::ExecuteRaw($namespace, $params);
 ```
 
+### How Adapter Selection Works
+
+`SOSSData` picks a datastore adapter per tenant:
+
+1. `SOSSData` receives a tenant ID or falls back to `DATASTORE_DOMAIN`.
+2. It checks `$GLOBALS["ENGINE_CONFIG"]->DAVVAG_DATA->{$tenantId}->connector`.
+3. If a connector is configured, DAVVAG loads `plugins/sossdata/{connector}/{connector}.php` and instantiates the class with the same name.
+4. If no connector is configured, DAVVAG falls back to `plugins/sossdata/davvagstore/davvagstore.php`.
+5. The adapter must implement `iDataStore`.
+
+Example connector mapping:
+
+```text
+tenant-a -> phpmysql
+tenant-b -> davvagstore
+```
+
 Schema files live at:
 
 ```text
 {TENANT_RESOURCE_LOCATION}/schemas/{namespace}.json
 ```
 
-The MySQL connector can create missing databases, tables, and columns from schema files. It also adds system columns:
+The tenant schema file defines the logical dataset for the namespace. The adapter uses that schema to create storage structures and to convert values when reading and writing.
+
+The MySQL adapter can create missing databases, tables, and columns from schema files. It also adds system columns:
 
 ```text
 sysversionid
@@ -548,6 +568,14 @@ Query strings use comma-separated `field:value` filters:
 ```text
 email:user@example.com,status:Active
 ```
+
+The `phpmysql` adapter reads schema definitions from the active tenant and supports the following behavior:
+
+- auto-creates the database when the configured tenant database does not exist;
+- auto-creates a table from the tenant schema when the namespace is used for the first time;
+- adds missing schema columns to an existing table;
+- stores system metadata such as `syscreatedby`, `syslastupdatedby`, `sysviewobject`, and version timestamps;
+- filters queries by `sysviewobject` when view-object filtering is enabled.
 
 Security note: the current MySQL connector builds SQL strings directly. Validate and escape user-controlled input before adding public write or query endpoints.
 
@@ -621,7 +649,7 @@ SOSSData::Insert("my_new_app_items", $data);
 SOSSData::Query("my_new_app_items", "status:Active");
 ```
 
-The MySQL connector can create missing tables from schema files when the namespace is first used.
+The MySQL connector can create missing tables from schema files when the namespace is first used. For a deeper explanation of tenant resolution, datastore adapters, and app-level usage patterns, read `docs/11-app-developer-guide.md`.
 
 ## Auth and Permissions
 

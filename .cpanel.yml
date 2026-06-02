@@ -1,0 +1,37 @@
+---
+# DAVVAG Framework cPanel Git deployment.
+#
+# Place this file in the repository root. cPanel runs these Bash tasks from the
+# checked-out repository when you click "Deploy HEAD Commit" or use push deploy.
+#
+# Before production use:
+# 1. Edit DEPLOYPATH if your cPanel document root is not $HOME/public_html/.
+# 2. Keep production config.json on the server. This deployment only creates it
+#    from config-temp.json when config.json does not already exist.
+# 3. If tenant folders are tracked in this repo, set DAVVAG_TENANTS to a
+#    space-separated list, for example:
+#    export DAVVAG_TENANTS="apps.davvag.com example.com"
+# 4. Production config.json should normally set RESOURCE_LOCATION to:
+#    /home/YOUR_CPANEL_USER/public_html/davvag-core
+# 5. Production MEDIA_FOLDER should normally point outside public_html, for
+#    example /home/YOUR_CPANEL_USER/davvag-media.
+deployment:
+  tasks:
+    - export DEPLOYPATH="${DEPLOYPATH:-$HOME/public_html/}"
+    - export DEPLOYPATH="${DEPLOYPATH%/}/"
+    - export DAVVAG_TENANTS="${DAVVAG_TENANTS:-apps.davvag.com}"
+    - /bin/mkdir -p "$DEPLOYPATH"
+    - /bin/mkdir -p "$DEPLOYPATH/davvag-core"
+    - /bin/mkdir -p "$HOME/davvag-media"
+    - /bin/cp -f .htaccess "${DEPLOYPATH}.htaccess"
+    - /bin/cp -f admin.php index.php init.php configloader.php "$DEPLOYPATH"
+    - /bin/cp -f config-temp.json "$DEPLOYPATH/config-temp.json"
+    - if [ ! -f "$DEPLOYPATH/config.json" ]; then /bin/cp -f config-temp.json "$DEPLOYPATH/config.json"; fi
+    - /bin/cp -R assets "$DEPLOYPATH"
+    - /bin/cp -R components "$DEPLOYPATH"
+    - /bin/cp -R files "$DEPLOYPATH"
+    - /bin/cp -R lib "$DEPLOYPATH"
+    - /bin/cp -R pages "$DEPLOYPATH"
+    - /bin/cp -R plugins "$DEPLOYPATH"
+    - /bin/cp -f davvag-core/.htaccess "$DEPLOYPATH/davvag-core/.htaccess"
+    - if [ -n "$DAVVAG_TENANTS" ]; then for TENANT in $DAVVAG_TENANTS; do if [ -d "davvag-core/$TENANT" ]; then /bin/mkdir -p "$DEPLOYPATH/davvag-core/$TENANT"; /bin/cp -R "davvag-core/$TENANT/." "$DEPLOYPATH/davvag-core/$TENANT/"; fi; done; fi

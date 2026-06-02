@@ -97,7 +97,7 @@ If `LOCAL_DEV_HOST` exists, `HOST_NAME` uses it. Otherwise `HOST_NAME` uses `$_S
 | Common Helpers | `components/common.php` | CORS response wrapping, access checks, REST helper. |
 | Virtual Firewall | `components/virtual_firewall.php` | Hook point for component authorization. Currently permissive in source. |
 | Auth Facade | `plugins/auth/auth.php` | Login, session restore, logout, group access, permissions, domain attributes. |
-| Data Facade | `plugins/sossdata/SOSSData.php` | Insert, update, delete, query, raw query, close. |
+| Data Facade | `plugins/sossdata/SOSSData.php` | Tenant-aware data facade that routes insert, update, delete, query, raw query, and close calls to the configured adapter. |
 | Cache | `plugins/phpcache/cache.php` | JSON cache files under `MEDIA_FOLDER/cache`. |
 | Frontend Loader | `lib/webdock.js` | Downloads app/component descriptors, injects assets, exposes service/transform calls. |
 
@@ -140,4 +140,3 @@ Service call:
 ```text
 /components/{appCode}/{componentName}/service/{handlerName}
 ```
-

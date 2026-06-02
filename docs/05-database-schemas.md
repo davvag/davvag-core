@@ -1,6 +1,8 @@
 # Database Schemas
 
-DAVVAG uses schema JSON files to create and update database tables through `SOSSData` and the MySQL connector.
+DAVVAG uses schema JSON files to describe logical data namespaces. `SOSSData` reads those schemas and forwards each request to the active datastore adapter for the tenant.
+
+In the default MySQL path, the adapter can create databases, tables, and columns on demand from the tenant schema files.
 
 ## Schema Location
 
@@ -15,6 +17,8 @@ Example:
 ```text
 davvag-core/example.com/schemas/my_new_app_items.json
 ```
+
+The active tenant is resolved from `TENANT_RESOURCE_LOCATION`, so schema files are tenant-specific and must live inside the tenant folder that is currently being served.
 
 ## Basic Schema
 
@@ -110,6 +114,31 @@ SOSSData::Delete("my_new_app_items", $data);
 SOSSData::Query("my_new_app_items", "status:Active");
 ```
 
+`SOSSData` is a facade. It does not talk directly to MySQL. It selects a datastore adapter based on the tenant configuration:
+
+```text
+$GLOBALS["ENGINE_CONFIG"]->DAVVAG_DATA->{$tenantId}->connector
+```
+
+If a connector is present, DAVVAG loads:
+
+```text
+plugins/sossdata/{connector}/{connector}.php
+```
+
+The class name must match the connector folder name. For example:
+
+```text
+plugins/sossdata/phpmysql/phpmysql.php
+class phpmysql implements iDataStore
+```
+
+If no connector is configured, DAVVAG falls back to:
+
+```text
+plugins/sossdata/davvagstore/davvagstore.php
+```
+
 Query syntax:
 
 ```text
@@ -145,7 +174,7 @@ Use existing files in `schemas/mysqlquery/` as examples.
 
 ## Database Creation Behavior
 
-The MySQL connector:
+The `phpmysql` adapter and its `mysqlConnector` helper use the tenant schema file to keep storage in sync:
 
 1. Reads DB config from `DB_CONFIG_FILE`.
 2. Builds a DB name from `init_db` plus `DATASTORE_DOMAIN`.
@@ -154,6 +183,19 @@ The MySQL connector:
 5. Adds missing columns from schema JSON.
 6. Adds framework system columns.
 7. Applies view-object filtering by default on queries.
+
+The system columns are:
+
+```text
+sysversionid
+syscreated
+sysupdated
+sysviewobject
+syscreatedby
+syslastupdatedby
+```
+
+`syscreatedby` and `syslastupdatedby` are filled from the authenticated user when available, otherwise they default to `anonymous`.
 
 ## View Object Filtering
 
@@ -177,3 +219,12 @@ The current MySQL connector builds SQL strings directly. When generating new ser
 4. Prefer exact filters over arbitrary user-provided query strings.
 5. Avoid exposing write endpoints to `anonymous` unless intentionally public.
 
+## Adapter Rules
+
+When you add a new datastore adapter, keep these rules aligned with `SOSSData`:
+
+1. Implement the `iDataStore` interface.
+2. Provide the same method names and parameter order used by `SOSSData`.
+3. Place the adapter in `plugins/sossdata/{connector}/{connector}.php`.
+4. Keep the class name identical to the connector folder name.
+5. Make sure the adapter respects tenant-specific schemas and `DATASTORE_DOMAIN`.
