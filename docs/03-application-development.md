@@ -61,6 +61,13 @@ The folder names under the app are flexible. The framework resolves components u
         }
       }
     }
+  },
+  "dependencies": {
+    "apps": [],
+    "schemas": [],
+    "workflows": [],
+    "plugins": [],
+    "php-extensions": []
   }
 }
 ```
@@ -77,6 +84,29 @@ Important fields:
 | `configuration.webdock.startupComponent` | Main UI component. |
 | `configuration.webdock.onLoad` | Components loaded at startup, usually service/shell components. |
 | `configuration.webdock.routes.partials` | Optional route-to-component map. |
+| `dependencies` | Install/runtime dependencies required by the app. Keep arrays empty when none are required; do not use placeholder empty strings. |
+
+Every app descriptor must include the dependency block before deployment:
+
+```json
+"dependencies": {
+  "apps": [],
+  "schemas": [],
+  "workflows": [],
+  "plugins": [],
+  "php-extensions": []
+}
+```
+
+Dependency fields:
+
+| Field | Use |
+| --- | --- |
+| `apps` | Other DAVVAG apps or app services that this app calls directly, including apps referenced by bundled workflows. |
+| `schemas` | Tenant schema namespaces read or written by this app, including dynamic attribute schemas and datasource schemas. |
+| `workflows` | Workflow files used directly or triggered by the app's declared attribute schemas. Use namespaced paths when applicable, such as `davvag-attributes/testflow.json`. |
+| `plugins` | Tenant/global plugins imported by service code or required by runtime helpers. |
+| `php-extensions` | PHP extensions that must be installed on the server for app-specific code paths. |
 
 ## Register the App
 
@@ -240,4 +270,3 @@ GET /components/my-new-app/main-view/file/partial.html
 | Startup app not installed | Missing from `tenant.json > apps`. |
 | Component descriptor not found | Wrong `location` or missing `component.json`. |
 | Script not loading | Wrong resource `location` or invalid route. |
-
