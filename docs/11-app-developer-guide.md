@@ -1,10 +1,304 @@
 # App Developer Guide for DAVVAG
 
-This guide is for application developers and AI agents that need to store and retrieve data in DAVVAG correctly.
+This guide is for application developers and AI agents that need to build DAVVAG apps and store data correctly.
 
 The key idea is simple:
 
 `SOSSData` is the framework facade. It chooses a datastore adapter for the active tenant, then the adapter uses the tenant schema files to read or write data.
+
+## App Folder Convention
+
+A tenant app normally lives under:
+
+```text
+{TENANT_RESOURCE_LOCATION}/apps/{app-code}
+```
+
+For local development this may look like:
+
+```text
+davvag-core/localhost/apps/task-tracker
+```
+
+Use this app shape:
+
+```text
+apps/{app-code}/
+  app.json
+  app.php
+  components/
+    {component-name}/
+      component.json
+      partial.html
+      script.js
+      component.css
+  services/
+    {service-name}/
+      component.json
+      script.js
+      service.php
+```
+
+Register the app in the tenant files that should see it:
+
+```text
+tenant.json
+sysadmin.json
+web_user.json
+anonymous.json, only if public access is intentional
+```
+
+Do not assume the repo-local tenant is the active runtime tenant. The root `config.json` can point `TENANT_RESOURCE_LOCATION` somewhere else through `RESOURCE_LOCATION` and `LOCAL_DEV_HOST`. Before browser testing, confirm which tenant folder is active.
+
+## App Descriptor Pattern
+
+`app.json` declares components, services, route mappings, startup components, and on-load dependencies.
+
+Example:
+
+```json
+{
+  "components": {
+    "projects": {"type": "component", "location": "components"},
+    "taskapi": {"type": "service", "location": "services"}
+  },
+  "description": {
+    "title": "Task Manager",
+    "author": "DAVVAG",
+    "version": "0.3",
+    "icon": "appicon.png"
+  },
+  "tags": ["showincms", "showindock"],
+  "configuration": {
+    "webdock": {
+      "startupComponent": "projects",
+      "onLoad": ["taskapi"],
+      "routes": {
+        "partials": {
+          "/": "projects",
+          "/projects": "projects"
+        }
+      }
+    },
+    "dock": {
+      "subapps": [
+        {"name": "Projects", "path": "projects"}
+      ]
+    }
+  }
+}
+```
+
+When changing CSS or descriptors, bump the app `description.version`. Webdock appends this version to resource URLs, so a version bump helps avoid stale cached component descriptors and styles.
+
+## Component Descriptor Pattern
+
+Component descriptors live at:
+
+```text
+components/{component-name}/component.json
+```
+
+Typical UI component:
+
+```json
+{
+  "name": "projects",
+  "resources": {
+    "files": [
+      {"type": "mainScript", "location": "script.js"},
+      {"type": "mainView", "location": "partial.html"}
+    ],
+    "css": [
+      {"type": "css", "location": "projects.css"}
+    ]
+  }
+}
+```
+
+Typical service component:
+
+```json
+{
+  "name": "taskapi",
+  "serviceHandler": {
+    "file": "service.php",
+    "class": "TaskManagerService",
+    "methods": {
+      "SaveTask": {"method": "POST"}
+    }
+  }
+}
+```
+
+Service method names must follow DAVVAG's PHP naming convention:
+
+```text
+POST SaveTask -> postSaveTask($req, $res)
+GET ListItems -> getListItems($req, $res)
+```
+
+## Route Navigation
+
+Use the shell route component for app navigation:
+
+```javascript
+handler = exports.getShellComponent("soss-routes");
+handler.appNavigate("../tasks?projectId=" + projectId);
+handler.appNavigate("../task?projectId=" + projectId + "&taskId=" + taskId);
+```
+
+Important behavior:
+
+```text
+soss-routes.appNavigate() appends plain paths to the current hash route.
+```
+
+From:
+
+```text
+#/app/task-tracker/projects
+```
+
+this is usually wrong:
+
+```javascript
+handler.appNavigate("/tasks?projectId=" + projectId);
+```
+
+because it can become:
+
+```text
+#/app/task-tracker/projects/tasks?projectId=...
+```
+
+Use sibling navigation instead:
+
+```javascript
+handler.appNavigate("../tasks?projectId=" + projectId);
+```
+
+Keep a direct hash fallback in split components if you need simple testing outside the shell, but shell code should use `exports.getShellComponent("soss-routes")`.
+
+## Running In Both Docks
+
+DAVVAG apps may run inside different docks:
+
+```text
+/#/app/{app-code}/...
+/admin#/app/{app-code}/...
+```
+
+The default dock and admin dock may not provide the same CSS framework version. For example, a default `davvag-cms` dock can behave like Bootstrap 4, while the admin `dock` can behave more like Bootstrap 3. If your app uses older classes such as:
+
+```text
+btn-default
+btn-xs
+label label-default
+progress-bar-success
+glyphicon ...
+col-md-5
+```
+
+add a scoped compatibility stylesheet instead of relying on the dock theme.
+
+Recommended pattern:
+
+1. Create a lightweight shared style component, for example `components/task-style`.
+2. Register it in `app.json`.
+3. Add it to `configuration.webdock.onLoad`.
+4. In every main screen component, call a small style loader as a fallback.
+
+Example fallback loader:
+
+```javascript
+function ensureTaskCommonStyles() {
+    if (document.getElementById("task-tracker-common-css")) {
+        return;
+    }
+    var link = document.createElement("link");
+    link.id = "task-tracker-common-css";
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = "components/task-tracker/task-style/file/task-common.css?v=0.3";
+    document.getElementsByTagName("head")[0].appendChild(link);
+}
+```
+
+The URL should use the DAVVAG component file endpoint:
+
+```text
+components/{app-code}/{component-name}/file/{file-name}
+```
+
+Avoid `../` CSS paths in component descriptors. Browser URL normalization can change the request before PHP receives it.
+
+## File Uploads
+
+For app attachments, use the DAVVAG file uploader app component. This is the same pattern used by Album-form and Article-form apps.
+
+Do this:
+
+```javascript
+exports.getAppComponent("davvag-tools", "davvag-file-uploader", function (uploader) {
+    uploader.initialize();
+    uploader.upload(newfiles, "task_manager_attachments", taskId, function () {
+        newfiles = [];
+        cb();
+    });
+});
+```
+
+Do not call `soss-uploader` directly from app screens unless you are intentionally bypassing the standard modal/progress wrapper.
+
+Important naming rule:
+
+```text
+davvag-file-uploader creates filenames as {id}-{file.name}
+```
+
+Pass only the entity ID as the third argument:
+
+```javascript
+uploader.upload(files, "task_manager_attachments", taskId, cb);
+uploader.upload(files, "task_manager_comment_attachments", commentId, cb);
+```
+
+Do not pass:
+
+```javascript
+taskId + "-" + file.name
+```
+
+Read uploaded files through:
+
+```text
+components/dock/soss-uploader/service/get/{store-name}/{id}-{fileName}
+```
+
+Typical UI flow:
+
+1. User selects files.
+2. `FileReader` creates local previews.
+3. Save metadata with your app service.
+4. Upload the actual files with `davvag-file-uploader`.
+5. Reload the entity details so metadata and file URLs are in sync.
+
+Server-side importers can write compatible files directly when there is no browser `File` object. Use the same storage convention used by `soss-uploader`:
+
+```text
+MEDIA_FOLDER/DATASTORE_DOMAIN/{store-name}/{id}-{fileName}
+```
+
+Then insert matching metadata rows into the app attachment namespace.
+
+Task Manager uses this for `TaskEmailClient`:
+
+```text
+GET components/task-tracker/TaskEmailClient/service/getMail
+```
+
+The service reads project IMAP settings, requires PHP `ext-imap`, imports new emails from project-authorized profile email addresses, stores the original `emailMessageId` on tasks, and saves replies as discussion comments matched by `Message-ID`, `In-Reply-To`, or `References`.
 
 ## What `SOSSData` Does
 
@@ -235,6 +529,190 @@ class ApiService {
 ?>
 ```
 
+## Current Profile and Audit Stamping
+
+When an app records user activity, stamp the current profile on the server. Do not trust the browser to send profile identity for work logs, comments, approvals, or audit records.
+
+Recommended helper pattern:
+
+```php
+private function currentProfile() {
+    $out = new stdClass();
+    $out->id = 0;
+    $out->name = "Unknown";
+
+    if (class_exists("Profile")) {
+        $profile = Profile::getUserProfile();
+        if (isset($profile->profile) && isset($profile->profile->id)) {
+            $out->id = $profile->profile->id;
+            $out->name = isset($profile->profile->name) ? $profile->profile->name : "Unknown";
+            return $out;
+        }
+    }
+
+    $user = Auth::Autendicate();
+    if (isset($user->userid)) {
+        $profileResult = SOSSData::Query("profile", "linkeduserid:" . $user->userid);
+        if ($profileResult->success && count($profileResult->result) > 0) {
+            $out->id = $profileResult->result[0]->id;
+            $out->name = isset($profileResult->result[0]->name) ? $profileResult->result[0]->name : "Unknown";
+            return $out;
+        }
+        $out->name = isset($user->email) ? $user->email : "Unknown";
+    }
+    return $out;
+}
+```
+
+Then apply it in service handlers:
+
+```php
+$profile = $this->currentProfile();
+$log->profileId = $profile->id;
+$log->profileName = $profile->name;
+```
+
+This is useful for work logs, task comments, progress timelines, discussions, and notifications.
+
+## Related Data and Cleanup
+
+Use separate namespaces for related data when a feature grows beyond one table. Example:
+
+```text
+task_manager_tasks
+task_manager_task_assignees
+task_manager_task_attachments
+task_manager_work_logs
+task_manager_task_comments
+task_manager_comment_attachments
+task_manager_notifications
+```
+
+When deleting a parent entity, clean up child namespaces explicitly:
+
+```php
+$this->deleteByQuery($this->assigneeNamespace, "taskId:" . $task->taskId);
+$this->deleteByQuery($this->attachmentNamespace, "taskId:" . $task->taskId);
+$this->deleteByQuery($this->workLogNamespace, "taskId:" . $task->taskId);
+$this->deleteByQuery($this->commentNamespace, "taskId:" . $task->taskId);
+$this->deleteByQuery($this->commentAttachmentNamespace, "taskId:" . $task->taskId);
+```
+
+For thread-like data, keep the model simple unless the product needs deep nesting. A practical comment model is:
+
+```text
+commentId
+taskId
+parentCommentId
+profileId
+profileName
+body
+commentDate
+status
+```
+
+Return root comments with one-level `replies` arrays and an `Attachments` array on every comment or reply. This keeps Vue templates simple and avoids expensive client-side joins.
+
+## Permission Layers
+
+Most non-trivial DAVVAG apps need more than one permission layer.
+
+View-object permissions:
+
+```javascript
+openViewObject(target.sysviewobject, function (data, shellpopup) {
+    target.sysviewobject = data;
+    api.services.SaveProject(target);
+    shellpopup.close();
+});
+```
+
+Do not rename `sysviewobject`; it is a framework system column used by view-object filtering.
+
+Domain-specific access:
+
+```text
+task_manager_project_access
+```
+
+For example, a project app can store allowed profile IDs in a project-access namespace. Then services can filter project lists and task access by the current profile. Use the broad framework view-object permission for DAVVAG visibility and the app-specific access table for product rules.
+
+Only add the app to `anonymous.json` when public access is intentional.
+
+## Time and Progress Forms
+
+For work logs, a good UI pattern is:
+
+```text
+work date: date input
+start time: time input
+end time: time input
+minutes: calculated number
+```
+
+In the browser, keep UI-only fields separate:
+
+```javascript
+logForm: {
+    logDate: "2026-06-10",
+    startTime: "09:00",
+    endTime: "10:30",
+    startDate: "",
+    endDate: "",
+    durationInMinutes: 0
+}
+```
+
+Before saving, combine date and time:
+
+```javascript
+log.startDate = log.logDate + "T" + log.startTime;
+log.endDate = log.logDate + "T" + log.endTime;
+delete log.startTime;
+delete log.endTime;
+```
+
+Also calculate duration server-side if both full dates exist and duration is zero. That gives the UI convenience without making the database depend on browser-only fields.
+
+## UI Layout Lessons
+
+Keep app screens focused:
+
+- Split large apps into route-level components instead of putting every workflow on one page.
+- Use list/edit screens for parent entities, such as Projects.
+- Use child list screens scoped by parent ID, such as Tasks under one Project.
+- Use a dedicated detail screen for activity, comments, progress, and logs.
+- Put secondary forms inside expandable sections when the primary job is reading existing activity.
+
+For discussion UIs:
+
+- Show existing comments before the new-comment form.
+- Keep reply forms hidden until the user clicks `Reply to`.
+- Hide reply forms again after save or cancel.
+- Store profile name on the server so timelines remain readable even if profile data later changes.
+
+## Notifications
+
+For task-style workflows, queue notification rows in a namespace first:
+
+```text
+task_manager_notifications
+```
+
+Example:
+
+```php
+$notification->taskId = $body->taskId;
+$notification->profileId = $assignee->profileId;
+$notification->profileName = $assignee->profileName;
+$notification->eventType = "Discussion";
+$notification->message = "Task discussion updated";
+$notification->status = "Queued";
+$notification->createdate = date("Y-m-d H:i:s");
+```
+
+Actual email or IMAP/SMTP delivery can remain a later plugin integration. This keeps the app behavior stable even before mail delivery is implemented.
+
 ## Practical Checklist
 
 Before you ship a new data-backed app:
@@ -245,10 +723,33 @@ Before you ship a new data-backed app:
 4. Match the class name to the connector folder name.
 5. Test insert, query, update, and delete from the app service.
 6. Verify that view-object filtering behaves as expected for the target group.
+7. Register the app in the right tenant group files.
+8. Verify every component descriptor has the correct `mainScript`, `mainView`, and `css` resources.
+9. Test route navigation with `soss-routes.appNavigate("../sibling?...")`.
+10. Test in both docks if the app is tagged for both:
+
+```text
+http://localhost/git/davvag-core/#/app/{app-code}/{route}
+http://localhost/git/davvag-core/admin#/app/{app-code}/{route}
+```
+
+11. Check component CSS URLs directly:
+
+```text
+components/{app-code}/{component-name}/file/{file-name}
+```
+
+12. Validate scripts and JSON before browser testing:
+
+```powershell
+node --check davvag-core\localhost\apps\{app-code}\components\{component}\script.js
+Get-Content davvag-core\localhost\apps\{app-code}\app.json -Raw | ConvertFrom-Json | Out-Null
+Get-ChildItem davvag-core\localhost\schemas\{app-prefix}_*.json | ForEach-Object { Get-Content $_.FullName -Raw | ConvertFrom-Json | Out-Null }
+C:\xampp\php\php.exe -l davvag-core\localhost\apps\{app-code}\services\{service}\service.php
+```
 
 ## Where To Read Next
 
 - [05-database-schemas.md](05-database-schemas.md)
 - [07-plugins.md](07-plugins.md)
 - [10-ai-agent-playbook.md](10-ai-agent-playbook.md)
-
