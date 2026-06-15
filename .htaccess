@@ -2,4 +2,4 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(admin)?$ ./admin.php [QSA,L]
-RewriteRule ^(admin)/(assets)/([A-Za-z0-9-]+)/(.*)/?$ ./davvag-core/%{HTTP_HOST}/apps/$3/assets/$4 [QSA,L]
+RewriteRule ^(admin)/(assets)/([A-Za-z0-9_.-]+)/(.*)/?$ ./assets/index.php?app=$3&file=$4 [QSA,L]
