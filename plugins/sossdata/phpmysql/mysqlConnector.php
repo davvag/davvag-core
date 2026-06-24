@@ -204,7 +204,7 @@ class mysqlConnector
                         $this->retry++;
                         $this->createTable($namespace);
                         $this->retry=0;
-                        return $this->Query($namespace, $param, $lastID, $sorting, $pageSize, $fromPage);
+                        return $this->Query($namespace, $param, $lastID, $sorting, $pageSize, $fromPage, $vieObject);
                     } else {
                         return $this->result(false, [], $this->con->error);
                     }
@@ -740,7 +740,7 @@ class mysqlConnector
     {
         switch ($field->dataType) {
             case "java.lang.String":
-                return "'" . $value . "'";
+                return "'" . $this->escapeSqlValue($value) . "'";
                 break;
             case "int":
                 return (int)$value;
@@ -762,11 +762,19 @@ class mysqlConnector
                 return "'" . date('Y-m-d H:i:s', strtotime($value)) . "'";
                 break;
             case "object":
-                return "'" . json_encode($value) . "'";
+                return "'" . $this->escapeSqlValue(json_encode($value)) . "'";
                 break;
             default:
-                return "'" . $value . "'";
+                return "'" . $this->escapeSqlValue($value) . "'";
                 break;
         }
+    }
+
+    private function escapeSqlValue($value)
+    {
+        if ($value === null) {
+            return "";
+        }
+        return mysqli_real_escape_string($this->con, (string)$value);
     }
 }
