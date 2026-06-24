@@ -151,26 +151,97 @@ Example:
 $result = SOSSData::Query("my_new_app_items", "status:Active,title:Test");
 ```
 
-## Raw Queries
+## Raw Queries for Reports and Joins
 
-Raw query helpers live in:
+Use a raw query schema when an app needs a read model that does not fit `SOSSData::Query()`: joins, reporting summaries, aggregates, subqueries, custom ordering, or stored procedure calls.
+
+The main raw query definition lives in the normal tenant schema folder:
 
 ```text
-schemas/mysqlquery/
-schemas/query/
+{TENANT_RESOURCE_LOCATION}/schemas/{namespace}.json
 ```
 
-Call:
+Example:
+
+```json
+{
+  "rawquery": {
+    "type": "sql",
+    "parameters": ["startdate", "enddate", "page", "size"],
+    "query": "SELECT DATE_FORMAT(oh.invoiceDate, '%Y-%m') AS reportMonth, p.id AS profileId, p.name AS profileName, SUM(od.qty) AS qty, SUM(od.total) AS total FROM orderheader oh INNER JOIN orderdetails od ON oh.invoiceNo = od.invoiceNo INNER JOIN profile p ON oh.profileId = p.id WHERE oh.invoiceDate BETWEEN '$startdate' AND '$enddate' GROUP BY DATE_FORMAT(oh.invoiceDate, '%Y-%m'), p.id, p.name ORDER BY reportMonth DESC LIMIT $page,$size"
+  },
+  "fields": [
+    {"fieldName": "reportMonth", "dataType": "java.lang.String"},
+    {"fieldName": "profileId", "dataType": "int"},
+    {"fieldName": "profileName", "dataType": "java.lang.String"},
+    {"fieldName": "qty", "dataType": "float"},
+    {"fieldName": "total", "dataType": "float"}
+  ]
+}
+```
+
+Call it from a service by building a parameter object:
 
 ```php
 $params = new \stdClass();
 $params->parameters = new \stdClass();
-$params->parameters->status = "Active";
+$params->parameters->page = isset($data->page) ? max(0, (int)$data->page) : 0;
+$params->parameters->size = isset($data->size) ? min(100, max(1, (int)$data->size)) : 25;
+$params->parameters->startdate = $startdate;
+$params->parameters->enddate = $enddate;
 
-$result = SOSSData::ExecuteRaw("my_new_app_report", $params);
+$result = SOSSData::ExecuteRaw("my_new_app_sales_report", $params);
 ```
 
-Use existing files in `schemas/mysqlquery/` as examples.
+The MySQL adapter handles `ExecuteRaw()` like this:
+
+1. Loads `schemas/{namespace}.json` with `Schema::Get($namespace)`.
+2. Reads `rawquery.query`.
+3. Replaces each `$name` placeholder with `$params->parameters->name`.
+4. Runs the final SQL or procedure call.
+5. Creates each result object from the schema `fields` list.
+
+Because result objects are built from `fields`, joined reports should select explicit aliases:
+
+```sql
+SELECT
+  p.id AS profileId,
+  p.name AS profileName,
+  s.outstanding AS outstanding
+FROM profile p
+INNER JOIN profilestatus s ON p.id = s.profileid
+```
+
+Then define matching fields:
+
+```json
+[
+  {"fieldName": "profileId", "dataType": "int"},
+  {"fieldName": "profileName", "dataType": "java.lang.String"},
+  {"fieldName": "outstanding", "dataType": "float"}
+]
+```
+
+Existing tenant examples:
+
+| Namespace | Pattern |
+| --- | --- |
+| `profiles_search` | Joined profile/status query called from `apps/com_qti_students/services/productsvr/service.php`. |
+| `davvag_launchers_query` | Join with launcher permissions called from `apps/davvag-cms/shell/auth-handler/service.php`. |
+| `messages_inbox_query` | Join and aggregation for inbox views. |
+| `orderdetails_purchase_sum_by_month` | Report aggregate with `SUM`, `COUNT`, `GROUP BY`, and date parameters. |
+
+`schemas/mysqlquery/{namespace}.sql` is a companion setup script location for stored procedures, indexes, or helper SQL. If a raw query calls a missing procedure and MySQL returns error `1305`, the adapter executes the matching script and retries. The raw query itself should still be declared in `schemas/{namespace}.json`.
+
+`schemas/query/` contains older helper examples. Prefer `schemas/{namespace}.json` with a `rawquery` block for new advanced queries.
+
+Security rules for raw queries:
+
+1. Treat placeholder replacement as direct string replacement, not prepared statements.
+2. Cast integers and limits in PHP before calling `ExecuteRaw()`.
+3. Validate dates and whitelist enum values.
+4. Do not accept raw SQL fragments, field names, sort expressions, or `WHERE` clauses from the browser.
+5. Raw queries do not automatically add `sysviewobject` filtering, so add visibility conditions yourself or keep the endpoint admin-only.
 
 ## Database Creation Behavior
 

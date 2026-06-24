@@ -253,6 +253,97 @@ WEBDOCK.component().register(function (exports) {
 </section>
 ```
 
+## Call Saved AI Agents From Any App
+
+Apps can use agents saved in `ai-agent-creator` through the common interaction service:
+
+```text
+POST /components/ai-agent-creator/creator-api/service/InteractWithAgent
+```
+
+Use this instead of duplicating agent runtime logic in each application. The service validates the saved agent, sends the message to the configured provider, preserves the session, executes configured agent skills, and returns a stable `response` field for the app to use.
+
+Request payload:
+
+```json
+{
+  "agentCode": "support-agent",
+  "message": "Summarize this customer ticket and suggest the next action.",
+  "appCode": "my-new-app",
+  "appName": "My New App",
+  "profile": {
+    "profileId": "customer-123"
+  },
+  "conversationKey": "ticket-456",
+  "context": {
+    "ticketId": "ticket-456",
+    "priority": "High"
+  },
+  "payload": {
+    "subject": "Payment failed",
+    "status": "Open"
+  }
+}
+```
+
+Response payload is wrapped by the DAVVAG service response:
+
+```json
+{
+  "success": true,
+  "result": {
+    "success": true,
+    "response": "Agent answer text",
+    "reply": "Agent answer text",
+    "agentCode": "support-agent",
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "session": {},
+    "skillResults": [],
+    "interaction": {
+      "appCode": "my-new-app",
+      "sessionId": "my-new-app-support-agent-..."
+    }
+  }
+}
+```
+
+Server-side app services can call the method directly:
+
+```php
+require_once(TENANT_RESOURCE_LOCATION . "/apps/ai-agent-creator/services/creator-api/service.php");
+
+$creator = new \ai_agent_creator\CreatorService();
+$agent = $creator->interactWithAgent(array(
+    "agentCode" => "support-agent",
+    "message" => $message,
+    "appCode" => "my-new-app",
+    "appName" => "My New App",
+    "profile" => array("profileId" => $profileId),
+    "conversationKey" => $ticketId,
+    "context" => array("ticketId" => $ticketId),
+    "payload" => $ticket
+));
+
+if (!$agent->success) {
+    return $agent;
+}
+
+$answer = $agent->response;
+```
+
+When an app depends on a saved agent, record the dependency:
+
+```json
+"dependencies": {
+  "apps": ["ai-agent-creator"],
+  "schemas": [],
+  "workflows": [],
+  "plugins": [],
+  "php-extensions": ["curl"]
+}
+```
+
 ## Test App Descriptor
 
 ```text

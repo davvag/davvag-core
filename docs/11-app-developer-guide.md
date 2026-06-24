@@ -300,6 +300,165 @@ GET components/task-tracker/TaskEmailClient/service/getMail
 
 The service reads project IMAP settings, requires PHP `ext-imap`, imports new emails from project-authorized profile email addresses, stores the original `emailMessageId` on tasks, and saves replies as discussion comments matched by `Message-ID`, `In-Reply-To`, or `References`.
 
+## Reusable Lookup Popups
+
+DAVVAG apps can expose reusable selector components for other apps by calling `exports.Complete(selectedObject)` from the selector. A caller opens the selector through the shell `app_popup` component and receives the selected object in the callback.
+
+Profile selection uses this pattern:
+
+```javascript
+function openProfilePopup(onSelect) {
+    var popup = exports.getShellComponent("app_popup");
+    if (!popup || !popup.open) {
+        setError("Profile popup is not loaded.");
+        return;
+    }
+    popup.open("profileapp", "frmprofile-list-popup", {}, function (profile, instance) {
+        var selected = normalizeProfile(profile);
+        if (selected && selected.id) {
+            onSelect(selected);
+        }
+        if (instance && instance.close) {
+            instance.close();
+        }
+    }, "Select Profile", true, true);
+}
+```
+
+Reusable selector components should keep their return object small and predictable:
+
+```javascript
+function select(profile) {
+    exports.Complete(profile);
+}
+```
+
+Product selection is available from:
+
+```text
+productapp-v2 / frmproduct-list-popup
+```
+
+The current user must have access to `productapp-v2` through the tenant group files, because `app_popup` downloads the source app component under the active user's permissions.
+
+Use it from another app like this:
+
+```javascript
+function openProductPopup(onSelect) {
+    var popup = exports.getShellComponent("app_popup");
+    if (!popup || !popup.open) {
+        setError("Product popup is not loaded.");
+        return;
+    }
+    popup.open("productapp-v2", "frmproduct-list-popup", {}, function (product, instance) {
+        var selected = normalizeProduct(product);
+        if (selected && selected.product_id) {
+            onSelect(selected);
+        }
+        if (instance && instance.close) {
+            instance.close();
+        }
+    }, "Select Product", true, true);
+}
+
+function normalizeProduct(product) {
+    if (product && product.product_id) {
+        return product;
+    }
+    if (product && product.itemid) {
+        return {
+            product_id: product.itemid,
+            product_code: String(product.itemid),
+            product_title: product.name || "",
+            product_price: product.price || 0,
+            product_currency_code: product.currencycode || "",
+            category: product.catogory || "",
+            uom: product.uom || "",
+            invType: product.invType || ""
+        };
+    }
+    return null;
+}
+```
+
+You can pass initial lookup filters as the third argument:
+
+```javascript
+popup.open(
+    "productapp-v2",
+    "frmproduct-list-popup",
+    {search: "math", invType: "Service"},
+    function (product, instance) {
+        var selected = normalizeProduct(product);
+    },
+    "Select Product",
+    true,
+    true
+);
+```
+
+Course Manager uses this lookup from the subject list. Keep the mapping action in the feature component and delegate product selection to `productapp-v2`:
+
+```javascript
+function mapProductToSubject(subject) {
+    if (!subject || !subject.id) {
+        return;
+    }
+    openProductPopup(function (product) {
+        var payload = clone(subject);
+        applyProductToSubject(payload, product);
+        clearMessages();
+        api.services.SaveSubject(payload).then(function (response) {
+            if (response.success) {
+                setInfo("Product mapped to subject.");
+                loadSubjects();
+                bindData.subjectForm = clone(response.result || payload);
+            } else {
+                setError(response.result && response.result.message ? response.result.message : "Product mapping failed.");
+            }
+        }).error(function () {
+            setError("Product mapping failed.");
+        });
+    });
+}
+
+function applyProductToSubject(subject, product) {
+    subject.product_id = product.product_id || "";
+    subject.product_code = product.product_code || product.product_id || "";
+    subject.product_title = product.product_title || "";
+    subject.product_price = product.product_price || "";
+    subject.product_currency_code = product.product_currency_code || "";
+}
+```
+
+When one app depends on another app's lookup component, record that dependency in the caller app descriptor:
+
+```json
+{
+  "dependencies": {
+    "apps": [
+      "productapp-v2"
+    ]
+  }
+}
+```
+
+Implementation details learned from `productapp-v2/frmproduct-list-popup`:
+
+1. Load shared styles inside the popup component as a fallback, because a popup can be opened outside the source app's normal startup flow.
+2. Return both native fields and stable cross-app aliases. For products, include `itemid`, `name`, `product_id`, `product_code`, `product_title`, `product_price`, and `product_currency_code`.
+3. Keep the old data shape in caller-side `normalizeProduct()` so existing local product popups and the reusable product popup can both work.
+4. If a descriptor or CSS changes, bump `description.version` on the source app and the caller app to avoid cached descriptors and styles.
+5. The tenant `davvag-core/localhost` folder may be ignored by Git in this repo, so verify generated tenant app files on disk even when `git status` does not show them.
+
+For new reusable lookup components:
+
+1. Register the component in the source app's `app.json`.
+2. Include `inputData` and `outputData` in `component.json`.
+3. Use `exports.Complete(selectedObject)` when the user selects a row.
+4. In the caller, close the popup instance after handling the selected object.
+5. Normalize the returned object in the caller when older apps may return a different shape.
+
 ## What `SOSSData` Does
 
 `plugins/sossdata/SOSSData.php` exposes the public data API:
@@ -458,25 +617,125 @@ The MySQL adapter checks `Auth::ViewObjects()` and adds a `sysviewobject in (...
 
 Use the default filtering for normal app requests. Only disable it for trusted admin or maintenance code paths.
 
-## Raw Queries
+## Raw Queries and Reporting Joins
 
-Some namespaces can define a raw query file under the tenant schema folder:
+Use `SOSSData::ExecuteRaw()` for read-only advanced data shapes that do not fit simple `SOSSData::Query()` filters:
+
+- joined report views;
+- totals and grouped summaries;
+- custom search ranking;
+- subqueries;
+- stored procedure calls.
+
+Define the raw query in a normal schema file:
+
+```text
+{TENANT_RESOURCE_LOCATION}/schemas/{namespace}.json
+```
+
+Example:
+
+```json
+{
+  "rawquery": {
+    "type": "sql",
+    "parameters": ["startdate", "enddate", "page", "size"],
+    "query": "SELECT DATE_FORMAT(oh.invoiceDate, '%Y-%m') AS reportMonth, p.id AS profileId, p.name AS profileName, SUM(od.qty) AS qty, SUM(od.total) AS total FROM orderheader oh INNER JOIN orderdetails od ON oh.invoiceNo = od.invoiceNo INNER JOIN profile p ON oh.profileId = p.id WHERE oh.invoiceDate BETWEEN '$startdate' AND '$enddate' GROUP BY DATE_FORMAT(oh.invoiceDate, '%Y-%m'), p.id, p.name ORDER BY reportMonth DESC LIMIT $page,$size"
+  },
+  "fields": [
+    {"fieldName": "reportMonth", "dataType": "java.lang.String"},
+    {"fieldName": "profileId", "dataType": "int"},
+    {"fieldName": "profileName", "dataType": "java.lang.String"},
+    {"fieldName": "qty", "dataType": "float"},
+    {"fieldName": "total", "dataType": "float"}
+  ]
+}
+```
+
+Expose it through a service method:
+
+```php
+public function postSalesReport($req, $res) {
+    $data = $req->Body(true);
+
+    $params = new \stdClass();
+    $params->parameters = new \stdClass();
+    $params->parameters->page = isset($data->page) ? max(0, (int)$data->page) : 0;
+    $params->parameters->size = isset($data->size) ? min(100, max(1, (int)$data->size)) : 25;
+    $params->parameters->startdate = isset($data->startdate) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data->startdate) ? $data->startdate : date("Y-m-01");
+    $params->parameters->enddate = isset($data->enddate) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data->enddate) ? $data->enddate : date("Y-m-d");
+
+    return SOSSData::ExecuteRaw("my_new_app_sales_report", $params);
+}
+```
+
+Then register the service handler method:
+
+```json
+{
+  "SalesReport": {
+    "method": "POST"
+  }
+}
+```
+
+The current codebase uses the same parameter object shape in:
+
+| File | Raw namespace |
+| --- | --- |
+| `apps/com_qti_students/services/productsvr/service.php` | `profiles_search` |
+| `apps/davvag-cms/shell/auth-handler/service.php` | `davvag_launchers_query` |
+| `apps/davvag-cms/shell/auth-handler/service.php` | `davvag_launchers_subquery` |
+
+Runtime behavior:
+
+1. `SOSSData::ExecuteRaw($namespace, $params)` resolves the tenant adapter.
+2. The MySQL adapter loads `schemas/{namespace}.json`.
+3. It reads `rawquery.query`.
+4. It replaces `$placeholder` values from `$params->parameters`.
+5. It executes the SQL and maps returned columns through `fields`.
+
+For joined results, avoid `SELECT *` in new report schemas. Use explicit aliases so the result object is predictable:
+
+```sql
+SELECT
+  p.id AS profileId,
+  p.name AS profileName,
+  s.outstanding AS outstanding
+FROM profile p
+INNER JOIN profilestatus s ON p.id = s.profileid
+```
+
+Every selected alias must have a matching `fields[].fieldName`. If a field is listed but not returned by the SQL, the adapter returns a placeholder message for that field.
+
+Stored procedure pattern:
+
+```json
+{
+  "rawquery": {
+    "type": "procedure",
+    "parameters": ["page", "size"],
+    "query": "call my_report_proc($page,$size);"
+  },
+  "fields": []
+}
+```
+
+Place procedure setup SQL at:
 
 ```text
 {TENANT_RESOURCE_LOCATION}/schemas/mysqlquery/{namespace}.sql
 ```
 
-When you call:
+The adapter executes that setup script only when the procedure call fails with MySQL missing procedure error `1305`, then retries the raw query.
 
-```php
-$params = new \stdClass();
-$params->parameters = new \stdClass();
-$params->parameters->status = "Active";
+Raw query safety:
 
-$result = SOSSData::ExecuteRaw("my_new_app_report", $params);
-```
-
-the adapter loads the SQL template and replaces parameter placeholders before execution.
+- Cast page, size, IDs, and other numeric values before passing them to `ExecuteRaw()`.
+- Validate dates with a strict format such as `YYYY-MM-DD`.
+- Whitelist statuses, types, and sort modes.
+- Do not pass SQL snippets, column names, order clauses, or raw where clauses from the browser.
+- Raw queries do not automatically apply `sysviewobject` filtering, so include permission filters in the SQL or keep the endpoint restricted to trusted groups.
 
 Use raw queries sparingly and only when schema-driven insert/query/update logic is not enough.
 
@@ -528,6 +787,88 @@ class ApiService {
 }
 ?>
 ```
+
+## Calling Saved AI Agents
+
+Use `ai-agent-creator` as the shared agent runtime for app-specific AI behavior. Do not copy provider calls, session storage, or skill execution into each app service.
+
+Preferred server-side pattern:
+
+```php
+<?php
+namespace my_new_app;
+
+require_once(TENANT_RESOURCE_LOCATION . "/apps/ai-agent-creator/services/creator-api/service.php");
+
+class ApiService {
+    private function askSavedAgent($agentCode, $message, $profileId, $conversationKey, $context = array(), $payload = array()) {
+        $creator = new \ai_agent_creator\CreatorService();
+        return $creator->interactWithAgent(array(
+            "agentCode" => $agentCode,
+            "message" => $message,
+            "appCode" => "my-new-app",
+            "appName" => "My New App",
+            "profile" => array(
+                "profileId" => $profileId
+            ),
+            "conversationKey" => $conversationKey,
+            "context" => $context,
+            "payload" => $payload
+        ));
+    }
+}
+?>
+```
+
+The returned object uses this stable shape:
+
+```php
+$agentRun = $this->askSavedAgent("support-agent", $message, $profileId, $ticketId, array(
+    "ticketId" => $ticketId
+), $ticket);
+
+if (!$agentRun->success) {
+    return $agentRun;
+}
+
+$reply = $agentRun->response; // Same text as $agentRun->reply.
+$session = $agentRun->session;
+$skillResults = $agentRun->skillResults;
+```
+
+The same method is exposed as a DAVVAG service endpoint:
+
+```text
+POST /components/ai-agent-creator/creator-api/service/InteractWithAgent
+```
+
+Payload fields:
+
+| Field | Required | Purpose |
+| --- | --- | --- |
+| `agentCode` | Yes | Saved agent code from `ai-agent-creator`. |
+| `message` | Yes | User/app prompt sent to the agent. `prompt` and `question` are accepted aliases. |
+| `appCode` | Recommended | Calling app code; used for runtime trace and generated session IDs. |
+| `appName` | Optional | Human-readable calling app name. |
+| `profile.profileId` or `profileId` | Recommended | Stable user/customer/profile key for session continuity. |
+| `conversationKey` or `conversationId` | Recommended | Stable business object key, such as task ID, ticket ID, order ID, or chat thread ID. |
+| `context` | Optional | App context shown to the agent runtime, such as selected entity IDs or status. |
+| `payload` | Optional | Additional app data the agent can inspect through runtime context and configured skills. |
+| `sessionId` | Optional | Explicit session ID. If omitted, the runtime derives one from app, agent, profile, and conversation key. |
+
+Caller app descriptors should include:
+
+```json
+"dependencies": {
+  "apps": ["ai-agent-creator"],
+  "schemas": [],
+  "workflows": [],
+  "plugins": [],
+  "php-extensions": ["curl"]
+}
+```
+
+Use one stable `conversationKey` per real conversation. For example, use a task ID for a task assistant, an order ID for an order assistant, or a customer channel thread ID for support chat. That keeps agent memory scoped to the correct app workflow instead of mixing unrelated messages.
 
 ## Current Profile and Audit Stamping
 
@@ -726,20 +1067,21 @@ Before you ship a new data-backed app:
 7. Register the app in the right tenant group files.
 8. Verify every component descriptor has the correct `mainScript`, `mainView`, and `css` resources.
 9. Test route navigation with `soss-routes.appNavigate("../sibling?...")`.
-10. Test in both docks if the app is tagged for both:
+10. If the app opens reusable lookup popups from another app, add that source app to `dependencies.apps` and confirm the current user group can access it.
+11. Test in both docks if the app is tagged for both:
 
 ```text
 http://localhost/git/davvag-core/#/app/{app-code}/{route}
 http://localhost/git/davvag-core/admin#/app/{app-code}/{route}
 ```
 
-11. Check component CSS URLs directly:
+12. Check component CSS URLs directly:
 
 ```text
 components/{app-code}/{component-name}/file/{file-name}
 ```
 
-12. Validate scripts and JSON before browser testing:
+13. Validate scripts and JSON before browser testing:
 
 ```powershell
 node --check davvag-core\localhost\apps\{app-code}\components\{component}\script.js
