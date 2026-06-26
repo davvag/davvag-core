@@ -33,6 +33,12 @@ docs/08-auth-sessions-permissions.md
 docs/09-deployment.md
 ```
 
+For profile, user, chat, CMS, profile-photo, and reusable app patterns:
+
+```text
+docs/12-reusable-app-patterns.md
+```
+
 ## Resolve Active Tenant
 
 1. Read root `configloader.php`.
@@ -224,4 +230,3 @@ service/app-handler/service.php
 schemas/*.json
 davvag-flow/*.json
 ```
-
