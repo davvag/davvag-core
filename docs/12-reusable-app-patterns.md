@@ -293,7 +293,10 @@ Frontend crop and upload:
 ```js
 exports.getAppComponent("davvag-tools", "davvag-img-cropper", function(cropper) {
     cropper.initialize(300, 300);
-    cropper.crope(1, 1, function(result) {
+    cropper.crop(1, 1, function(result) {
+        if (!result || !result.fileData) {
+            return;
+        }
         var file = result.fileData;
         file.name = profileId;
 
@@ -314,6 +317,53 @@ components/dock/soss-uploader/service/get/profile/{profileId}
 ```
 
 Use this URL in profile cards, chat windows, agent consoles, and profile summaries. Add an image-error fallback to initials because not every profile has a photo.
+
+## DAVVAG Tools Reusable Components
+
+The shared tools app lives at:
+
+```text
+davvag-core/localhost/apps/davvag-tools
+```
+
+Use it as an app dependency when another app needs shared upload, crop, capture, embedded-launcher, or record-permission behavior:
+
+```json
+{
+  "dependencies": {
+    "apps": ["davvag-tools"]
+  }
+}
+```
+
+Stable component contracts:
+
+```text
+davvag-img-cropper
+  initialize(width, height)
+  crop(width, height, callback, optionalDataUrl)
+  crope(width, height, callback, optionalDataUrl)  legacy alias
+  callback result: { name, data, fileData }
+
+davvag-file-uploader
+  initialize()
+  upload(filesOrFile, className, idPrefix, callback)
+  upload_uncompressed(filesOrFile, className, idPrefix, callback)
+  marks each file with status/result/error before callback
+
+davvag-app-downloader
+  launchApp(launcherInfo, onLoaded, onError, onComplete, data)
+  RenderHTML(jqueryElement, onLoaded, onError, onComplete, data)
+  downloadAPP(appId, componentId, elementId, onLoaded, onError, onComplete, data)
+
+viewObjectAPI
+  Save [POST]
+  FindObject [GET]
+  PermisionValues / PermissionValues [GET]
+  UserVieObjects / UserViewObjects [GET]
+```
+
+Keep the misspelled method names in old callers, but prefer the correctly spelled aliases in new code.
 
 ## AI Agent Creator Pattern
 
