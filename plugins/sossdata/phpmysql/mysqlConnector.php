@@ -257,7 +257,18 @@ class mysqlConnector
                 }
                 return $this->result($success, count($genis) == 1 ? $genis[0] : $genis, $errorMsg);
             } catch (Exception $e) {
-                return $this->result(false, null, $e->getMessage());
+                if(mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054){
+                    if($this->retry>0){
+                        return $this->result(false, null, $this->con->error);
+                    }
+                    $this->retry++;
+                    $this->createTable($namespace);
+                    $this->retry=0;
+                    return $this->Insert($namespace, $data);
+                }else{
+                    return $this->result(false, null, $e->getMessage());
+                }
+                
             }
         }
     }
@@ -298,7 +309,17 @@ class mysqlConnector
                 }
                 return $this->result($success, count($results) == 1 ? $results[0] : $results, $errorMsg);
             } catch (Exception $e) {
-                return $this->result(false, null, $e->getMessage());
+                if(mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054){
+                    if($this->retry>0){
+                        return $this->result(false, null, $this->con->error);
+                    }
+                    $this->retry++;
+                    $this->createTable($namespace);
+                    $this->retry=0;
+                    return $this->Update($namespace, $data);
+                }else{
+                    return $this->result(false, null, $e->getMessage());
+                }
             }
         }
     }
