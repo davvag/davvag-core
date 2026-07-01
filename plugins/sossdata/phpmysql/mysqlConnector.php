@@ -28,7 +28,7 @@ class mysqlConnector
                 //die("Connection failed: " . $this->con->connect_error);
                 if (preg_match('/Unknown database/i', $this->con->connect_error)) {
                     $this->createDatabase($configData->mysql_server, $configData->mysql_username, $configData->mysql_password, $dbname);
-                    $this->Open();
+                    $this->Open($db);
                 } else {
                     throw new Exception($this->con->connect_error);
                 }
@@ -119,6 +119,7 @@ class mysqlConnector
     public function Query($namespace, $param, $lastID = 0, $sorting = "DESC", $pageSize = 20, $fromPage = 0,$vieObject=true)
     {
         try {
+            $this->ensureNamespaceReady($namespace);
             $tableSchema = clone(Schema::Get($namespace));
             $systemFields = Schema::GetSystemColums();
             $param=urldecode($param);
@@ -202,7 +203,7 @@ class mysqlConnector
                             return $this->result(false, [], $this->con->error);
                         }
                         $this->retry++;
-                        $this->createTable($namespace);
+                        $this->ensureTableReady($namespace);
                         $this->retry=0;
                         return $this->Query($namespace, $param, $lastID, $sorting, $pageSize, $fromPage, $vieObject);
                     } else {
@@ -222,6 +223,7 @@ class mysqlConnector
         if ($this->ConOK()) {
 
             try {
+                $this->ensureNamespaceReady($namespace);
                 $tableSchema = Schema::Get($namespace);
                 $sqls = $this->generateInsertSQL($namespace, $tableSchema, $data);
                 $genis = array();
@@ -241,7 +243,7 @@ class mysqlConnector
                                 return $this->result(false, null, $this->con->error);
                             }
                             $this->retry++;
-                            $this->createTable($namespace);
+                            $this->ensureTableReady($namespace);
                             $this->retry=0;
                             return $this->Insert($namespace, $data);
                         } else {
@@ -262,7 +264,7 @@ class mysqlConnector
                         return $this->result(false, null, $this->con->error);
                     }
                     $this->retry++;
-                    $this->createTable($namespace);
+                    $this->ensureTableReady($namespace);
                     $this->retry=0;
                     return $this->Insert($namespace, $data);
                 }else{
@@ -278,6 +280,7 @@ class mysqlConnector
     {
         if ($this->ConOK()) {
             try {
+                $this->ensureNamespaceReady($namespace);
                 $tableSchema = Schema::Get($namespace);
                 $sqls = $this->generateUpdateSQL($namespace, $tableSchema, $data);
                 $results = array();
@@ -296,7 +299,7 @@ class mysqlConnector
                                 return $this->result(false, null, $this->con->error);
                             }
                             $this->retry++;
-                            $this->createTable($namespace);
+                            $this->ensureTableReady($namespace);
                             $this->retry=0;
                             return $this->Update($namespace, $data);
                         } else {
@@ -314,7 +317,7 @@ class mysqlConnector
                         return $this->result(false, null, $this->con->error);
                     }
                     $this->retry++;
-                    $this->createTable($namespace);
+                    $this->ensureTableReady($namespace);
                     $this->retry=0;
                     return $this->Update($namespace, $data);
                 }else{
@@ -328,6 +331,7 @@ class mysqlConnector
     {
         if ($this->ConOK()) {
             try {
+                $this->ensureNamespaceReady($namespace);
                 
                 $tableSchema = Schema::Get($namespace);
                 $sqls = $this->generateDeleteSQL($namespace, $tableSchema, $data);
@@ -353,7 +357,7 @@ class mysqlConnector
                                 return $this->result(false, null, $this->con->error);
                             }
                             $this->retry++;
-                            $this->createTable($namespace);
+                            $this->ensureTableReady($namespace);
                             $this->retry=0;
                             return $this->Delete($namespace, $data);
                         } else {
@@ -385,11 +389,36 @@ class mysqlConnector
                 if ($this->con->query($sql) === TRUE) {
                    
                 } else {
-                    echo "Error: " . $sql . "<br>" . $this->con->error;
+                    throw new Exception("Error executing mysql script for ".$namespace.": ".$this->con->error);
                 }
                 # code...
             }
         }
+    }
+
+    private function ensureTableReady($namespace)
+    {
+        if (!$this->createTable($namespace)) {
+            $message = $this->con ? $this->con->error : "Unknown schema recovery error";
+            throw new Exception("Auto-create failed for table '".$namespace."': ".$message);
+        }
+    }
+
+    private function ensureNamespaceReady($namespace)
+    {
+        if (!$this->tableExists($namespace)) {
+            $this->ensureTableReady($namespace);
+        }
+    }
+
+    private function tableExists($namespace)
+    {
+        $escaped = mysqli_real_escape_string($this->con, $namespace);
+        $result = $this->con->query("SHOW TABLES LIKE '" . $escaped . "'");
+        if ($result === false) {
+            throw new Exception("Unable to inspect table '".$namespace."': ".$this->con->error);
+        }
+        return $result->num_rows === 1;
     }
 
     private function generateDeleteSQL($namespace, $tableSchema, $data)
@@ -617,14 +646,15 @@ class mysqlConnector
             $sql = "Create Table `" . $namespace . "`(";
             $primary = " PRIMARY KEY(";
             foreach ($tableSchema->fields as $value) {
-                $sql .= "`" . $value->fieldName . "` " . $this->convertSQLtype(
-                    $value->dataType,
-                    (!empty($value->annotations->maxLen) ? $value->annotations->maxLen : 0),
-                    (!empty($value->annotations->isPrimary) ? false : true),
-                    (!empty($value->annotations->autoIncrement) ? $value->annotations->autoIncrement : false),
-                    (!empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2"),
-                    (!empty($value->annotations->encoding) ? $value->annotations->encoding : false)
-                ) . ",";
+                        $sql .= "`" . $value->fieldName . "` " . $this->convertSQLtype(
+                            $value->dataType,
+                            (!empty($value->annotations->maxLen) ? $value->annotations->maxLen : 0),
+                            (!empty($value->annotations->isPrimary) ? false : true),
+                            (!empty($value->annotations->autoIncrement) ? $value->annotations->autoIncrement : false),
+                            (!empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2"),
+                            (!empty($value->annotations->encoding) ? $value->annotations->encoding : false),
+                            (isset($value->annotations->default) ? $value->annotations->default : null)
+                        ) . ",";
                 if (empty($value->annotations->isPrimary) == false) {
                     if ($value->annotations->isPrimary) {
                         $primary .= "`" . $value->fieldName . "`,";
@@ -638,10 +668,10 @@ class mysqlConnector
             if ($this->con->query($sql) === TRUE) {
                 return true;
             } else {
-                echo "Error: " . $sql . "<br>" . $this->con->error;
-                return false;
+                throw new Exception("Schema sync failed for '".$namespace."': ".$this->con->error.". SQL: ".$sql);
             }
         }
+        return true;
     }
 
     private function result($suessfull, $data = null, $message = "",$numberOfRecords=null,$pageNumber=null,$pagesize=null)
