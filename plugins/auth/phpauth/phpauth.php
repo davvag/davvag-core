@@ -128,27 +128,37 @@ class phpauth implements iDavvagAuth{
             throw new Exception("Registration Invalied");
         }else{
             $result=SOSSData::Query("domains","domain:".$data->domain,null,"asc",20,0,AUTH_DOMAIN,false);
+            if(!$result->success){
+                return $this->error("Error checking existing domain: ".$result->message);
+            }
             if(count($result->result)!=0){
                 return $this->error("Already registered");
                 //throw new Exception("Already registered");
             }else{
+                $result=SOSSData::Query("users","email:".$data->email,null,"asc",20,0,AUTH_DOMAIN,false);
+                if(!$result->success){
+                    return $this->error("Error checking existing user: ".$result->message);
+                }
+                $user=new stdClass();
+                if(count($result->result)!=0)
+                {
+                    $user=$result->result[0];
+                }else{
+                    $user->username=$data->otherdata->usersname;
+                    $user->password=$data->otherdata->password;
+                    $user->name=$data->userfullname;
+                    $user->email=$data->email;
+                    //$data->otherdata->userid= 
+                    $user=$this->SaveUser($user);
+                    if(empty($user) || empty($user->userid)){
+                        $message = isset($user->message) ? $user->message : "Error creating user.";
+                        return $this->error($message);
+                    }
+                }
                 $result = SOSSData::Insert ("profile", $data);
                 if($result->success){
                     $data->otherdata->profileid=$result->result->generatedId;
                     $data->id=$result->result->generatedId;
-                    $result=SOSSData::Query("users","email:".$data->email,null,"asc",20,0,AUTH_DOMAIN,false);
-                    $user=new stdClass();
-                    if(count($result->result)!=0)
-                    {
-                        $user=$result->result[0];
-                    }else{
-                        $user->username=$data->otherdata->usersname;
-                        $user->password=$data->otherdata->password;
-                        $user->name=$data->userfullname;
-                        $user->email=$data->email;
-                        //$data->otherdata->userid= 
-                        $user=$this->SaveUser($user);
-                    }
                     $data->otherdata->userid=$user->userid;
                     $data->createdUser=$user->userid;
                     $this->Join($data->domain,$user->userid,"sysadmin");
@@ -169,6 +179,8 @@ class phpauth implements iDavvagAuth{
                     }else{
                         return $this->error($result->message);
                     }
+                }else{
+                    return $this->error($result->message);
                 }
             }
             
