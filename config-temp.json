@@ -1,16 +1,57 @@
 {
     "variables":{
-        "RESOURCE_LOCATION":"D:\\xampp\\htdocs\\git\\davvag-core\\davvag-core",
-        "MEDIA_FOLDER":"D:\\media",
+        "RESOURCE_LOCATION":"/home/davvagco/public_html/davvag-core",
+        "MEDIA_FOLDER":"/home/davvagco/public_html/media/",
         "OS_URL":"http://localhost:9000/data",
-        "AUTH_URL" : "http://localhost:9000"
+        "AUTH_URL" : "http://localhost:9000",
+        "DB_CONFIG_FILE":"/home/davvagco/sossgrid.conf"
     },
     "alias":{
         "localhost":["127.0.0.1"]
-    },"DAVVAG_StartUp":{
+    }
+    ,"DAVVAG_StartUp":{
         "plugins":[
+            {"name":"notify","plugin_location":"global","file":"notify.php","location":"/notify/notify.php"},
             {"name":"sossdata","plugin_location":"global","file":"SOSSData.php","location":"/sossdata/SOSSData.php"},
             {"name":"auth","plugin_location":"global","file":"auth.php","location":"/auth/auth.php"}
         ]
-    }
+    },
+    "DAVVAG_DATA":{
+        "GLOBAL":{
+            "connnector":"phpmysql",
+            "phpmysql":{
+                
+            }
+        },
+        "www.davvag.com":{
+            "connector":"phpmysql",
+            "phpmysql":{
+                
+            }
+        },
+        "www.ephraimgen.com":{
+            "connector":"phpmysql",
+            "phpmysql":{
+                
+            }
+        },
+        "www.jeremiahthebrimstone.com":{
+            "connector":"phpmysql",
+            "phpmysql":{
+                
+            }
+        },
+        "lbc.davvag.com":{
+            "connector":"phpmysql",
+            "phpmysql":{
+                
+            }
+        }
+    },
+    "DAVVAG_AUTH":{
+        "connector":"phpauth",
+        "phpauth":{
+            
+        }
+    },"DEBUG":false
 }
