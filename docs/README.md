@@ -12,7 +12,7 @@ Start here, then read the topic file that matches your task.
 | [02-tenant-setup.md](02-tenant-setup.md) | How to create tenant/domain folders such as `davvag-core/example.com`. |
 | [03-application-development.md](03-application-development.md) | How to create and register DAVVAG applications. |
 | [04-components-and-services.md](04-components-and-services.md) | Component descriptors, frontend components, service handlers, and API routes. |
-| [05-database-schemas.md](05-database-schemas.md) | Schema-driven database setup with `SOSSData`. |
+| [05-database-schemas.md](05-database-schemas.md) | Schema-driven database setup with `SOSSData`, including field and relationship metadata. |
 | [06-workflows.md](06-workflows.md) | `davvag-flow` workflow files, node types, and execution. |
 | [07-plugins.md](07-plugins.md) | Global and tenant-local plugin usage and extension patterns. |
 | [08-auth-sessions-permissions.md](08-auth-sessions-permissions.md) | Auth flow, sessions, cookies, user groups, and access checks. |

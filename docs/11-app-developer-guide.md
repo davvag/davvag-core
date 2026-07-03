@@ -515,6 +515,8 @@ davvag-core/example.com/schemas/my_new_app_items.json
 
 The schema defines the logical fields. The adapter uses it to map values and create the backing table if needed.
 
+When a schema has stable foreign-key style references, maintain a `relations` block in the same JSON file. Keep relationship metadata in the schema source instead of scattering it across app docs or service comments. Use it for direct references like `course_id -> course_manager_course.id` or `student_id -> profile.id`. For polymorphic references like `entity_type` plus `entity_id`, document them in prose unless the target is fixed.
+
 ## Save Flow
 
 Typical save flow from a service:

@@ -73,6 +73,76 @@ The active tenant is resolved from `TENANT_RESOURCE_LOCATION`, so schema files a
 | `annotations.default` | Optional default value. |
 | `annotations.decimalPoints` | Decimal precision string, for example `10,2`. |
 
+## Relationships
+
+Schemas can also keep relationship metadata in the same JSON file. This metadata documents how a field maps to another schema and should be maintained alongside `fields` whenever the relationship is stable and known.
+
+Example:
+
+```json
+{
+  "fields": [
+    {
+      "fieldName": "id",
+      "dataType": "int",
+      "annotations": {
+        "isPrimary": true,
+        "autoIncrement": true
+      }
+    },
+    {
+      "fieldName": "course_id",
+      "dataType": "int"
+    },
+    {
+      "fieldName": "teacher_id",
+      "dataType": "int"
+    }
+  ],
+  "relations": [
+    {
+      "relationName": "course_manager_subject_course",
+      "relationType": "many-to-one",
+      "targetEntity": "course_manager_course",
+      "joinColumns": [
+        {
+          "sourceColumn": "course_id",
+          "targetColumn": "id"
+        }
+      ]
+    },
+    {
+      "relationName": "course_manager_subject_teacher_profile",
+      "relationType": "many-to-one",
+      "targetEntity": "profile",
+      "joinColumns": [
+        {
+          "sourceColumn": "teacher_id",
+          "targetColumn": "id"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Relationship keys:
+
+| Key | Purpose |
+| --- | --- |
+| `relationName` | Stable unique name for the relationship inside the schema. |
+| `relationType` | Logical relationship type such as `many-to-one`. |
+| `targetEntity` | Target namespace or logical target entity name. |
+| `joinColumns[].sourceColumn` | Field in the current schema. |
+| `joinColumns[].targetColumn` | Field in the target schema. |
+
+Use `relations` for direct references only:
+
+1. Add a relation when a field always points to one known target schema.
+2. Skip polymorphic pairs such as `entity_type` plus `entity_id` unless the target is fixed.
+3. Keep the `relations` block in the tenant schema JSON so the schema remains the source of truth.
+4. For documentation formatting, reserve the exact heading `Schema Relationship` for detailed per-schema reference documents only. General framework docs should use a normal heading such as `Relationships`.
+
 ## Common Data Types
 
 ```text
