@@ -784,6 +784,7 @@ Typical component pattern:
 ```javascript
 WEBDOCK.component().register(function (exports) {
     var api;
+    var scope;
 
     var state = {
         form: {},
@@ -795,12 +796,16 @@ WEBDOCK.component().register(function (exports) {
         data: state,
         methods: {
             save: save
+        },
+        onReady: function (s) {
+            scope = s;
+            init();
         }
     };
 
-    exports.onReady = function () {
+    function init() {
         api = exports.getComponent("api");
-    };
+    }
 
     function save() {
         api.services.Save(state.form).then(function (response) {
@@ -811,6 +816,19 @@ WEBDOCK.component().register(function (exports) {
     }
 });
 ```
+
+For Vue-backed components, initialize through `exports.vue.onReady`, not `exports.onReady`.
+
+The active dock creates Vue first and then calls `instance.vue.onReady(...)`. Service lookups, route-context reads, DOM-dependent setup and initial data loading should therefore start from the Vue `onReady` hook:
+
+```javascript
+onReady: function (s) {
+    scope = s;
+    init();
+}
+```
+
+Use `exports.onReady` only for non-Vue components or components that intentionally manage their own mount lifecycle.
 
 Use the framework's component APIs:
 
