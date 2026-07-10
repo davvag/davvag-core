@@ -665,6 +665,30 @@ The descriptor is part of the application contract.
 
 Do not treat it as optional metadata.
 
+## App Icon Descriptor Rule
+
+`description.icon` is a logical app icon filename, not a nested asset path.
+
+Use:
+
+```json
+"icon": "appicon.svg"
+```
+
+or:
+
+```json
+"icon": "appicon.png"
+```
+
+Do not write:
+
+```json
+"icon": "assets/appicon.svg"
+```
+
+The framework/dock expects the app icon value as the app-level icon filename. If the physical icon asset is stored under the app assets folder, keep the descriptor value as the filename expected by the dock.
+
 ---
 
 # 13. APPLICATION DEPENDENCY ARCHITECTURE
@@ -714,6 +738,28 @@ zip
 ```
 
 Dependencies are install/runtime contracts, not documentation suggestions.
+
+If service PHP imports a plugin with `require_once(PLUGIN_PATH . ...)` or `require_once(PLUGIN_PATH_LOCAL . ...)`, the app must declare that plugin in `dependencies.plugins`.
+
+Example:
+
+```php
+require_once(PLUGIN_PATH_LOCAL . "/profile/profile.php");
+```
+
+requires:
+
+```json
+"plugins": ["profile"]
+```
+
+If the same service also imports auth, cache or data plugins, declare those too:
+
+```json
+"plugins": ["auth", "sossdata", "phpcache", "profile"]
+```
+
+After dependency or descriptor changes, bump the affected app/component versions so stale descriptors are not reused by the browser or Webdock runtime.
 
 ---
 
@@ -830,6 +876,20 @@ onReady: function (s) {
 
 Use `exports.onReady` only for non-Vue components or components that intentionally manage their own mount lifecycle.
 
+If a Vue component receives `undefined` for a service dependency or `api.services` is missing, check these items before rewriting the component:
+
+```text
+service component is listed in app.json components
+service component type is "service"
+service component is included in configuration.webdock.onLoad when needed at startup
+service component.json contains serviceHandler.methods
+frontend initialization runs inside exports.vue.onReady
+app/component versions were bumped after descriptor changes
+browser cache was refreshed after descriptor changes
+```
+
+Do not work around missing `services` by hard-coding service URLs in the component. Fix the descriptor loading contract.
+
 Use the framework's component APIs:
 
 ```text
@@ -884,6 +944,26 @@ class ApiService {
 }
 ?>
 ```
+
+Active profile lookup pattern:
+
+```php
+require_once(PLUGIN_PATH_LOCAL . "/profile/profile.php");
+
+$storeProfile = \Profile::getUserProfile();
+$profile = isset($storeProfile->profile) ? $storeProfile->profile : $storeProfile;
+
+if ($profile === null || !isset($profile->id) || intval($profile->id) < 1) {
+    $res->SetError("An active profile is required.");
+    return null;
+}
+
+$profileId = intval($profile->id);
+```
+
+Use this pattern when an app needs the active user's app-facing profile id.
+
+Do not replace it with a direct `linkeduserid` datastore lookup inside each app. The profile plugin is the shared identity facade and may return either the profile directly or a wrapper containing `profile`.
 
 Service responsibility:
 
@@ -979,6 +1059,26 @@ App services may also return an internal result shape such as:
 Keep response contracts stable for existing callers.
 
 Before changing a service result shape, inspect all frontend and cross-app consumers.
+
+Frontend service invocation must not retry real service failures.
+
+Retry only transport-level failures such as:
+
+```text
+jqXHR.status === 0
+timeout
+```
+
+Do not retry application/service responses such as:
+
+```text
+HTTP 400
+HTTP 401 / 403
+HTTP 500
+{"success": false, ...}
+```
+
+This is especially important for POST service calls. Retrying a real service error can duplicate writes or duplicate validation failures in the browser network log.
 
 ---
 
@@ -1076,6 +1176,34 @@ handler.appNavigate("../tasks?projectId=" + projectId);
 ```
 
 Always test real hash navigation inside the target dock.
+
+For app descriptor dock subapps, use full app hash paths instead of relative paths.
+
+Correct:
+
+```json
+{
+  "name": "Networks",
+  "path": "#/app/davvag-mesh-networks"
+}
+```
+
+Incorrect:
+
+```json
+{
+  "name": "Sync",
+  "path": "../davvag-mesh-sync"
+}
+```
+
+Descriptor-level relative app paths can produce broken hashes such as:
+
+```text
+#/app/davvag-mesh/../davvag-mesh-sync
+```
+
+Use relative navigation only where the active route component intentionally resolves sibling routes at runtime. Use full `#/app/{app-code}` paths when switching apps from dock/subapp metadata.
 
 ---
 
@@ -2304,6 +2432,108 @@ missing PHP extension
 ```
 
 Debug architecture before rewriting working code.
+
+---
+
+# 57A. MESH / WEBDOCK IMPLEMENTATION FINDINGS
+
+These findings were captured while making the `davvag-mesh` app family work correctly.
+
+Apply them to future DAVVAG apps when the same symptoms appear.
+
+## Vue component startup
+
+For Vue-backed components, use:
+
+```javascript
+exports.vue = {
+    data: state,
+    methods: {},
+    onReady: function (s) {
+        scope = s;
+        init();
+    }
+};
+```
+
+Do not initialize Vue-backed components with only:
+
+```javascript
+exports.onReady = init;
+```
+
+Symptom when wrong:
+
+```text
+exports.getComponent("service-component").services is undefined
+```
+
+## Service descriptors and cache
+
+When a service is unavailable in the frontend:
+
+```text
+confirm app.json onLoad includes the service when needed
+confirm the service component has type "service"
+confirm component.json contains serviceHandler.methods
+confirm the service PHP class namespace matches component.json
+bump app/component versions after descriptor changes
+hard refresh or clear cached descriptors during development
+```
+
+## Active profile id
+
+Use the profile plugin:
+
+```php
+require_once(PLUGIN_PATH_LOCAL . "/profile/profile.php");
+
+$storeProfile = \Profile::getUserProfile();
+$profile = isset($storeProfile->profile) ? $storeProfile->profile : $storeProfile;
+$profileId = ($profile && isset($profile->id)) ? intval($profile->id) : 0;
+```
+
+Do not query `profile` manually by `linkeduserid` in each service.
+
+## Service invoke retry behavior
+
+Retry service invokes only once and only for transport/network failures.
+
+Do not retry HTTP/service errors. A `500` response containing JSON such as:
+
+```json
+{"success": false, "result": "An active profile is required."}
+```
+
+is a service failure, not a network failure.
+
+## App switching routes
+
+Dock/subapp app-switching paths must use full app hashes:
+
+```text
+#/app/davvag-mesh-sync
+```
+
+Do not use descriptor paths that produce:
+
+```text
+#/app/davvag-mesh/../davvag-mesh-sync
+```
+
+## App icon values
+
+Use:
+
+```json
+"icon": "appicon.svg"
+```
+
+not:
+
+```json
+"icon": "assets/appicon.svg"
+```
 
 ---
 
