@@ -1223,6 +1223,27 @@ Prefer sibling navigation when appropriate:
 handler.appNavigate("../tasks?projectId=" + projectId);
 ```
 
+The dock route controller must preserve the active app root while resolving component navigation. For example, both of these starting routes:
+
+```text
+#/app/profileapp.v1
+#/app/profileapp.v1/list
+```
+
+must resolve:
+
+```javascript
+handler.appNavigate("../edit?id=1");
+```
+
+to:
+
+```text
+#/app/profileapp.v1/edit?id=1
+```
+
+The resolver must never climb above `#/app/{app-code}` for app-relative navigation. A leading component path such as `/edit?id=1` is also app-root-relative while an app is active. Use a full hash such as `#/app/{other-app-code}` only when intentionally switching applications.
+
 Always test real hash navigation inside the target dock.
 
 For app descriptor dock subapps, use full app hash paths instead of relative paths.
