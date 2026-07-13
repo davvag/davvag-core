@@ -1082,6 +1082,54 @@ This is especially important for POST service calls. Retrying a real service err
 
 ---
 
+# 18A. SERVICE REQUEST BUTTON LOCKING
+
+Every button-triggered service request must have an in-flight lock.
+
+This applies to service-backed actions including:
+
+```text
+CREATE / SAVE
+EDIT / UPDATE
+DELETE / CANCEL
+STATUS CHANGES
+SEARCH / LOAD MORE
+UPLOAD / PROCESS / SEND
+```
+
+Required behavior:
+
+```text
+USER FIRES BUTTON ACTION
+      ↓
+LOCK THE INITIATING BUTTON
+      ↓
+START ONE SERVICE REQUEST
+      ↓
+KEEP THE BUTTON LOCKED WHILE THE REQUEST IS IN FLIGHT
+      ↓
+UNLOCK AFTER SUCCESS OR FAILURE COMPLETION
+```
+
+Rules:
+
+```text
+IGNORE REPEATED CLICKS WHILE LOCKED
+RELEASE THE LOCK ON BOTH SUCCESS AND ERROR PATHS
+DO NOT RELEASE THE LOCK BEFORE THE SERVICE PROMISE / REQUEST SETTLES
+DO NOT USE A FIXED TIMER AS THE REQUEST COMPLETION SIGNAL
+PRESERVE ANY BUSINESS-RULE DISABLED STATE AFTER THE TEMPORARY LOCK ENDS
+KEEP A LOCK COUNT WHEN ONE BUTTON STARTS MULTIPLE RELATED REQUESTS
+```
+
+Prefer an explicit reactive `submitting`, `saving`, `deleting` or `loading` state when a component owns the action. A centralized app-level request-lock helper is acceptable for legacy apps with many components, provided it only associates real DAVVAG service requests with their initiating buttons and releases them on the request's actual completion event.
+
+Client-side locking prevents accidental duplicate submissions but is not a server-side idempotency guarantee. Financial, destructive or otherwise sensitive services should also enforce duplicate protection or idempotency in the backend where required.
+
+Do not implement only a success-path unlock. Network errors, authorization failures, validation failures and service errors must all release the temporary UI lock.
+
+---
+
 # 19. CONTROLLERS AND BUSINESS LOGIC RULE
 
 DAVVAG does not require every app to imitate an external MVC framework.
@@ -2746,6 +2794,8 @@ When a bug appears only after a code update, verify cached versioned resources b
 
 30. Do not redesign DAVVAG as Laravel, Yii or another framework inside one feature.
 
+31. Lock every service-triggering button for the full lifetime of its in-flight request and reject repeated activation until completion.
+
 ---
 
 # 65. AI CODING AGENT EXECUTION PROTOCOL
@@ -2779,6 +2829,7 @@ plugin dependencies
 PHP extension dependencies
 group access
 security checks
+service request button-lock behavior
 test routes
 ```
 
