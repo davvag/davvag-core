@@ -12,30 +12,42 @@ class mysqlConnector
 
     public function Open($db = null)
     {
-        if (!defined("DB_CONFIG_FILE")) {
-            throw new Exception("No database Configuration.");
-        }
-        if (file_exists(DB_CONFIG_FILE)) {
-            $configData = json_decode(file_get_contents(DB_CONFIG_FILE));
-            if ($db == null) {
-                $dbname = $configData->init_db . str_replace(".", "_", DATASTORE_DOMAIN);
-            } else {
-                $dbname = $configData->init_db . str_replace(".", "_", $db);
+        try {
+            if (!defined("DB_CONFIG_FILE")) {
+                throw new Exception("No database Configuration.");
             }
-            $this->con = new mysqli($configData->mysql_server, $configData->mysql_username, $configData->mysql_password, $dbname);
-            if ($this->con->connect_error) {
-
-                //die("Connection failed: " . $this->con->connect_error);
-                if (preg_match('/Unknown database/i', $this->con->connect_error)) {
-                    $this->createDatabase($configData->mysql_server, $configData->mysql_username, $configData->mysql_password, $dbname);
-                    $this->Open($db);
+            if (file_exists(DB_CONFIG_FILE)) {
+                $configData = json_decode(file_get_contents(DB_CONFIG_FILE));
+                if ($db == null) {
+                    $dbname = $configData->init_db . str_replace(".", "_", DATASTORE_DOMAIN);
                 } else {
-                    throw new Exception($this->con->connect_error);
+                    $dbname = $configData->init_db . str_replace(".", "_", $db);
                 }
+                $this->con = new mysqli($configData->mysql_server, $configData->mysql_username, $configData->mysql_password, $dbname);
+                if ($this->con->connect_error) {
+
+                    //die("Connection failed: " . $this->con->connect_error);
+                    if (preg_match('/Unknown database/i', $this->con->connect_error)) {
+                        $this->createDatabase($configData->mysql_server, $configData->mysql_username, $configData->mysql_password, $dbname);
+                        $this->Open($db);
+                    } else {
+                        throw new Exception($this->con->connect_error);
+                    }
+                }
+            } else {
+                throw new Exception("Configuration file missing.");
             }
-        } else {
-            throw new Exception("Configuration file missing.");
+        }catch (Exception $e) {
+            //if($e->getMessage())
+            if (preg_match('/Unknown database/i', $e->getMessage())) {
+                $this->createDatabase($configData->mysql_server, $configData->mysql_username, $configData->mysql_password, $dbname);
+                $this->Open($db);
+            } else {
+                throw new Exception($this->con->connect_error);
+            }
+            //throw new Exception("Database connection failed: " . $e->getMessage());
         }
+        
     }
 
     private function ConOK()

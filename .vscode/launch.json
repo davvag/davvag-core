@@ -16,6 +16,7 @@
             "request": "launch",
             "program": "${file}",
             "cwd": "${fileDirname}",
+            "runtimeExecutable": "C:\\xampp\\php\\php.exe",
             "port": 0,
             "runtimeArgs": [
                 "-dxdebug.start_with_request=yes"
@@ -29,6 +30,7 @@
             "name": "Launch Built-in web server",
             "type": "php",
             "request": "launch",
+            "runtimeExecutable": "C:\\xampp\\php\\php.exe",
             "runtimeArgs": [
                 "-dxdebug.mode=debug",
                 "-dxdebug.start_with_request=yes",
@@ -37,7 +39,11 @@
             ],
             "program": "",
             "cwd": "${workspaceRoot}",
-            "port": 9999,
+            "port": 0,
+            "env": {
+                "XDEBUG_MODE": "debug,develop",
+                "XDEBUG_CONFIG": "client_port=${port}"
+            },
             "serverReadyAction": {
                 "pattern": "Development Server \\(http://localhost:([0-9]+)\\) started",
                 "uriFormat": "http://localhost:%s",
