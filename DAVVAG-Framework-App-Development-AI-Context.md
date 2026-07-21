@@ -2606,6 +2606,56 @@ not:
 
 ---
 
+# 57B. ACTIVE LESSON MANAGER ROUTING DEFECT
+
+The following issue is currently reported in the `lesson-manager` app and must be treated as unresolved until it is reproduced, corrected and browser-tested:
+
+```text
+OPEN #/app/lesson-manager/learn
+      ↓
+THE APPLICATION SHELL / ROUTING SYSTEM BREAKS
+      ↓
+SUBSEQUENT ROUTES DO NOT WORK
+```
+
+Known scope:
+
+```text
+affected app: lesson-manager
+trigger route: #/app/lesson-manager/learn
+visible impact: navigation stops working across routes after the Learn screen is opened
+status: active defect; root cause not yet verified
+```
+
+Required investigation order:
+
+```text
+1. Reproduce from a clean page load in the supported dock
+2. Capture the first browser console error and failed network request
+3. Confirm the dock hash router still owns window.onhashchange
+4. Confirm partial-app receives appName=lesson-manager and appRoute=/learn
+5. Confirm the learn component mounts without replacing or corrupting the shell render boundary
+6. Confirm StudentCourses and LearningCourse service failures remain isolated to the component
+7. Navigate from Learn to another lesson-manager route
+8. Navigate from Learn to a different app route
+9. Refresh directly on #/app/lesson-manager/learn and repeat the navigation tests
+```
+
+Do not mark this defect fixed based only on valid JSON, JavaScript syntax or a successful direct resource request. The fix is complete only when entering the Learn route no longer prevents both same-app and cross-app navigation in the actual browser dock.
+
+When correcting this issue:
+
+```text
+PRESERVE THE GLOBAL DOCK ROUTER
+ISOLATE LEARN COMPONENT STARTUP / SERVICE ERRORS
+DO NOT REPLACE window.onhashchange FROM AN APP COMPONENT
+DO NOT MUTATE THE SHELL ROUTE SETTINGS FROM lesson-manager
+BUMP THE AFFECTED APP / COMPONENT VERSION
+TEST NAVIGATION BEFORE AND AFTER ENTERING THE LEARN ROUTE
+```
+
+---
+
 # 58. DEPLOYMENT ARCHITECTURE
 
 DAVVAG deployment depends on:
