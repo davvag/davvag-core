@@ -2656,6 +2656,49 @@ TEST NAVIGATION BEFORE AND AFTER ENTERING THE LEARN ROUTE
 
 ---
 
+# 57C. VIRAL CONTENT MANAGER OPTIMIZER RESPONSE ARCHIVE
+
+The `davvag-viral-content-manager` Existing Content Optimizer persists service responses in the tenant schema:
+
+```text
+optimizer_responses
+```
+
+The archive owns two response types:
+
+```text
+details_fetch          platform metadata/transcript returned by FetchUrlDetails
+optimization_analysis  completed AnalyzeUrl optimization package
+```
+
+Implementation contract:
+
+```text
+FetchUrlDetails always calls the configured platform services and saves the returned payload
+AnalyzeUrl saves its completed client response payload after the existing content/analysis records
+ListOptimizerResponses returns the newest saved responses for the Responses grid sub-app
+requestPayload contains only the optimizer input fields approved by the service
+responsePayload contains the complete client-safe service result
+```
+
+The dock route is:
+
+```text
+#/app/davvag-viral-content-manager/responses
+```
+
+The Responses grid and payload viewer are implemented by the existing `viral-dashboard` component. When extending this archive, preserve the `optimizer_responses` schema contract, do not store provider credentials, keep fetched raw provider data masked, and bump the app/component versions after descriptor or UI changes.
+
+For explicit Fetch Details behavior:
+
+```text
+LOCK THE BUTTON DURING THE REQUEST
+CALL FetchUrlDetails WITH forceRefresh=true
+REPLACE THE PREVIOUS FETCHED FORM FIELDS WITH THE NEW RESPONSE, INCLUDING EMPTY VALUES
+SAVE THE NEW RESPONSE AS A SEPARATE ARCHIVE ROW
+RELOAD THE RESPONSES GRID AFTER SUCCESS
+```
+
 # 58. DEPLOYMENT ARCHITECTURE
 
 DAVVAG deployment depends on:
