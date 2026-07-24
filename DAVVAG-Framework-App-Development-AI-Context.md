@@ -1,5 +1,5 @@
 # DAVVAG FRAMEWORK — APPLICATION DEVELOPMENT ARCHITECTURE
-
+("C:\xampp\htdocs\davvag-core\DAVVAG-Framework-App-Development-AI-Context.md")
 ## AI CONTEXT DOCUMENT
 
 **Document role:** Permanent architecture and implementation context  
