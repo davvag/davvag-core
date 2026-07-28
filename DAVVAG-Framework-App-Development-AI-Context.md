@@ -1748,6 +1748,125 @@ excutionStack
 
 ---
 
+# 34A. SAVED AI AGENT WORKFLOW ACTIVITY
+
+The shared workflow activity:
+
+```text
+plugins/davvag-flow/lib/saved_agent.php
+```
+
+provides this callable contract:
+
+```php
+SavedAgentWorkflow::run($input);
+```
+
+The activity:
+
+```text
+CONFIRMS TENANT_RESOURCE_LOCATION
+    ↓
+LOADS {TENANT_RESOURCE_LOCATION}/apps/ai-agent-creator/services/creator-api/service.php
+    ↓
+CREATES ai_agent_creator\CreatorService
+    ↓
+CALLS CreatorService::runAgent($input)
+    ↓
+RETURNS THE COMPLETE SUCCESSFUL SAVED-AGENT RESULT
+```
+
+It throws an exception when the active tenant is unresolved, `ai-agent-creator` is not installed, the saved-agent runtime cannot be loaded, or the agent result is unsuccessful. A workflow can therefore route the exception through its normal `fail` node handling.
+
+Minimum input:
+
+```json
+{
+  "agentCode": "saved-agent-code",
+  "message": "Prompt for the saved agent"
+}
+```
+
+Supported `runAgent` context may also include:
+
+```text
+profile
+sessionId
+flow
+connector
+payload
+```
+
+Global flow class-node example:
+
+```json
+{
+  "urntype": "class",
+  "file": "saved_agent.php",
+  "class": "SavedAgentWorkflow",
+  "method": {
+    "name": "run",
+    "params": [
+      {
+        "inputData": ""
+      }
+    ],
+    "return": true,
+    "returnobj": "agentResult"
+  }
+}
+```
+
+The empty `inputData` value is intentional in the global engine: it forwards the complete workflow input object to `SavedAgentWorkflow::run()`.
+
+## Flow Runtime Dialect Boundary
+
+The repository contains two `davvag-flow/flow.php` implementations:
+
+```text
+plugins/davvag-flow/flow.php                            global engine
+{TENANT_RESOURCE_LOCATION}/plugins/davvag-flow/flow.php tenant-local engine
+```
+
+They do not currently expose identical node and parameter behavior.
+
+The global engine used by Lesson Manager supports `class` nodes and its legacy class parameter form uses `inputData` or `scopData` properties. The active localhost tenant-local engine also supports `service` and `create_object` nodes and resolves modern named parameters through `type` and `value`.
+
+Do not assume a workflow validated against one engine is compatible with the other. Before adding or changing a workflow:
+
+```text
+READ THE CALLING SERVICE'S flow.php IMPORT
+CONFIRM WHETHER PLUGIN_PATH OR PLUGIN_PATH_LOCAL IS USED
+AUTHOR NODE PARAMETERS FOR THAT ENGINE
+EXECUTE THE REAL WORKFLOW PATH
+```
+
+When a class workflow must remain compatible with both current parameter dialects, a whole-input parameter can carry both representations:
+
+```json
+{
+  "name": "input",
+  "inputData": "",
+  "type": "object",
+  "value": "inputData"
+}
+```
+
+The saved-agent activity is a low-level workflow bridge to `runAgent`. Apps that need the normalized app-interaction contract and stable `response` field should continue using `CreatorService::interactWithAgent()` or the `InteractWithAgent` service endpoint.
+
+Apps using this activity must declare:
+
+```text
+dependencies.apps: ai-agent-creator
+dependencies.workflows: the namespaced workflow id
+dependencies.plugins: davvag-flow
+dependencies.php-extensions: curl when the saved-agent provider requires it
+```
+
+Never place provider credentials or saved-agent secrets in workflow JSON or in the activity input.
+
+---
+
 # 35. WORKFLOW DESIGN RULES
 
 Every important workflow node should define failure behavior.
@@ -2643,6 +2762,41 @@ Required investigation order:
 
 Do not mark this defect fixed based only on valid JSON, JavaScript syntax or a successful direct resource request. The fix is complete only when entering the Learn route no longer prevents both same-app and cross-app navigation in the actual browser dock.
 
+Static remediation applied on 2026-07-27:
+
+```text
+all Lesson Manager component navigation now calls appNavigate with app-root paths such as /dashboard and /learn
+component fallbacks use full #/app/lesson-manager/<route> hashes
+no Lesson Manager component assigns window.onhashchange or mutates shell route settings
+app and affected component versions were bumped
+```
+
+Additional route evidence and remediation on 2026-07-27:
+
+```text
+Apache access logs confirmed that /learn resolved the learn descriptor, script and view with HTTP 200
+StudentCourses, LearningCourse and StartLesson all returned HTTP 200 during the affected navigation
+the Dock router resolves appNavigate('/learn') to #/app/lesson-manager/learn as designed
+the remaining failure boundary is client-side rendering or stale versioned resources, not route matching
+Lesson Manager was bumped to 1.4 and the Learn component to 1.3 to invalidate stale v=1.3 resources
+Learn startup now renders an isolated service-availability error instead of throwing into the shell
+```
+
+Verified client-rendering root cause and correction on 2026-07-27:
+
+```text
+the affected Dock uses Vue 2.0.3 and compiles downloaded component HTML in the browser
+three Learn interpolation expressions contained literal &&current sequences in HTML text
+the HTML parser decoded the second ampersand through the legacy &curren; entity, producing invalid Vue expressions
+Vue 2.0.3 compiled the complete Learn template to an empty no-op render function without a production console error
+the Learn, Submissions and Reports views also contained UTF-8 BOM prefixes and were normalized to UTF-8 without BOM
+the three Learn text expressions now use &amp;&amp; so the DOM preserves the intended JavaScript && operator
+Lesson Manager was bumped to 1.5 and the Learn component to 1.4
+a disposable Chrome test using the Dock's exact Vue 2.0.3 build and partial-app mount pattern compiled the served Learn view with zero failing elements and rendered one .lm-page root
+```
+
+This reduces the known route-risk but does not close the defect. The required browser dock navigation matrix was not executable in the implementation environment because the browser-control process could not start. Keep the defect open until the checks above pass in an authenticated supported dock.
+
 When correcting this issue:
 
 ```text
@@ -2653,6 +2807,124 @@ DO NOT MUTATE THE SHELL ROUTE SETTINGS FROM lesson-manager
 BUMP THE AFFECTED APP / COMPONENT VERSION
 TEST NAVIGATION BEFORE AND AFTER ENTERING THE LEARN ROUTE
 ```
+
+---
+
+# 57D. LESSON MANAGER 1.3 IMPLEMENTATION BASELINE
+
+The Lesson Manager application at:
+
+```text
+davvag-core/localhost/apps/lesson-manager
+```
+
+was completed against its `instruction.md` contract on 2026-07-27. The code-level feature scope is approximately 94% complete and production readiness is approximately 78%. The difference is external/runtime verification, not an intentionally omitted core workflow.
+
+Implemented application contracts:
+
+```text
+teacher/admin authorization and subject/course ownership filtering
+student enrollment checks and subject-scoped progression locks
+subject-required lesson creation with server-derived course_id
+safe lesson reordering, publishing, archiving and dependency handling
+rich-text authoring with backend allowlist sanitization
+Davvag uploader reuse for content resources, editor images, local videos,
+assignment supporting files and learner submissions
+YouTube/Facebook settings with tenant-local encrypted credentials,
+OAuth state ownership checks, YouTube token refresh and Facebook long-lived-token exchange
+provider metadata retrieval with editable manual fallbacks
+saved ai-agent-creator selection and davvag-flow quiz-generation workflow
+best-effort extraction of uploaded text, HTML, DOCX and PDF material for quiz prompts
+editable draft quizzes, question types, randomization, limits and publishing
+server-created timed quiz attempts, attempt-limit enforcement and automatic marking
+manual quiz review with teacher feedback and Course Manager mark persistence
+assignment rules, due/late/resubmission limits, file type/size validation,
+verified uploaded media references, history, feedback and pass/fail state
+Course Manager assessment, assignment, mark, grading-scale and notification reuse
+student dashboard totals, teachers, pending work, current lesson and course status
+learner views for resources, video, quiz/assignment history, marks and feedback
+teacher submission review, quiz review, lock override and filtered reporting
+course totals, grades, completion, inactivity and quiz pass-rate reporting
+progress timestamps and queued lifecycle notifications
+```
+
+Declared Lesson Manager 1.3 dependencies:
+
+```text
+apps: course-manager, ai-agent-creator, davvag-tools
+workflow: lesson-manager/generate-quiz
+plugins: auth, sossdata, profile, davvag-flow
+PHP extensions: curl, openssl
+```
+
+Verification completed on 2026-07-27:
+
+```text
+PHP lint: lesson-manager service and workflow adapter passed
+business/security rules: passed
+service descriptor to PHP handler reflection check: passed
+JSON parse: 21 relevant app/component/schema/workflow files passed
+JavaScript parse: dashboard, learn, lesson-style, quiz-studio, reports,
+settings, studio and submissions passed
+dependency and app-root navigation source checks: passed
+```
+
+Release gates that remain external to static implementation:
+
+```text
+run the complete #/app/lesson-manager/learn dock navigation matrix from section 57B
+install/update the changed tenant schemas in the target datastore
+exercise teacher and student roles against representative enrollment data
+run a real saved AI agent and verify its provider/billing configuration
+test upload storage and download URLs against the deployed MEDIA_FOLDER layout
+test YouTube and Facebook OAuth with real approved provider applications
+verify caption/transcript availability for the connected provider account
+```
+
+Provider transcript retrieval and PDF/DOCX text extraction are best-effort. A missing transcript or an unextractable document must not prevent manual authoring or quiz review. `DAVVAG_PROVIDER_SECRET` remains mandatory for storing provider secrets. `DAVVAG_FACEBOOK_GRAPH_VERSION` may override the validated Graph API version used by the deployment.
+
+Do not describe Lesson Manager 1.3 as browser-certified or provider-certified until the external release gates above pass.
+
+---
+
+# 57E. LESSON FREE / CREDIT-POINT AUTHORING CONTRACT
+
+Lesson Studio at:
+
+```text
+#/app/lesson-manager/studio
+```
+
+supports lesson-level access metadata through:
+
+```text
+lesson_manager_lesson.is_free
+lesson_manager_lesson.required_credit_points
+```
+
+Contract:
+
+```text
+existing lessons with no is_free value are treated as free
+new lessons default to free
+free lessons persist required_credit_points as 0
+non-free lessons require a whole credit-point value from 1 through 1,000,000,000
+the service validates and normalizes both fields before persistence
+the Studio sequence displays Free or the required credit-point count
+```
+
+Version baseline:
+
+```text
+Lesson Manager app: 1.7
+Studio component: 1.4
+Learn component: 1.5
+API service component: 1.5
+```
+
+The `davvag-credit-points` ledger defined in section 68 now enforces this contract. Learners see the charge before confirming; `StartLesson` performs the authoritative one-time debit and permanent unlock. The deduction and unlock record share one database transaction and deterministic idempotency key. `profile_attributes` remains user-editable and must never be used as an authoritative wallet.
+
+After changing these fields, install or update the `lesson_manager_lesson` schema in the target datastore. Do not describe the complete learner experience as browser-certified until the authenticated dock navigation and confirmation flow have been exercised in a supported browser session.
 
 ---
 
@@ -3062,3 +3334,75 @@ The correct question is:
 > Which DAVVAG contract owns this responsibility, and how should the feature integrate with it cleanly?
 
 That principle is the authority for future DAVVAG application development.
+
+---
+
+# 68. CREDIT POINTS APPLICATION BASELINE
+
+The active tenant includes `davvag-credit-points` as the platform wallet for whole-number virtual credits. It is registered for tenant, `web_user`, and `sysadmin` contexts, but not anonymous users.
+
+Core rules:
+
+```text
+DAVVAG CREDIT TRANSACTIONS ARE IMMUTABLE AND DOUBLE-ENTRY
+USER WALLET BALANCES MAY NOT BECOME NEGATIVE
+EVERY MUTATION REQUIRES AN IDEMPOTENCY KEY
+PURCHASED CREDITS DO NOT EXPIRE
+PROMOTIONAL LOTS MAY EXPIRE
+COUPON PLAINTEXT IS NEVER STORED
+PAYMENT CREDITING REQUIRES A VERIFIED SERVER CALLBACK
+```
+
+The app owns programs, wallets, transactions, entries, lots, reservations, packages, purchase orders, payment events, reward claims, coupon campaigns/codes/redemptions, idempotency records, and permanent lesson unlocks. Its PHP ledger library is the authoritative cross-app integration contract. The implementation uses a direct `mysqli` transaction boundary only because the current SOSSData public connector does not expose begin/commit/rollback; schemas are still declared as DAVVAG tenant schemas and initialized through SOSSData.
+
+`credit-admin-api.ProcessExpirations` is the protected paginated scheduler target for due promotional lots. Each processed amount creates a balanced `EXPIRATION` transaction; purchased lots are excluded. Configure the declared `davvag-scheduler` dependency to call this endpoint on the deployment's required cadence.
+
+Lesson Manager integration:
+
+- Missing `is_free` remains backward-compatible and is treated as free.
+- A paid lesson requires a positive whole `required_credit_points` value.
+- The learner confirms the charge before opening the lesson.
+- Unlock uses the deterministic key `lesson-access:{profile_id}:{lesson_id}` and atomically records the debit plus a unique permanent unlock.
+- Teachers and administrators retain the existing management/access bypass.
+
+Operational secrets are server environment values only:
+
+```text
+DAVVAG_CREDIT_COUPON_PEPPER
+DAVVAG_CREDIT_PAYMENT_WEBHOOK_SECRET
+```
+
+The payment service is a signed provider-neutral completion boundary. A provider-specific checkout connector must create the external checkout and send the verified completion fields; the Credit Points frontend must never collect raw card data or mark an order paid from browser state.
+
+## Shared currency contract
+
+`currency-configuration` is the tenant's common currency application and owns the `currency_configuration` schema plus the `List`, `Active`, and `Default` service contract. Business apps must consume its active three-letter currency codes instead of maintaining local currency lists or accepting unchecked free text.
+
+Credit Points 1.2 follows this contract:
+
+- Package administration receives active currencies and the default currency from `currency-configuration`.
+- The currency field is a configured-currency selector.
+- The server rejects unknown or inactive codes both when saving a package and when creating a purchase order.
+- Package prices use the shared symbol and configured decimal-place count.
+- Purchase orders retain the selected code as an immutable currency snapshot.
+
+---
+
+# 69. COMMON CURRENCY APPLICATION
+
+\`currency-configuration\` is the tenant-wide authority for real monetary currencies. Applications that create, edit, charge, invoice, pay, report, or display monetary values must declare both the \`currency-configuration\` app dependency and the \`currency_configuration\` schema dependency. Applications with no currency behavior must not declare these dependencies.
+
+The shared PHP contract is \`currency_configuration\CurrencyConfigurationService\`:
+
+\`\`\`text
+listCurrencies()          all configured records
+activeCurrencies()        active records for selectors
+defaultCurrency()         active base currency, or first active currency
+requireActiveCurrency()   validate a three-letter configured code
+resolveCurrencyCode()     validate a supplied code or use the configured default
+formatAmount()            format with configured symbol and decimal places
+\`\`\`
+
+The shared frontend service \`currency-configuration-handler\` exposes \`loadActive\`, \`loadDefault\`, and \`format\`. Currency input controls must use active configured records and submit the three-letter code, never the display symbol. Server write/payment boundaries must validate again through the shared PHP contract.
+
+Historical transactions, paid orders, and ledger entries retain their stored currency code as an immutable snapshot. Deactivating a currency prevents new writes but does not rewrite history.
