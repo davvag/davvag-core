@@ -3571,3 +3571,38 @@ so schema and lesson-write authorization failures stop early. Upload and record
 state is resumable: after correcting a server-side failure, rerun the identical
 subject-code command and retain `.lesson-import-state-{subject-code}.json` so
 already verified uploads are reused.
+
+---
+
+# 72. LESSON STUDIO MATERIAL MANAGEMENT UI
+
+As of the 2026-07-29 tenant baseline, the Lesson Manager Studio Materials tab uses a list-first management interface. The material editor must not remain permanently beside the material list because the two-column layout makes saved titles, metadata, and actions too narrow at normal administration viewport sizes.
+
+The authoritative interaction contract is:
+
+```text
+MATERIALS TAB         full-width ordered material list
+NEW MATERIAL          opens an empty modal form
+EDIT                  opens the selected record in the same modal form
+SAVE                  persists, closes the modal, and refreshes the ordered list
+CANCEL / CLOSE / ESC  closes the modal without saving
+DELETE                requires confirmation and refreshes the list after success
+```
+
+Each list row displays the material order, title, content type, available file/resource metadata, and explicit Edit and Delete actions. The empty state provides its own New material action. Records are sorted numerically by `sort_order` when loaded, and a new record defaults to the next available order value.
+
+The reusable New/Edit modal owns the complete material form:
+
+```text
+content type
+sort order
+title
+rich-text body editor and formatting toolbar
+rich-text image upload
+lesson resource upload
+resource URL / uploaded file reference
+```
+
+The rich-text editor continues to synchronize HTML with `contentForm.body` and uses the existing Lesson Manager backend sanitization contract. Uploaded images and resources continue through the declared Davvag uploader; saving is disabled while an upload is in progress. Video and assignment upload controls remain in their existing tab-specific Uploaded media area.
+
+The modal is viewport constrained, scrolls its body independently, supports backdrop and Escape dismissal, and becomes a full-height sheet on small screens. Future Studio changes must preserve readable full-width material listing and must not reintroduce the former side-by-side editor/list layout.
