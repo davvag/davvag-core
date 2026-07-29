@@ -6,6 +6,7 @@
 **System:** DAVVAG Framework Application Development  
 **Primary stack:** PHP 8+, DAVVAG tenant-aware framework, Webdock, Vue.js, JavaScript, MySQL through SOSSData, JSON schemas and JSON workflows  
 **Status:** Architecture Authority  
+**Last repository verification:** 2026-07-29
 **Scope:** tenants, applications, components, services, schemas, workflows, plugins, authentication, permissions, AI agents, cross-app reuse, testing, deployment and maintenance
 
 ---
@@ -3378,7 +3379,7 @@ The payment service is a signed provider-neutral completion boundary. A provider
 
 `currency-configuration` is the tenant's common currency application and owns the `currency_configuration` schema plus the `List`, `Active`, and `Default` service contract. Business apps must consume its active three-letter currency codes instead of maintaining local currency lists or accepting unchecked free text.
 
-Credit Points 1.2 follows this contract:
+Credit Points 1.3 follows this contract:
 
 - Package administration receives active currencies and the default currency from `currency-configuration`.
 - The currency field is a configured-currency selector.
@@ -3386,23 +3387,140 @@ Credit Points 1.2 follows this contract:
 - Package prices use the shared symbol and configured decimal-place count.
 - Purchase orders retain the selected code as an immutable currency snapshot.
 
+## Administration routes and product mapping
+
+Credit Points 1.3 separates configuration management into routed administration subapps:
+
+```text
+#/app/davvag-credit-points/admin/packages
+#/app/davvag-credit-points/admin/rewards
+#/app/davvag-credit-points/admin/coupons
+```
+
+The main `#/app/davvag-credit-points/admin` route remains responsible for wallet reconciliation and audited manual credit grants. It links to the three configuration subapps.
+
+The subapps provide:
+
+```text
+PACKAGES    list, search, create, edit, delete, and DAVVAG product mapping
+REWARDS     list, search, create, edit, and delete reward rules
+COUPONS     list, search, create, edit, and delete campaigns;
+            generate codes; view masked codes; delete or disable codes
+```
+
+Package product mapping uses:
+
+```text
+davvag_credit_package.product_id -> products.itemid
+```
+
+`product_id` is the optional DAVVAG catalog relationship. It is not the same field as `provider_product_id`, which remains the external payment provider's product identifier. The server validates a non-zero `product_id` against the tenant product catalog before saving. The app therefore declares the `productapp` application dependency and the `products` schema dependency.
+
+The package schema declares the many-to-one `product_id -> products.itemid` relationship. Because the current datastore schema bootstrap does not add this column to an already-created package table, `CreditDatabase` also performs an idempotent compatibility migration that adds `product_id` and `idx_credit_package_product` when missing. Fresh installations remain schema-driven; existing installations gain the same contract without dropping or recreating package data.
+
+Configuration deletion must preserve audit and transaction history:
+
+```text
+unused package / reward / campaign / coupon     hard delete is allowed
+referenced package / reward / campaign          mark DELETED and hide from admin lists
+campaign archived with active coupon codes      disable its active codes
+redeemed coupon code                            disable and retain it
+```
+
+Do not cascade-delete purchase orders, reward claims, coupon redemptions, ledger transactions, or ledger entries to satisfy an administration delete request.
+
 ---
 
 # 69. COMMON CURRENCY APPLICATION
 
-\`currency-configuration\` is the tenant-wide authority for real monetary currencies. Applications that create, edit, charge, invoice, pay, report, or display monetary values must declare both the \`currency-configuration\` app dependency and the \`currency_configuration\` schema dependency. Applications with no currency behavior must not declare these dependencies.
+`currency-configuration` is the tenant-wide authority for real monetary currencies. Applications that create, edit, charge, invoice, pay, report, or display monetary values must declare both the `currency-configuration` app dependency and the `currency_configuration` schema dependency. Applications with no currency behavior must not declare these dependencies.
 
-The shared PHP contract is \`currency_configuration\CurrencyConfigurationService\`:
+The authoritative implementation is:
 
-\`\`\`text
+```text
+{TENANT_RESOURCE_LOCATION}/apps/currency-configuration/services/currency-configuration-handler/service.php
+```
+
+Its shared PHP contract is `currency_configuration\CurrencyConfigurationService`:
+
+```text
 listCurrencies()          all configured records
 activeCurrencies()        active records for selectors
 defaultCurrency()         active base currency, or first active currency
 requireActiveCurrency()   validate a three-letter configured code
 resolveCurrencyCode()     validate a supplied code or use the configured default
 formatAmount()            format with configured symbol and decimal places
-\`\`\`
+```
 
-The shared frontend service \`currency-configuration-handler\` exposes \`loadActive\`, \`loadDefault\`, and \`format\`. Currency input controls must use active configured records and submit the three-letter code, never the display symbol. Server write/payment boundaries must validate again through the shared PHP contract.
+Backend callers load the tenant app implementation and instantiate the namespaced service:
+
+```php
+require_once(
+    TENANT_RESOURCE_LOCATION .
+    "/apps/currency-configuration/services/currency-configuration-handler/service.php"
+);
+
+$currency = new \currency_configuration\CurrencyConfigurationService();
+$code = $currency->resolveCurrencyCode($submittedCode);
+```
+
+Do not copy currency records, default codes or provider-specific currency fallbacks into each application. A missing submitted code resolves to the configured active base currency. A supplied code must be a configured, active three-letter code. Server-side write and payment boundaries must perform this validation even when the UI uses a controlled selector.
+
+The component service exposes these framework endpoints:
+
+```text
+List       all configured records
+Active     active records for selectors
+Default    configured active base currency, or first active currency
+Save       create or update a normalized currency record
+```
+
+The shared frontend service `currency-configuration-handler` exposes `loadActive`, `loadDefault`, and `format`. Currency input controls must use active configured records and submit the three-letter code, never the display symbol. The symbol and decimal-place count are presentation metadata; the three-letter code is the persisted integration value.
+
+As of the 2026-07-28 verified tenant baseline, the shared contract is declared by the product, shop, course, lesson, order, banking, PayPal, Stripe, DirectPay, profile and related commerce applications that handle monetary values. Adding currency behavior to another app requires both dependency declarations and server-boundary validation; copying a dependency into apps with no monetary behavior is not required.
 
 Historical transactions, paid orders, and ledger entries retain their stored currency code as an immutable snapshot. Deactivating a currency prevents new writes but does not rewrite history.
+
+When deploying a currency-contract change:
+
+```text
+INSTALL OR UPDATE currency_configuration IN THE TARGET DATASTORE
+CONFIRM AT LEAST ONE ACTIVE CURRENCY EXISTS
+CONFIRM THE INTENDED BASE CURRENCY
+TEST PRODUCT / ORDER WRITES WITH ACTIVE AND INACTIVE CODES
+TEST EACH ENABLED PAYMENT PROVIDER WITH A SUPPORTED CURRENCY
+VERIFY HISTORICAL RECORDS STILL RENDER FROM THEIR STORED CODE
+```
+
+---
+
+# 70. DECIMAL DATA AND TRAVEL DESTINATION COORDINATES
+
+The `phpmysql` SOSSData adapter must keep `decimal` and `java.util.Date` as separate serialization contracts. Decimal values are numeric on both reads and writes; they must never pass through `strtotime()` or date formatting. A decimal routed through the date branch becomes the Unix epoch display value (`01-01-1970 00:00:00`) and can also be corrupted before persistence.
+
+The authoritative adapter behavior is:
+
+```text
+decimal read       database decimal string -> PHP float (null remains null)
+decimal write      numeric input -> unquoted numeric SQL value (null -> SQL NULL)
+java.util.Date     database/application date -> DAVVAG date formatting
+```
+
+The Travel Destinations coordinate schema uses:
+
+```text
+travel_destination.latitude     DECIMAL(9,7)    valid range -90 through 90
+travel_destination.longitude    DECIMAL(10,7)   valid range -180 through 180
+```
+
+Do not use `DECIMAL(8,7)` for these fields: it leaves only one digit before the decimal point and cannot represent normal two-digit Sri Lankan longitudes or the documented coordinate boundaries. Backend range validation remains mandatory even with sufficient database precision.
+
+For an existing deployment, changing schema JSON alone does not resize an already-created column because the current `phpmysql` schema synchronizer adds missing columns but does not modify existing column definitions. Deployment must therefore inspect and, when necessary, migrate the live table before relying on the expanded ranges:
+
+```sql
+ALTER TABLE `travel_destination`
+    MODIFY `latitude` DECIMAL(9,7) NULL,
+    MODIFY `longitude` DECIMAL(10,7) NULL;
+```
+
+After deployment, verify a known destination through `GetDestination` and confirm that latitude/longitude are JSON numbers, fall within their valid ranges, retain the intended precision, and no longer contain epoch-formatted strings. If earlier writes were attempted while decimal serialization was broken or while longitude precision was undersized, compare the stored coordinates with the authoritative source and repair affected rows; a serializer correction cannot reconstruct already-corrupted values.

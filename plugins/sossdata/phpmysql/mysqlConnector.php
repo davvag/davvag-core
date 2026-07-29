@@ -787,6 +787,8 @@ class mysqlConnector
                 return (int)$value;
                 break;
             case "decimal":
+                return $value === null ? null : (float)$value;
+                break;
             case "java.util.Date":
                 return date('m-d-Y H:i:s', strtotime($value));
                 break;
@@ -821,6 +823,8 @@ class mysqlConnector
                 return (int)$value;
                 break;
             case "decimal":
+                return $value === null ? "NULL" : (float)$value;
+                break;
             case "java.util.Date":
                 return "'" . date('Y-m-d H:i:s', strtotime($value)) . "'";
                 break;
