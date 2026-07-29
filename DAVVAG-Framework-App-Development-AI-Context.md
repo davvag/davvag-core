@@ -2796,6 +2796,22 @@ Lesson Manager was bumped to 1.5 and the Learn component to 1.4
 a disposable Chrome test using the Dock's exact Vue 2.0.3 build and partial-app mount pattern compiled the served Learn view with zero failing elements and rendered one .lm-page root
 ```
 
+Additional Learn blank-screen remediation on 2026-07-29:
+
+```text
+the CMS route, Learn partial, Learn script, stylesheet and StudentCourses request all returned HTTP 200
+the browser fetched the new Learn partial but reused script.js?v=1.7 from its disk cache
+the resulting new-template / old-script mismatch removed the Vue render after course data arrived
+the mobile completion checklist also reintroduced literal &&current expressions in HTML interpolation text
+those interpolation operators are now encoded as &amp;&amp; so browser entity parsing preserves JavaScript &&
+Lesson Manager is now 1.8, Learn is 1.6 and lesson-style is 1.2
+CMS partial-app is now 0.8 and dock-shell is 0.3
+both CMS app renderers prefer the freshly downloaded descriptor version over stale app-list metadata when loading component resources
+the served v=1.8 Learn script contains the new subject/lesson methods and the served partial contains no literal &&current interpolation
+```
+
+This correction still requires an authenticated hard-refresh and the complete browser navigation matrix before the defect can be marked browser-certified.
+
 This reduces the known route-risk but does not close the defect. The required browser dock navigation matrix was not executable in the implementation environment because the browser-control process could not start. Keep the defect open until the checks above pass in an authenticated supported dock.
 
 When correcting this issue:
@@ -3606,3 +3622,34 @@ resource URL / uploaded file reference
 The rich-text editor continues to synchronize HTML with `contentForm.body` and uses the existing Lesson Manager backend sanitization contract. Uploaded images and resources continue through the declared Davvag uploader; saving is disabled while an upload is in progress. Video and assignment upload controls remain in their existing tab-specific Uploaded media area.
 
 The modal is viewport constrained, scrolls its body independently, supports backdrop and Escape dismissal, and becomes a full-height sheet on small screens. Future Studio changes must preserve readable full-width material listing and must not reintroduce the former side-by-side editor/list layout.
+
+---
+
+# 73. LESSON MANAGER MOBILE LEARN FLOW
+
+The learner route is:
+
+```text
+#/app/lesson-manager/learn
+```
+
+Its responsive interaction order is deliberately progressive:
+
+```text
+1. CHOOSE ASSIGNED COURSE
+2. CHOOSE SUBJECT WITHIN THAT COURSE
+3. CHOOSE A PUBLISHED LESSON
+4. VIEW CONTENT, RESOURCES, VIDEO AND COMPLETION REQUIREMENTS
+```
+
+Do not automatically open the first course or lesson. The learner must make each selection so the same flow remains understandable on a narrow phone viewport. On mobile, the course/subject picker, lesson list and lesson content are separate visual stages with explicit Subjects and Lessons back controls. On wider screens the lesson list and selected content may share the available width.
+
+Lessons must remain grouped by `subject_id`. Previous and Next navigation operate only inside the selected subject. The lesson screen must show the configured completion checklist for reading, video, quiz, assignment and teacher approval before the detailed material. Images, video, embedded frames, tables, resources and action controls must fit narrow viewports without horizontal page overflow.
+
+The CMS compiles downloaded views with Vue 2 after browser HTML parsing. The historically affected Dock used Vue 2.0.3, while the current localhost CMS v7 bundle reports Vue 2.6.12; the entity-decoding hazard occurs before either compiler version runs. In interpolation text, never write a logical-AND sequence whose right side starts with `current` as a literal `&&current`; the legacy HTML entity parser can consume `&curren;` and corrupt the Vue expression. Use:
+
+```html
+{{current.progress&amp;&amp;current.progress.lesson_completed}}
+```
+
+After changing a downloaded app view, script or stylesheet, bump the app and affected component versions together. The CMS app renderers must use the freshly downloaded descriptor version for component resource URLs; stale app-list version metadata must not force an old script to run against a new partial.
