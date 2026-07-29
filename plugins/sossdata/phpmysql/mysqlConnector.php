@@ -721,17 +721,17 @@ class mysqlConnector
                     $strValue .= "AUTO_INCREMENT ";
                 break;
             case "float":
-                $strValue = "FLOAT " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "FLOAT " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
 
                 break;
             case "double":
-                $strValue = "DECIMAL " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "DECIMAL " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "short":
-                $strValue = "BIGINT " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "BIGINT " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "long":
-                $strValue = "BIGINT " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "BIGINT " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "decimal":
                 if ($decimalPoints == null)
@@ -741,25 +741,25 @@ class mysqlConnector
                 break;
             case "java.lang.String":
                 if ($datalength == 0) {
-                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 } else if ($datalength < 3072) {
                     if ($endCoding == null || $endCoding == "") {
                         $strValue = "VARCHAR(" . ($datalength) . ") " . (($isNull) ? "" : "NOT") . " NULL";
                     } else {
-                        $strValue = "MEDIUMTEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                        $strValue = "MEDIUMTEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                     }
                 } else {
-                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                    $strValue = "TEXT " . ($endCoding == null || $endCoding == "" ? "" : " CHARACTER SET '" . $endCoding . "' ") . " " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 }
                 break;
             case "java.util.Date":
-                $strValue = "DATETIME " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "DATETIME " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "boolean":
-                $strValue = "VARCHAR(5) " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "VARCHAR(5) " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             default:
-                $strValue = "TEXT " . (($isNull) ? "" : "NOT") . " NULL".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "TEXT " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 break;
         }
         return $strValue;

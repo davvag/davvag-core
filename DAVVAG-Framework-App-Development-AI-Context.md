@@ -3524,3 +3524,50 @@ ALTER TABLE `travel_destination`
 ```
 
 After deployment, verify a known destination through `GetDestination` and confirm that latitude/longitude are JSON numbers, fall within their valid ranges, retain the intended precision, and no longer contain epoch-formatted strings. If earlier writes were attempted while decimal serialization was broken or while longitude precision was undersized, compare the stored coordinates with the authoritative source and repair affected rows; a serializer correction cannot reconstruct already-corrupted values.
+
+---
+
+# 71. LESSON MANAGER PYTHON PUBLISHER
+
+The Lesson Manager textbook publisher is located at:
+
+```text
+{TENANT_RESOURCE_LOCATION}/apps/lesson-manager/python/lesson_publisher.py
+```
+
+It reads only `DAVVAG_BASE_URL`, `DAVVAG_EMAIL`, `DAVVAG_PASSWORD`, and optional `DAVVAG_SECURITY_TOKEN` from the configured environment file. Existing process environment variables take priority. Credentials and tokens must never be written to import state or printed in logs.
+
+Password authentication must use the public browser-login contract:
+
+```text
+GET /components/userapp/login-handler/service/login
+parameters: email, password, domain
+domain: hostname parsed from DAVVAG_BASE_URL
+```
+
+Do not use `/components/dock/auth-handler/service/login` to establish a session. That service is permission-protected from anonymous callers and returns an unauthorized framework response before credentials can be authenticated. A successful public login must return a result containing a security token; the session cookie is then used for Lesson Manager API requests.
+
+The publisher is dry-run by default. A subject code is mandatory, must resolve exactly and case-insensitively through `Bootstrap`, and must be among the courses and subjects manageable by the authenticated profile. `--apply` authorizes uploads and draft database writes; `--apply --publish` additionally publishes only after verification. On the verified 2026-07-29 tenant account, the Grade 11 Catholic subject code is `CATH_11S`.
+
+Windows console output must remain valid when lesson titles contain Sinhala or other characters outside the active legacy code page. Serialize CLI JSON with ASCII escapes (or an equivalently guaranteed UTF-8 output channel); do not allow a successful import or preflight to end with `UnicodeEncodeError` while printing its summary.
+
+The verified dry-run baseline for `CATH_11S` is:
+
+```text
+lessons       25
+content       30
+media files   130
+API writes    0
+```
+
+The shared `phpmysql` SQL type generator must preserve whitespace between the
+nullability and default clauses. Every applicable type must produce `NULL
+DEFAULT ...` or `NOT NULL DEFAULT ...`; `NULLDEFAULT ...` is invalid SQL and
+causes first-write schema synchronization to fail. Regression coverage is kept
+with the adapter under `plugins/sossdata/phpmysql/tests`.
+
+Apply mode creates or validates lesson records before beginning media uploads,
+so schema and lesson-write authorization failures stop early. Upload and record
+state is resumable: after correcting a server-side failure, rerun the identical
+subject-code command and retain `.lesson-import-state-{subject-code}.json` so
+already verified uploads are reused.
