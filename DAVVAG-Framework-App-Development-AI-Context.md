@@ -6,7 +6,7 @@
 **System:** DAVVAG Framework Application Development  
 **Primary stack:** PHP 8+, DAVVAG tenant-aware framework, Webdock, Vue.js, JavaScript, MySQL through SOSSData, JSON schemas and JSON workflows  
 **Status:** Architecture Authority  
-**Last repository verification:** 2026-07-29
+**Last repository verification:** 2026-08-05
 **Scope:** tenants, applications, components, services, schemas, workflows, plugins, authentication, permissions, AI agents, cross-app reuse, testing, deployment and maintenance
 
 ---
@@ -3661,3 +3661,170 @@ v-bind:disabled="(!l.unlocked&&!l.credit_locked)||!!busyLesson"
 ```
 
 The same rule applies to quiz attempt-limit controls and every other bound HTML boolean attribute: coerce numeric counters with `!!` or return an explicit `true`/`false`. Lesson Manager 1.9 and Learn 1.7 contain this correction. Verification must confirm that an idle lesson button renders `disabled: false`, has a click handler, calls `StartLesson` with the lesson ID, assigns `current`, and advances `mobileStage` to `content`.
+
+---
+
+# 74. TASK TRACKER WORK LOG REPORTING
+
+As of the 2026-08-05 tenant baseline, Task Manager 2.7 at:
+
+```text
+davvag-core/localhost/apps/task-tracker
+```
+
+provides two read-only reporting subapps for the work recorded against tasks:
+
+```text
+task-work-log-summery
+task-work-log-detailed
+```
+
+The identifier `task-work-log-summery` intentionally preserves the requested spelling and is part of the route/component contract. Its user-facing title should be `Work Log Summary`. Do not silently rename the identifier to `task-work-log-summary` after links or descriptors depend on it; a correction requires an explicit route migration or alias.
+
+The routes and dock entries are:
+
+```text
+#/app/task-tracker/task-work-log-summery   Work Log Summary
+#/app/task-tracker/task-work-log-detailed  Work Log Detailed
+```
+
+Both subapps report existing data. They must not create a second time-entry namespace or copy work-log rows into reporting tables. Their authoritative data path is:
+
+```text
+task_manager_projects.projectId
+        -> task_manager_tasks.projectId
+        -> task_manager_work_logs.taskId
+```
+
+The read model is defined by the non-persisted raw-query schema:
+
+```text
+schemas/task_manager_work_log_report.json
+```
+
+Both endpoints execute it through `SOSSData::ExecuteRaw()`. The SQL must apply the inclusive `logDate` range, optional numeric project filter, and project-profile permission condition before returning joined rows to PHP. Do not retrieve every task or work-log record and then date-filter the dataset in application memory.
+
+The stored integer `task_manager_work_logs.durationInMinutes` is the authoritative duration. Reports calculate totals from minutes and only then present hours. Never total independently rounded per-row hour values.
+
+```text
+task minutes    = SUM(work log durationInMinutes for one task)
+project minutes = SUM(task minutes for one project)
+date minutes    = SUM(work log durationInMinutes for one calendar date)
+report minutes  = SUM(all included work log durationInMinutes)
+decimal hours   = total minutes / 60
+HH:MM           = FLOOR(total minutes / 60) + ':' + zero-padded remainder
+```
+
+Negative or missing durations must not reduce a total. Treat them as zero in report output and flag or omit malformed rows according to the normal error-handling contract. A valid zero-minute historical row may be displayed but contributes zero.
+
+## Reporting Period Contract
+
+Both reports use the same filters:
+
+```text
+period preset  Weekly | Monthly | Specific Date Range
+startDate      local calendar date, inclusive
+endDate        local calendar date, inclusive
+projectId      optional; All Projects means all accessible projects
+```
+
+Preset behavior is deterministic:
+
+```text
+Weekly              current Monday through current Sunday
+Monthly             first through last calendar day of the selected/current month
+Specific Date Range user-selected inclusive start and end dates
+```
+
+The report includes a row when its `logDate` calendar date is within the inclusive range. `logDate`, rather than task creation/update/due date, controls date membership. Normalize boundaries server-side using the tenant/server local timezone, validate real `YYYY-MM-DD` values, reject `startDate > endDate`, and return the effective normalized range with the result. The frontend must not implement an independent inclusion rule.
+
+Changing the period, either boundary, or the project filter reloads the report. Both screens must show the active period, an explicit empty state, loading/error state, and the total duration in both `HH:MM` and decimal hours. Decimal-hour display may be rounded to two places, but returned/stored total minutes remain exact.
+
+## Work Log Summary Subapp
+
+`task-work-log-summery` answers how much time was worked by project, task, and date for the selected period.
+
+Its Project-wise view groups results in this order:
+
+```text
+PROJECT
+  TASK
+    total minutes
+    HH:MM
+    decimal hours
+```
+
+Each project row displays the project total, and each nested task row displays `taskId`, task subject/title, task status, and the total time calculated for that task. The sum of visible task totals must equal the project total. The sum of visible project totals must equal the overall report total.
+
+Its Date-wise view groups the same filtered work logs by `logDate` calendar day. Each day displays its daily total and a project/task breakdown so users can identify where that day's hours were spent. Dates are ordered newest first by default; project and task labels use stable, human-readable ordering within a day.
+
+The screen must allow switching between Project-wise and Date-wise presentation without changing the selected filters or producing different overall totals.
+
+## Work Log Detailed Subapp
+
+`task-work-log-detailed` displays one row per included `task_manager_work_logs` record. Each row contains at least:
+
+```text
+work date
+project name
+task id
+task subject/title
+profile/person name
+comments/work description
+start time
+end time
+duration in minutes
+duration as HH:MM
+duration as decimal hours
+recorded progress
+recorded status
+```
+
+The default ordering is `logDate` descending, followed by `startDate` descending and `logId` descending for stable results. The detailed report footer displays exact total minutes plus `HH:MM` and decimal-hour totals for the currently filtered rows. Its total must equal the Summary report total for the same effective filters and permissions.
+
+## Service, Permission, and Response Contract
+
+Reporting aggregation belongs in the Task Tracker backend service, not in authoritative frontend business logic. The `taskapi` service exposes POST report methods with request and handler names following the DAVVAG convention:
+
+```text
+POST WorkLogSummary  -> postWorkLogSummary($req, $res)
+POST WorkLogDetailed -> postWorkLogDetailed($req, $res)
+```
+
+The service request accepts `period`, `startDate`, `endDate`, and optional `projectId`. Responses return the effective filters, exact `totalMinutes`, formatted/presentation-ready totals, and the appropriate grouped or detailed rows. The frontend may format labels but must not recalculate which records are authorized or included.
+
+Apply the existing Task Manager access rules before returning or aggregating any work log:
+
+```text
+sysadmin             may report all projects
+other authenticated  may report only projects allowed by task_manager_project_access
+requested projectId  must be rejected or return no data when inaccessible
+```
+
+Do not leak project, task, profile, comment, or duration data through aggregates. A total is permission-sensitive data and must be calculated only after inaccessible projects and tasks are excluded. Raw queries do not automatically apply `sysviewobject`, so `task_manager_work_log_report` must keep its explicit `task_manager_project_access` condition for non-sysadmin profiles. All dates must be strictly validated, and project/profile/admin parameters must be server-derived or cast numeric values. Never accept raw SQL fragments from the browser. Use SOSSData and the existing Task Manager namespaces; do not connect directly to MySQL from the component.
+
+## Descriptor and Verification Requirements
+
+Both components are registered in `task-tracker/app.json`, both routes are present in `configuration.webdock.routes.partials`, both entries are exposed in `configuration.dock.subapps`, and the report methods are declared in `services/taskapi/component.json`. The existing `taskapi` service remains in `configuration.webdock.onLoad`, and both screens reuse the shared `task-style` component for dock compatibility.
+
+The raw-query implementation uses Task Manager app version 2.7, `taskapi` version 0.4, and report component version 0.1. Future report changes must bump the affected versions. Verification must cover:
+
+```text
+weekly boundary and inclusive Sunday
+calendar-month boundary, including leap-year February
+single-day specific range
+custom inclusive multi-day range
+invalid and reversed date ranges
+All Projects and one accessible project
+rejection/exclusion of an inaccessible project
+multiple logs for one task
+multiple tasks under one project
+multiple projects on one date
+task, project, date, and overall totals derived from exact minutes
+Summary and Detailed totals matching for identical filters
+empty result behavior
+stable detailed ordering
+both /admin#/app/... and /#/app/... dock rendering
+SQL date filtering before PHP row shaping or aggregation
+raw-query permission exclusion for non-sysadmin profiles
+```
