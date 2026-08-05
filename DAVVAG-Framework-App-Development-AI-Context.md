@@ -3653,3 +3653,11 @@ The CMS compiles downloaded views with Vue 2 after browser HTML parsing. The his
 ```
 
 After changing a downloaded app view, script or stylesheet, bump the app and affected component versions together. The CMS app renderers must use the freshly downloaded descriptor version for component resource URLs; stale app-list version metadata must not force an old script to run against a new partial.
+
+The lesson selector's `disabled` binding must always evaluate to a JavaScript boolean. Vue preserves numeric `0` as the value of a bound HTML boolean attribute, and the browser treats any present `disabled` attribute as disabled. The broken expression ended with `||busyLesson`; with the idle value `busyLesson = 0`, every row displayed `Available` but accepted no click and generated no `StartLesson` request. The corrected form is:
+
+```html
+v-bind:disabled="(!l.unlocked&&!l.credit_locked)||!!busyLesson"
+```
+
+The same rule applies to quiz attempt-limit controls and every other bound HTML boolean attribute: coerce numeric counters with `!!` or return an explicit `true`/`false`. Lesson Manager 1.9 and Learn 1.7 contain this correction. Verification must confirm that an idle lesson button renders `disabled: false`, has a click handler, calls `StartLesson` with the lesson ID, assigns `current`, and advances `mobileStage` to `content`.
