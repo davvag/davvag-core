@@ -16,7 +16,7 @@
             }
         }
 
-        public static function GetSystemColums(){
+        public static function GetSystemColumns(){
             $fields=array();
             $key1=new stdClass();
             $key1->fieldName="sysversionid";
@@ -54,6 +54,11 @@
             $key5->annotations->maxLen=100;
             array_push($fields,$key5);
             return $fields;
+        }
+
+        // Backward-compatible alias for older connector code.
+        public static function GetSystemColums(){
+            return self::GetSystemColumns();
         }
     }
 ?>

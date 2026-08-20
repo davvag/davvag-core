@@ -221,9 +221,27 @@ Example:
 $result = SOSSData::Query("my_new_app_items", "status:Active,title:Test");
 ```
 
+For multiple validated conditions, sorting, and pagination, pass an advanced query array:
+
+```php
+$result = SOSSData::Query("my_new_app_items", [
+    "conditions" => [
+        ["column" => "status", "operator" => "=", "value" => "Active"],
+        ["column" => "priority", "operator" => ">=", "value" => 3]
+    ],
+    "sorting" => [
+        ["column" => "priority", "direction" => "DESC"]
+    ],
+    "pageSize" => 100,
+    "pageFrom" => 0
+]);
+```
+
+Use the canonical `column` spelling. Advanced conditions are joined with `AND`, and all condition and sort columns must exist in the schema. See [13-advanced-queries.md](13-advanced-queries.md) for the complete operator, sorting, pagination, and compatibility contract.
+
 ## Raw Queries for Reports and Joins
 
-Use a raw query schema when an app needs a read model that does not fit `SOSSData::Query()`: joins, reporting summaries, aggregates, subqueries, custom ordering, or stored procedure calls.
+Use a raw query schema when an app needs a read model that does not fit either simple or advanced `SOSSData::Query()` payloads: joins, reporting summaries, aggregates, subqueries, computed ordering expressions, or stored procedure calls.
 
 The main raw query definition lives in the normal tenant schema folder:
 

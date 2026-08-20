@@ -213,6 +213,7 @@ For data work:
 ```text
 05-database-schemas.md
 11-app-developer-guide.md
+13-advanced-queries.md
 ```
 
 For workflow work:
@@ -1611,6 +1612,47 @@ Example:
 SOSSData::Query("my_app_items", "status:Active,title:Test");
 ```
 
+For multiple comparisons, explicit sorting, and pagination, pass an advanced query payload through the same public facade:
+
+```php
+$query = [
+    "conditions" => [
+        ["column" => "status", "operator" => "=", "value" => "Active"],
+        ["column" => "priority", "operator" => ">=", "value" => 3]
+    ],
+    "sorting" => [
+        ["column" => "priority", "direction" => "DESC"],
+        ["column" => "title", "direction" => "ASC"]
+    ],
+    "pageSize" => 100,
+    "pageFrom" => 0
+];
+
+SOSSData::Query("my_app_items", $query);
+```
+
+Advanced-query contract:
+
+```text
+USE conditions AS THE TOP-LEVEL CONDITION LIST
+USE column, NOT THE LEGACY MISSPELLING coloumn
+USE operator FOR THE COMPARISON OPERATOR
+CONDITIONS ARE JOINED WITH AND
+USE ASC OR DESC FOR SORT DIRECTIONS
+pageSize MUST BE A POSITIVE INTEGER
+pageFrom IS A NON-NEGATIVE ROW OFFSET
+SCHEMA AND SYSTEM COLUMNS ARE ALLOWED
+NORMAL VIEW-OBJECT FILTERING STILL APPLIES
+```
+
+Supported operators are `=`, `==`, `!=`, `<>`, `>`, `>=`, `<`, `<=`, `LIKE`, `NOT LIKE`, `IN`, `NOT IN`, `IS NULL`, and `IS NOT NULL`.
+
+Condition and sorting columns are schema-validated. Values are converted using schema data types and strings are escaped. Do not provide raw SQL fragments in any payload property.
+
+The successful response contains `result`, `numberOfRecords`, `pageSize`, and the legacy `pageNumber` property. `numberOfRecords` is the total before pagination; `pageNumber` currently carries the `pageFrom` offset.
+
+The advanced array/JSON payload is currently implemented by the `phpmysql` adapter. Keep connector portability in mind and use `SOSSData::ExecuteRaw()` for controlled joins, aggregates, groups, subqueries, and stored-procedure read models. The full reference is `docs/13-advanced-queries.md`.
+
 Rules:
 
 ```text
@@ -1636,7 +1678,7 @@ Valid uses:
 * reporting
 * grouped summaries
 * subqueries
-* controlled custom ordering
+* computed ordering or ranking that cannot be expressed by advanced schema-column sorting
 * stored procedure calls
 
 The raw query definition belongs in a schema file.

@@ -128,20 +128,307 @@ class mysqlConnector
         }
     }
 
-    public function Query($namespace, $param, $lastID = 0, $sorting = "DESC", $pageSize = 20, $fromPage = 0,$vieObject=true)
+    private function AdvancedQuery($namespace, $param, $lastID = 0, $sorting = "DESC", $pageSize = 20, $fromPage = 0, $viewObject = true)
+    {
+        $tableSchema = clone(Schema::Get($namespace));
+        $systemFields = Schema::GetSystemColumns();
+        $fieldMap = array();
+
+        foreach ($tableSchema->fields as $field) {
+            $fieldMap[strtolower($field->fieldName)] = $field;
+        }
+        foreach ($systemFields as $field) {
+            if (!isset($fieldMap[strtolower($field->fieldName)])) {
+                array_push($tableSchema->fields, $field);
+            }
+            $fieldMap[strtolower($field->fieldName)] = $field;
+        }
+
+        $conditions = $this->getAdvancedQueryOption($param, array("conditions", "condition"), array());
+        if ($conditions === null) {
+            $conditions = array();
+        }
+        if (is_object($conditions)) {
+            $conditions = (array)$conditions;
+        }
+        if (!is_array($conditions)) {
+            throw new Exception("Condition must be an array.");
+        }
+        if ($this->hasAdvancedQueryOption($conditions, array("column", "coloumn"))) {
+            $conditions = array($conditions);
+        }
+
+        $whereParts = array();
+        $allowedOperators = array(
+            "=" => "=",
+            "==" => "=",
+            "!=" => "!=",
+            "<>" => "<>",
+            ">" => ">",
+            ">=" => ">=",
+            "<" => "<",
+            "<=" => "<=",
+            "LIKE" => "LIKE",
+            "NOT LIKE" => "NOT LIKE",
+            "IN" => "IN",
+            "NOT IN" => "NOT IN",
+            "IS NULL" => "IS NULL",
+            "IS NOT NULL" => "IS NOT NULL"
+        );
+
+        foreach ($conditions as $condition) {
+            if (is_object($condition)) {
+                $condition = (array)$condition;
+            }
+            if (!is_array($condition)) {
+                throw new Exception("Each condition must be an object or array.");
+            }
+
+            // Use "column" in new payloads. The misspelled "coloumn" key remains a legacy alias.
+            $column = $this->getAdvancedQueryOption($condition, array("column", "coloumn"), null);
+            $operator = $this->getAdvancedQueryOption($condition, array("condition", "operator"), "=");
+            $valueExists = $this->hasAdvancedQueryOption($condition, array("value"));
+            $value = $this->getAdvancedQueryOption($condition, array("value"), null);
+
+            if (!is_string($column)) {
+                throw new Exception("Column [" . (is_scalar($column) ? $column : "") . "] not found.");
+            }
+
+            $column = trim($column);
+            if (!isset($fieldMap[strtolower($column)])) {
+                throw new Exception("Column [" . $column . "] not found.");
+            }
+
+            $operator = strtoupper(trim(preg_replace('/\s+/', ' ', (string)$operator)));
+            if (!isset($allowedOperators[$operator])) {
+                throw new Exception("Condition operator [" . $operator . "] is not supported.");
+            }
+            $operator = $allowedOperators[$operator];
+            $field = $fieldMap[strtolower($column)];
+            $quotedColumn = $this->quoteIdentifier($field->fieldName);
+
+            if ($operator === "IS NULL" || $operator === "IS NOT NULL") {
+                $whereParts[] = $quotedColumn . " " . $operator;
+                continue;
+            }
+
+            if (!$valueExists) {
+                throw new Exception("Condition value is required for column [" . $field->fieldName . "].");
+            }
+
+            if ($value === null && ($operator === "=" || $operator === "==")) {
+                $whereParts[] = $quotedColumn . " IS NULL";
+            } else if ($value === null && ($operator === "!=" || $operator === "<>")) {
+                $whereParts[] = $quotedColumn . " IS NOT NULL";
+            } else if ($value === null) {
+                throw new Exception("Null can only be used with =, !=, <>, IS NULL, or IS NOT NULL.");
+            } else if ($operator === "IN" || $operator === "NOT IN") {
+                if (!is_array($value) || count($value) === 0) {
+                    throw new Exception("Condition value for [" . $operator . "] must be a non-empty array.");
+                }
+                $sqlValues = array();
+                foreach ($value as $singleValue) {
+                    $sqlValues[] = $singleValue === null ? "NULL" : $this->getValue($field, $singleValue);
+                }
+                $whereParts[] = $quotedColumn . " " . $operator . " (" . implode(",", $sqlValues) . ")";
+            } else {
+                $whereParts[] = $quotedColumn . " " . $operator . " " . $this->getValue($field, $value);
+            }
+        }
+
+        $defaultDirection = strtoupper(trim((string)$sorting)) === "ASC" ? "ASC" : "DESC";
+        $queryDirection = $this->getAdvancedQueryOption($param, array("sortDirection", "sortingDirection", "direction"), null);
+        if ($queryDirection !== null) {
+            $queryDirection = strtoupper(trim((string)$queryDirection));
+            if ($queryDirection !== "ASC" && $queryDirection !== "DESC") {
+                throw new Exception("Sorting direction must be ASC or DESC.");
+            }
+            $defaultDirection = $queryDirection;
+        }
+
+        $sortItems = $this->getAdvancedQueryOption($param, array("sorting", "sort"), array());
+        if ($sortItems === null || $sortItems === array()) {
+            $sortItems = array("sysversionid");
+        } else if (!is_array($sortItems)) {
+            $sortItems = array($sortItems);
+        } else if ($this->hasAdvancedQueryOption($sortItems, array("column", "coloumn"))) {
+            $sortItems = array($sortItems);
+        }
+
+        $orderParts = array();
+        foreach ($sortItems as $sortKey => $sortItem) {
+            $sortColumn = null;
+            $sortDirection = $defaultDirection;
+
+            if (is_object($sortItem)) {
+                $sortItem = (array)$sortItem;
+            }
+            if (is_array($sortItem)) {
+                $sortColumn = $this->getAdvancedQueryOption($sortItem, array("column", "coloumn"), null);
+                $itemDirection = $this->getAdvancedQueryOption($sortItem, array("direction", "sorting"), null);
+                if ($itemDirection !== null) {
+                    $sortDirection = strtoupper(trim((string)$itemDirection));
+                }
+            } else if (!is_int($sortKey)) {
+                $sortColumn = $sortKey;
+                $sortDirection = strtoupper(trim((string)$sortItem));
+            } else {
+                $sortText = trim((string)$sortItem);
+                if (preg_match('/^(.+?)\s+(ASC|DESC)$/i', $sortText, $matches)) {
+                    $sortColumn = trim($matches[1]);
+                    $sortDirection = strtoupper($matches[2]);
+                } else if (substr($sortText, 0, 1) === "-") {
+                    $sortColumn = substr($sortText, 1);
+                    $sortDirection = "DESC";
+                } else {
+                    $sortColumn = $sortText;
+                }
+            }
+
+            if (!is_string($sortColumn)) {
+                throw new Exception("Sorting column [" . (is_scalar($sortColumn) ? $sortColumn : "") . "] not found.");
+            }
+            $sortColumn = trim($sortColumn);
+            if (!isset($fieldMap[strtolower($sortColumn)])) {
+                throw new Exception("Sorting column [" . $sortColumn . "] not found.");
+            }
+            if ($sortDirection !== "ASC" && $sortDirection !== "DESC") {
+                throw new Exception("Sorting direction must be ASC or DESC.");
+            }
+            $orderParts[] = $this->quoteIdentifier($fieldMap[strtolower($sortColumn)]->fieldName) . " " . $sortDirection;
+        }
+
+        $pageSize = $this->getAdvancedQueryOption($param, array("pageSize"), $pageSize);
+        $fromPage = $this->getAdvancedQueryOption($param, array("pageFrom"), $fromPage);
+        if (filter_var($pageSize, FILTER_VALIDATE_INT) === false || (int)$pageSize < 1) {
+            throw new Exception("Page size must be a positive integer.");
+        }
+        if (filter_var($fromPage, FILTER_VALIDATE_INT) === false || (int)$fromPage < 0) {
+            throw new Exception("Page from must be a non-negative integer.");
+        }
+        $pageSize = (int)$pageSize;
+        $fromPage = (int)$fromPage;
+
+        if ($lastID != 0) {
+            $whereParts[] = $this->quoteIdentifier("sysversionid") . ($defaultDirection === "ASC" ? " > " : " < ") . (int)$lastID;
+        }
+
+        if ($viewObject) {
+            $objects = Auth::ViewObjects();
+            if (is_array($objects) && count($objects) > 0) {
+                $viewObjects = array();
+                foreach ($objects as $object) {
+                    $viewObjects[] = (int)$object;
+                }
+                $whereParts[] = $this->quoteIdentifier("sysviewobject") . " IN (" . implode(",", $viewObjects) . ")";
+            }
+        }
+
+        $sql = "SELECT * FROM " . $this->quoteIdentifier($namespace);
+        if (count($whereParts) > 0) {
+            $sql .= " WHERE " . implode(" AND ", $whereParts);
+        }
+        $sqlCount = "SELECT COUNT(*) FROM (" . $sql . ") tmp1982";
+        $sql .= " ORDER BY " . implode(", ", $orderParts) . " LIMIT " . $fromPage . "," . $pageSize;
+
+        if ($result = $this->con->query($sql)) {
+            $numberOfRecords = 0;
+            if ($rCount = $this->con->query($sqlCount)) {
+                $countRow = $rCount->fetch_row();
+                $numberOfRecords = (int)$countRow[0];
+            }
+
+            $data = array();
+            while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+                $item = new stdClass();
+                foreach ($tableSchema->fields as $field) {
+                    $item->{$field->fieldName} = $this->getValueToObject($field, isset($row[$field->fieldName]) ? $row[$field->fieldName] : null);
+                }
+                $item->{"@meta"} = new stdClass();
+                foreach ($systemFields as $field) {
+                    $item->{"@meta"}->{$field->fieldName} = isset($row[$field->fieldName]) ? $row[$field->fieldName] : null;
+                }
+                array_push($data, $item);
+            }
+            return $this->result(true, $data, "", $numberOfRecords, $fromPage, $pageSize);
+        }
+
+        if (mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054) {
+            if ($this->retry > 0) {
+                return $this->result(false, array(), $this->con->error);
+            }
+            $this->retry++;
+            $this->ensureTableReady($namespace);
+            $this->retry = 0;
+            return $this->AdvancedQuery($namespace, $param, $lastID, $sorting, $pageSize, $fromPage, $viewObject);
+        }
+
+        return $this->result(false, array(), $this->con->error);
+    }
+
+    private function getAdvancedQueryOption($options, $names, $default = null)
+    {
+        if (is_object($options)) {
+            $options = (array)$options;
+        }
+        if (!is_array($options)) {
+            return $default;
+        }
+
+        $lowerNames = array_map("strtolower", $names);
+        foreach ($options as $key => $value) {
+            if (in_array(strtolower((string)$key), $lowerNames, true)) {
+                return $value;
+            }
+        }
+        return $default;
+    }
+
+    private function hasAdvancedQueryOption($options, $names)
+    {
+        if (is_object($options)) {
+            $options = (array)$options;
+        }
+        if (!is_array($options)) {
+            return false;
+        }
+
+        $lowerNames = array_map("strtolower", $names);
+        foreach ($options as $key => $value) {
+            if (in_array(strtolower((string)$key), $lowerNames, true)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function quoteIdentifier($identifier)
+    {
+        return "`" . str_replace("`", "``", (string)$identifier) . "`";
+    }
+
+    public function Query($namespace, $param, $lastID = 0, $sorting = "DESC", $pageSize = 20, $fromPage = 0, $viewObject = true)
     {
         try {
             $this->ensureNamespaceReady($namespace);
             $tableSchema = clone(Schema::Get($namespace));
-            $systemFields = Schema::GetSystemColums();
-            $param=urldecode($param);
+            $systemFields = Schema::GetSystemColumns();
+            if (is_string($param)) {
+                $param = urldecode($param);
+                $decodedParam = json_decode($param, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decodedParam)) {
+                    $param = $decodedParam;
+                }
+            } else if (is_object($param)) {
+                $param = (array)$param;
+            }
             foreach ($systemFields as $key => $value) {
                 # code...
                 array_push($tableSchema->fields, $value);
             }
             $sql = "Select * from " . $namespace;
             if (is_array($param)) {
-                return $this->ExecuteRaw($namespace, $param);
+                return $this->AdvancedQuery($namespace, $param, $lastID, $sorting, $pageSize, $fromPage, $viewObject);
             } else {
                 $dived = explode(",", $param);
                 $sqlWhere = "";
@@ -170,7 +457,7 @@ class mysqlConnector
                         $sqlWhere .= " sysversionid <" . $lastID;
                     }
                 }
-                if($vieObject){
+                if($viewObject){
                     $objs=Auth::ViewObjects();
                     if(is_array($objs) && count($objs)>0){
                         $sqlView =($sqlWhere != "" ?" and":" where")." sysviewobject in(" .implode(",",$objs).")";
@@ -217,7 +504,7 @@ class mysqlConnector
                         $this->retry++;
                         $this->ensureTableReady($namespace);
                         $this->retry=0;
-                        return $this->Query($namespace, $param, $lastID, $sorting, $pageSize, $fromPage, $vieObject);
+                        return $this->Query($namespace, $param, $lastID, $sorting, $pageSize, $fromPage, $viewObject);
                     } else {
                         return $this->result(false, [], $this->con->error);
                     }
@@ -588,7 +875,7 @@ class mysqlConnector
     private function createTable($namespace)
     {
         $tableSchema = clone(Schema::Get($namespace));
-        $systemFields = Schema::GetSystemColums();
+        $systemFields = Schema::GetSystemColumns();
         foreach ($systemFields as $key => $value) {
             # code...
             $can = true;
@@ -686,11 +973,11 @@ class mysqlConnector
         return true;
     }
 
-    private function result($suessfull, $data = null, $message = "",$numberOfRecords=null,$pageNumber=null,$pagesize=null)
+    private function result($successful, $data = null, $message = "", $numberOfRecords = null, $pageNumber = null, $pageSize = null)
     {
         $result = new stdClass();
-        $result->success = $suessfull;
-        if ($suessfull) {
+        $result->success = $successful;
+        if ($successful) {
             $result->result = isset($data)?$data:[];
             if(isset($pageNumber)){
                 $result->pageNumber=$pageNumber;

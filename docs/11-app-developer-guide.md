@@ -572,6 +572,29 @@ status:Active,title:Test
 
 The MySQL adapter uses the schema to validate field names and map returned values into PHP objects.
 
+For a schema-backed list that needs comparison operators, multiple conditions, sorting, or pagination, pass an advanced query array:
+
+```php
+$query = [
+    "conditions" => [
+        ["column" => "status", "operator" => "=", "value" => "Active"],
+        ["column" => "priority", "operator" => ">=", "value" => 3]
+    ],
+    "sorting" => [
+        ["column" => "priority", "direction" => "DESC"],
+        ["column" => "title", "direction" => "ASC"]
+    ],
+    "pageSize" => 100,
+    "pageFrom" => 0
+];
+
+return SOSSData::Query("my_new_app_items", $query);
+```
+
+Use `column`, not the legacy misspelling `coloumn`. The MySQL adapter joins conditions with `AND`, validates condition and sort columns against the schema, restricts operators and directions, applies normal view-object filtering, and reports the total match count before pagination. `pageFrom` is a row offset.
+
+See [13-advanced-queries.md](13-advanced-queries.md) for the full payload and supported operators. This payload is currently specific to the `phpmysql` adapter; confirm support before using it with another datastore adapter.
+
 ## Update and Delete Flow
 
 Update and delete calls use the same namespace and schema-driven mapping:

@@ -145,6 +145,23 @@ SOSSData::Insert("namespace", $data);
 SOSSData::Query("namespace", "field:value");
 ```
 
+For advanced list filtering, use canonical payload keys and schema field names:
+
+```php
+SOSSData::Query("namespace", [
+    "conditions" => [
+        ["column" => "status", "operator" => "=", "value" => "Active"]
+    ],
+    "sorting" => [
+        ["column" => "sysversionid", "direction" => "DESC"]
+    ],
+    "pageSize" => 100,
+    "pageFrom" => 0
+]);
+```
+
+Use `column`, not `coloumn`. Read [13-advanced-queries.md](13-advanced-queries.md) before generating an advanced query payload.
+
 Create schemas first:
 
 ```text
