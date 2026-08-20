@@ -665,7 +665,7 @@ Example:
   "rawquery": {
     "type": "sql",
     "parameters": ["startdate", "enddate", "page", "size"],
-    "query": "SELECT DATE_FORMAT(oh.invoiceDate, '%Y-%m') AS reportMonth, p.id AS profileId, p.name AS profileName, SUM(od.qty) AS qty, SUM(od.total) AS total FROM orderheader oh INNER JOIN orderdetails od ON oh.invoiceNo = od.invoiceNo INNER JOIN profile p ON oh.profileId = p.id WHERE oh.invoiceDate BETWEEN '$startdate' AND '$enddate' GROUP BY DATE_FORMAT(oh.invoiceDate, '%Y-%m'), p.id, p.name ORDER BY reportMonth DESC LIMIT $page,$size"
+    "query": "SELECT DATE_FORMAT(oh.invoiceDate, '%Y-%m') AS reportMonth, p.id AS profileId, p.name AS profileName, SUM(od.qty) AS qty, SUM(od.total) AS total FROM orderheader oh INNER JOIN orderdetails od ON oh.invoiceNo = od.invoiceNo INNER JOIN profile p ON oh.profileId = p.id WHERE oh.invoiceDate BETWEEN $startdate AND $enddate GROUP BY DATE_FORMAT(oh.invoiceDate, '%Y-%m'), p.id, p.name ORDER BY reportMonth DESC LIMIT $page,$size"
   },
   "fields": [
     {"fieldName": "reportMonth", "dataType": "java.lang.String"},
@@ -717,8 +717,8 @@ Runtime behavior:
 1. `SOSSData::ExecuteRaw($namespace, $params)` resolves the tenant adapter.
 2. The MySQL adapter loads `schemas/{namespace}.json`.
 3. It reads `rawquery.query`.
-4. It replaces `$placeholder` values from `$params->parameters`.
-5. It executes the SQL and maps returned columns through `fields`.
+4. It compiles declared `$placeholder` tokens to prepared-statement markers.
+5. It binds `$params->parameters` values separately, executes the statement, and maps returned columns through `fields`.
 
 For joined results, avoid `SELECT *` in new report schemas. Use explicit aliases so the result object is predictable:
 
@@ -756,11 +756,14 @@ The adapter executes that setup script only when the procedure call fails with M
 
 Raw query safety:
 
-- Cast page, size, IDs, and other numeric values before passing them to `ExecuteRaw()`.
+- Declare every placeholder in `rawquery.parameters` and supply every declared value.
+- Pass scalar values only; the MySQL adapter binds them through a prepared statement.
 - Validate dates with a strict format such as `YYYY-MM-DD`.
 - Whitelist statuses, types, and sort modes.
-- Do not pass SQL snippets, column names, order clauses, or raw where clauses from the browser.
+- Do not pass SQL snippets, column names, order clauses, or raw where clauses from the browser; identifiers cannot be parameter-bound.
 - Raw queries do not automatically apply `sysviewobject` filtering, so include permission filters in the SQL or keep the endpoint restricted to trusted groups.
+
+See [14-sossdata-query-firewall.md](14-sossdata-query-firewall.md) for the full firewall contract, limits, blocked response, and legacy-placeholder compatibility.
 
 Use raw queries sparingly and only when schema-driven insert/query/update logic is not enough.
 

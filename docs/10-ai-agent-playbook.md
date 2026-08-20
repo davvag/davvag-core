@@ -162,6 +162,8 @@ SOSSData::Query("namespace", [
 
 Use `column`, not `coloumn`. Read [13-advanced-queries.md](13-advanced-queries.md) before generating an advanced query payload.
 
+Do not create SQL keyword blacklists. Use the SOSSData query firewall, schema-column allowlists, and bound raw-query parameters. Read [14-sossdata-query-firewall.md](14-sossdata-query-firewall.md) before changing query execution or `ExecuteRaw()` behavior.
+
 Create schemas first:
 
 ```text

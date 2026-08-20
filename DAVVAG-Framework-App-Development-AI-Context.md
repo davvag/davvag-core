@@ -214,6 +214,7 @@ For data work:
 05-database-schemas.md
 11-app-developer-guide.md
 13-advanced-queries.md
+14-sossdata-query-firewall.md
 ```
 
 For workflow work:
@@ -1652,6 +1653,12 @@ Condition and sorting columns are schema-validated. Values are converted using s
 The successful response contains `result`, `numberOfRecords`, `pageSize`, and the legacy `pageNumber` property. `numberOfRecords` is the total before pagination; `pageNumber` currently carries the `pageFrom` offset.
 
 The advanced array/JSON payload is currently implemented by the `phpmysql` adapter. Keep connector portability in mind and use `SOSSData::ExecuteRaw()` for controlled joins, aggregates, groups, subqueries, and stored-procedure read models. The full reference is `docs/13-advanced-queries.md`.
+
+All SOSSData operations pass through `SOSSDataQueryFirewall`. It validates namespaces, input shapes, sorting direction, pagination, version cursors, condition/sort counts, and raw-parameter shapes before an adapter executes SQL. The MySQL adapter additionally validates columns and operators against schema allowlists, sets an explicit connection character set, and casts or escapes standard-query values by schema type.
+
+`ExecuteRaw()` must compile declared `$placeholder` tokens to prepared-statement markers and bind values separately. It must never return to direct `str_replace()` interpolation. Identifiers and SQL fragments cannot be bound and must remain fixed in protected schema files.
+
+Blocked facade requests return `success: false` with code `SOSS_QUERY_FIREWALL_BLOCKED`. Do not leak raw database errors through a public endpoint. The complete security contract is `docs/14-sossdata-query-firewall.md`.
 
 Rules:
 

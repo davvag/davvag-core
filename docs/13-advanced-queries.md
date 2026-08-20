@@ -131,7 +131,7 @@ Only `ASC` and `DESC` are accepted. Sort columns are checked against the schema 
 
 | Property | Rule |
 | --- | --- |
-| `pageSize` | Positive integer; maximum number of rows returned. |
+| `pageSize` | Integer from 1 through 10,000; maximum number of rows returned. |
 | `pageFrom` | Non-negative integer row offset, not a page index. |
 
 For example, `"pageSize": 100` and `"pageFrom": 200` return up to 100 rows beginning at offset 200.
@@ -182,6 +182,8 @@ The adapter:
 - converts pagination values to validated integers.
 
 Do not place SQL fragments in `column`, `operator`, `sorting`, or `value`. Pass data values only.
+
+The public SOSSData boundary also validates namespaces, query shape, input size, direction, pagination, and version cursors. Blocked requests return code `SOSS_QUERY_FIREWALL_BLOCKED`. See [14-sossdata-query-firewall.md](14-sossdata-query-firewall.md).
 
 ## Compatibility Aliases
 

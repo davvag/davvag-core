@@ -1,6 +1,7 @@
 <?php
 
 //require_once (dirname(__FILE__) . "/../../configloader.php");
+require_once(dirname(__FILE__) . "/../SOSSDataQueryFirewall.php");
 
 class DAVVAG_Data {
 
@@ -67,8 +68,26 @@ class DAVVAG_Data {
         if ($tenantId == null)
             $tenantId = DATASTORE_DOMAIN;
 
-        $className = isset($query) ?  "$className?query=$query" : $className;
-        $className = isset($query) ?  "$className&lastversionid=$lastVersionId" : "$className?lastversionid=$lastVersionId";
+        try {
+            $className = SOSSDataQueryFirewall::validateNamespace($className);
+            $query = SOSSDataQueryFirewall::validateQuery($query);
+            $lastVersionId = SOSSDataQueryFirewall::normalizeLastVersionId($lastVersionId);
+            $sorting = SOSSDataQueryFirewall::normalizeDirection($sorting);
+            $pageSize = SOSSDataQueryFirewall::normalizePageSize($pageSize);
+            $fromPage = SOSSDataQueryFirewall::normalizeOffset($fromPage);
+        } catch (Throwable $e) {
+            return SOSSDataQueryFirewall::blockedResult($e);
+        }
+
+        $queryString = http_build_query(array(
+            "query" => is_array($query) ? json_encode($query) : $query,
+            "lastversionid" => $lastVersionId,
+            "sorting" => $sorting,
+            "pageSize" => $pageSize,
+            "fromPage" => $fromPage,
+            "viewObject" => $viewObject ? 1 : 0
+        ), "", "&", PHP_QUERY_RFC3986);
+        $className .= "?" . $queryString;
         $responseStr = self::callRest ($tenantId, $className);;
         return json_decode($responseStr)==null?(object)array("sucess"=>false,"message"=>$responseStr):json_decode($responseStr);
     }

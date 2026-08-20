@@ -256,7 +256,7 @@ Example:
   "rawquery": {
     "type": "sql",
     "parameters": ["startdate", "enddate", "page", "size"],
-    "query": "SELECT DATE_FORMAT(oh.invoiceDate, '%Y-%m') AS reportMonth, p.id AS profileId, p.name AS profileName, SUM(od.qty) AS qty, SUM(od.total) AS total FROM orderheader oh INNER JOIN orderdetails od ON oh.invoiceNo = od.invoiceNo INNER JOIN profile p ON oh.profileId = p.id WHERE oh.invoiceDate BETWEEN '$startdate' AND '$enddate' GROUP BY DATE_FORMAT(oh.invoiceDate, '%Y-%m'), p.id, p.name ORDER BY reportMonth DESC LIMIT $page,$size"
+    "query": "SELECT DATE_FORMAT(oh.invoiceDate, '%Y-%m') AS reportMonth, p.id AS profileId, p.name AS profileName, SUM(od.qty) AS qty, SUM(od.total) AS total FROM orderheader oh INNER JOIN orderdetails od ON oh.invoiceNo = od.invoiceNo INNER JOIN profile p ON oh.profileId = p.id WHERE oh.invoiceDate BETWEEN $startdate AND $enddate GROUP BY DATE_FORMAT(oh.invoiceDate, '%Y-%m'), p.id, p.name ORDER BY reportMonth DESC LIMIT $page,$size"
   },
   "fields": [
     {"fieldName": "reportMonth", "dataType": "java.lang.String"},
@@ -285,8 +285,8 @@ The MySQL adapter handles `ExecuteRaw()` like this:
 
 1. Loads `schemas/{namespace}.json` with `Schema::Get($namespace)`.
 2. Reads `rawquery.query`.
-3. Replaces each `$name` placeholder with `$params->parameters->name`.
-4. Runs the final SQL or procedure call.
+3. Compiles each declared `$name` placeholder to a prepared-statement `?` marker.
+4. Binds `$params->parameters->name` values separately and executes the SQL or procedure call.
 5. Creates each result object from the schema `fields` list.
 
 Because result objects are built from `fields`, joined reports should select explicit aliases:
@@ -325,11 +325,12 @@ Existing tenant examples:
 
 Security rules for raw queries:
 
-1. Treat placeholder replacement as direct string replacement, not prepared statements.
-2. Cast integers and limits in PHP before calling `ExecuteRaw()`.
-3. Validate dates and whitelist enum values.
-4. Do not accept raw SQL fragments, field names, sort expressions, or `WHERE` clauses from the browser.
+1. Declare every placeholder in `rawquery.parameters`; missing, unexpected, or unused declarations are blocked.
+2. Pass scalar data values only. The MySQL adapter binds them through a prepared statement.
+3. Continue validating business formats such as dates and whitelisting enum values.
+4. Do not accept raw SQL fragments, field names, sort expressions, or `WHERE` clauses from the browser; identifiers cannot be parameter-bound.
 5. Raw queries do not automatically add `sysviewobject` filtering, so add visibility conditions yourself or keep the endpoint admin-only.
+6. See [14-sossdata-query-firewall.md](14-sossdata-query-firewall.md) for firewall limits and migration behavior for older quoted placeholders.
 
 ## Database Creation Behavior
 

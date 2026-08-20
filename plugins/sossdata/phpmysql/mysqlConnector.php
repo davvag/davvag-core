@@ -1,5 +1,6 @@
 <?php
 require_once(dirname(__FILE__) . "/schema.php");
+require_once(dirname(__FILE__) . "/../SOSSDataQueryFirewall.php");
 class mysqlConnector
 {
     private $con = null;
@@ -34,6 +35,10 @@ class mysqlConnector
                         throw new Exception($this->con->connect_error);
                     }
                 }
+                $charset = isset($configData->mysql_charset) ? $configData->mysql_charset : "utf8mb4";
+                if (!$this->con->set_charset($charset)) {
+                    throw new Exception("Unable to set the MySQL connection character set.");
+                }
             } else {
                 throw new Exception("Configuration file missing.");
             }
@@ -43,7 +48,7 @@ class mysqlConnector
                 $this->createDatabase($configData->mysql_server, $configData->mysql_username, $configData->mysql_password, $dbname);
                 $this->Open($db);
             } else {
-                throw new Exception($this->con->connect_error);
+                throw new Exception($e->getMessage());
             }
             //throw new Exception("Database connection failed: " . $e->getMessage());
         }
@@ -71,7 +76,7 @@ class mysqlConnector
         }
 
         // Create database
-        $sql = "CREATE DATABASE " . $dbname;
+        $sql = "CREATE DATABASE " . $this->quoteIdentifier($dbname);
         if ($conn->query($sql) === TRUE) {
             return true;
         } else {
@@ -84,47 +89,94 @@ class mysqlConnector
     public function ExecuteRaw($namespace, $params)
     {
         try{
+            $namespace = SOSSDataQueryFirewall::validateNamespace($namespace);
+            SOSSDataQueryFirewall::validateRawRequest($params);
             $tableSchema = Schema::Get($namespace);
             if (isset($tableSchema->rawquery)) {
-                $sql = $tableSchema->rawquery->query;
-                foreach ($params->parameters as $key => $value) {
-                    $sql = str_replace("$" . $key, $value, $sql);
-                }
-                if ($result = $this->con->query($sql)) {
-                    //return $this->result(true,mysqli_fetch_all($result));
-                    $data = array();
-                    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-                        $item = new stdClass();
-                        foreach ($tableSchema->fields as $key => $value) {
-                            # code...
-                            $item->{$value->fieldName} = isset($row[$value->fieldName])?$row[$value->fieldName]:$value->fieldName." NOt Found.";
-                        }
-                        //$item->{"@meta"}=new stdClass();
+                $parameterValues = is_object($params) ? $params->parameters : $params["parameters"];
+                $declaredParameters = isset($tableSchema->rawquery->parameters) ? $tableSchema->rawquery->parameters : array();
+                $compiled = SOSSDataQueryFirewall::compileRawQuery(
+                    $tableSchema->rawquery->query,
+                    $parameterValues,
+                    $declaredParameters
+                );
 
-                        array_push($data, $item);
-                    }
-                    return $this->result(true, $data);
-                } else {
-                    if (mysqli_errno($this->con) == 1305) {
-                        if($this->retry>0){
-                            return $this->result(false, null, $this->con->error);
-                        }
-                        $this->retry++;
-                        $this->ExcuteMySQLScript($namespace);
-                        $this->retry=0;
-                        return $this->ExecuteRaw($namespace, $params);
-                    } else {
-                        return $this->result(false, null, $this->con->error);
-                    }
-                    
-                    //throw new Exception($this->con->error); 
-
+                try {
+                    $statement = $this->con->prepare($compiled->sql);
+                } catch (mysqli_sql_exception $e) {
+                    return $this->handleRawQueryError($namespace, $params, $e->getCode(), $e->getMessage());
                 }
+                if ($statement === false) {
+                    return $this->handleRawQueryError($namespace, $params, mysqli_errno($this->con), $this->con->error);
+                }
+
+                $boundValues = $compiled->values;
+                if ($compiled->types !== "" && !$statement->bind_param($compiled->types, ...$boundValues)) {
+                    $message = $statement->error;
+                    $statement->close();
+                    return $this->result(false, null, $message);
+                }
+                try {
+                    $executed = $statement->execute();
+                } catch (mysqli_sql_exception $e) {
+                    $statement->close();
+                    return $this->handleRawQueryError($namespace, $params, $e->getCode(), $e->getMessage());
+                }
+                if (!$executed) {
+                    $errorNumber = $statement->errno;
+                    $message = $statement->error;
+                    $statement->close();
+                    return $this->handleRawQueryError($namespace, $params, $errorNumber, $message);
+                }
+
+                $result = $statement->get_result();
+                if ($result === false) {
+                    $message = $statement->error !== "" ? $statement->error : "Raw query did not return a result set.";
+                    $statement->close();
+                    return $this->result(false, null, $message);
+                }
+
+                $data = array();
+                while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+                    $item = new stdClass();
+                    foreach ($tableSchema->fields as $key => $value) {
+                        $item->{$value->fieldName} = isset($row[$value->fieldName]) ? $row[$value->fieldName] : $value->fieldName . " not found.";
+                    }
+                    array_push($data, $item);
+                }
+                $result->free();
+                $statement->close();
+                $this->drainPendingResults();
+                return $this->result(true, $data);
             } else {
-                throw new Exception("This not a valied Schema");
+                throw new Exception("This is not a valid raw-query schema.");
             }
-        }catch(Exception $e){
+        }catch(Throwable $e){
             return $this->result(false, null, $e->getMessage());
+        }
+    }
+
+    private function handleRawQueryError($namespace, $params, $errorNumber, $message)
+    {
+        if ($errorNumber == 1305) {
+            if ($this->retry > 0) {
+                return $this->result(false, null, $message);
+            }
+            $this->retry++;
+            $this->ExcuteMySQLScript($namespace);
+            $this->retry = 0;
+            return $this->ExecuteRaw($namespace, $params);
+        }
+        return $this->result(false, null, $message);
+    }
+
+    private function drainPendingResults()
+    {
+        while ($this->con->more_results() && $this->con->next_result()) {
+            $result = $this->con->store_result();
+            if ($result) {
+                $result->free();
+            }
         }
     }
 
@@ -236,14 +288,10 @@ class mysqlConnector
             }
         }
 
-        $defaultDirection = strtoupper(trim((string)$sorting)) === "ASC" ? "ASC" : "DESC";
+        $defaultDirection = SOSSDataQueryFirewall::normalizeDirection($sorting);
         $queryDirection = $this->getAdvancedQueryOption($param, array("sortDirection", "sortingDirection", "direction"), null);
         if ($queryDirection !== null) {
-            $queryDirection = strtoupper(trim((string)$queryDirection));
-            if ($queryDirection !== "ASC" && $queryDirection !== "DESC") {
-                throw new Exception("Sorting direction must be ASC or DESC.");
-            }
-            $defaultDirection = $queryDirection;
+            $defaultDirection = SOSSDataQueryFirewall::normalizeDirection($queryDirection);
         }
 
         $sortItems = $this->getAdvancedQueryOption($param, array("sorting", "sort"), array());
@@ -300,14 +348,8 @@ class mysqlConnector
 
         $pageSize = $this->getAdvancedQueryOption($param, array("pageSize"), $pageSize);
         $fromPage = $this->getAdvancedQueryOption($param, array("pageFrom"), $fromPage);
-        if (filter_var($pageSize, FILTER_VALIDATE_INT) === false || (int)$pageSize < 1) {
-            throw new Exception("Page size must be a positive integer.");
-        }
-        if (filter_var($fromPage, FILTER_VALIDATE_INT) === false || (int)$fromPage < 0) {
-            throw new Exception("Page from must be a non-negative integer.");
-        }
-        $pageSize = (int)$pageSize;
-        $fromPage = (int)$fromPage;
+        $pageSize = SOSSDataQueryFirewall::normalizePageSize($pageSize);
+        $fromPage = SOSSDataQueryFirewall::normalizeOffset($fromPage);
 
         if ($lastID != 0) {
             $whereParts[] = $this->quoteIdentifier("sysversionid") . ($defaultDirection === "ASC" ? " > " : " < ") . (int)$lastID;
@@ -410,6 +452,11 @@ class mysqlConnector
     public function Query($namespace, $param, $lastID = 0, $sorting = "DESC", $pageSize = 20, $fromPage = 0, $viewObject = true)
     {
         try {
+            $namespace = SOSSDataQueryFirewall::validateNamespace($namespace);
+            $sorting = SOSSDataQueryFirewall::normalizeDirection($sorting);
+            $pageSize = SOSSDataQueryFirewall::normalizePageSize($pageSize);
+            $fromPage = SOSSDataQueryFirewall::normalizeOffset($fromPage);
+            $lastID = SOSSDataQueryFirewall::normalizeLastVersionId($lastID);
             $this->ensureNamespaceReady($namespace);
             $tableSchema = clone(Schema::Get($namespace));
             $systemFields = Schema::GetSystemColumns();
@@ -422,6 +469,7 @@ class mysqlConnector
             } else if (is_object($param)) {
                 $param = (array)$param;
             }
+            $param = SOSSDataQueryFirewall::validateQuery($param);
             foreach ($systemFields as $key => $value) {
                 # code...
                 array_push($tableSchema->fields, $value);
@@ -430,48 +478,48 @@ class mysqlConnector
             if (is_array($param)) {
                 return $this->AdvancedQuery($namespace, $param, $lastID, $sorting, $pageSize, $fromPage, $viewObject);
             } else {
-                $dived = explode(",", $param);
-                $sqlWhere = "";
-                foreach ($dived as $key => $value) {
-                    # code...
+                $divided = explode(",", $param);
+                $whereParts = array();
+                $fieldMap = array();
+                foreach ($tableSchema->fields as $schemaField) {
+                    $fieldMap[strtolower($schemaField->fieldName)] = $schemaField;
+                }
+                foreach ($divided as $key => $value) {
                     $field = explode(":", $value);
                     if (count($field) == 2) {
-                        $hasKey=false;
-                        foreach ($tableSchema->fields as $k1 => $v1) {
-                            # code...
-                            if($field[0]==$v1->fieldName){
-                                $hasKey=true;
-                            }
+                        $fieldName = trim($field[0]);
+                        $fieldKey = strtolower($fieldName);
+                        if (!isset($fieldMap[$fieldKey])) {
+                            throw new Exception("Column [" . $fieldName . "] not found.");
                         }
-                        if($hasKey){
-                            $sqlWhere .= " " . $field[0] . "='" . $field[1] . "' and";
-                        }else{
-                            throw new Exception("Colomn [".$field[0]."]not found ");
-                        }
+                        $schemaField = $fieldMap[$fieldKey];
+                        $whereParts[] = $this->quoteIdentifier($schemaField->fieldName) . "=" . $this->getValue($schemaField, $field[1]);
                     }
                 }
-                if ($lastID != 0) {
+                if ($lastID !== null) {
                     if ($sorting == "ASC") {
-                        $sqlWhere .= " sysversionid >" . $lastID;
+                        $whereParts[] = $this->quoteIdentifier("sysversionid") . ">" . $lastID;
                     } else {
-                        $sqlWhere .= " sysversionid <" . $lastID;
+                        $whereParts[] = $this->quoteIdentifier("sysversionid") . "<" . $lastID;
                     }
                 }
                 if($viewObject){
                     $objs=Auth::ViewObjects();
                     if(is_array($objs) && count($objs)>0){
-                        $sqlView =($sqlWhere != "" ?" and":" where")." sysviewobject in(" .implode(",",$objs).")";
+                        $viewObjects = array();
+                        foreach ($objs as $object) {
+                            $viewObjects[] = (int)$object;
+                        }
+                        $whereParts[] = $this->quoteIdentifier("sysviewobject") . " IN (" . implode(",", $viewObjects) . ")";
                     }
-                    else{
-                        $sqlView ="";
-                    }
-                }else{
-                    $sqlView ="";
                 }
                 
-                $sql .= ($sqlWhere != "" ? " where" . rtrim($sqlWhere, "and") : "").$sqlView;
+                $sql = "SELECT * FROM " . $this->quoteIdentifier($namespace);
+                if (count($whereParts) > 0) {
+                    $sql .= " WHERE " . implode(" AND ", $whereParts);
+                }
                 $sqlCount ="Select count(*) from ($sql) tmp1982";
-                $sql.= " Order by sysversionid $sorting limit $fromPage,$pageSize";
+                $sql.= " ORDER BY " . $this->quoteIdentifier("sysversionid") . " " . $sorting . " LIMIT " . $fromPage . "," . $pageSize;
                 if ($result = $this->con->query($sql)) {
                     //return $this->result(true,mysqli_fetch_all($result));
                     if ($rCount = $this->con->query($sqlCount)){
@@ -510,9 +558,9 @@ class mysqlConnector
                     }
                 }
             }
-        } catch (Exception $e) {
-            //throw $th;
-            return $this->result(false, [], $e->getMessage() ." ERROR NO".mysqli_errno($this->con));
+        } catch (Throwable $e) {
+            $errorNumber = $this->con instanceof mysqli ? mysqli_errno($this->con) : 0;
+            return $this->result(false, [], $e->getMessage() . " ERROR NO" . $errorNumber);
         }
         
     }
@@ -522,6 +570,7 @@ class mysqlConnector
         if ($this->ConOK()) {
 
             try {
+                $namespace = SOSSDataQueryFirewall::validateNamespace($namespace);
                 $this->ensureNamespaceReady($namespace);
                 $tableSchema = Schema::Get($namespace);
                 $sqls = $this->generateInsertSQL($namespace, $tableSchema, $data);
@@ -557,7 +606,7 @@ class mysqlConnector
                     }
                 }
                 return $this->result($success, count($genis) == 1 ? $genis[0] : $genis, $errorMsg);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 if(mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054){
                     if($this->retry>0){
                         return $this->result(false, null, $this->con->error);
@@ -579,6 +628,7 @@ class mysqlConnector
     {
         if ($this->ConOK()) {
             try {
+                $namespace = SOSSDataQueryFirewall::validateNamespace($namespace);
                 $this->ensureNamespaceReady($namespace);
                 $tableSchema = Schema::Get($namespace);
                 $sqls = $this->generateUpdateSQL($namespace, $tableSchema, $data);
@@ -610,7 +660,7 @@ class mysqlConnector
                     }
                 }
                 return $this->result($success, count($results) == 1 ? $results[0] : $results, $errorMsg);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 if(mysqli_errno($this->con) == 1146 || mysqli_errno($this->con) == 1054){
                     if($this->retry>0){
                         return $this->result(false, null, $this->con->error);
@@ -630,6 +680,7 @@ class mysqlConnector
     {
         if ($this->ConOK()) {
             try {
+                $namespace = SOSSDataQueryFirewall::validateNamespace($namespace);
                 $this->ensureNamespaceReady($namespace);
                 
                 $tableSchema = Schema::Get($namespace);
@@ -669,7 +720,7 @@ class mysqlConnector
                     }
                 }
                 return $this->result($success, count($results) == 1 ? $results[0] : $results, $errorMsg);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 return $this->result(false, null, $e->getMessage());
             }
         }
@@ -816,7 +867,8 @@ class mysqlConnector
             throw new Exception("No Primary value was set to update.");
             return null;
         }
-        $sqlStart .= "sysversionid=" . date("YmdHis") . ",sysupdated=" . time().",sysviewobject=".$data->sysviewobject.",syslastupdatedby='".(isset($data->syslastupdatedby)?$data->syslastupdatedby:"anonymous")."'";
+        $lastUpdatedBy = isset($data->syslastupdatedby) ? $data->syslastupdatedby : "anonymous";
+        $sqlStart .= "sysversionid=" . date("YmdHis") . ",sysupdated=" . time() . ",sysviewobject=" . (int)$data->sysviewobject . ",syslastupdatedby='" . $this->escapeSqlValue($lastUpdatedBy) . "'";
         $dout->sql = rtrim($sqlStart, ",") . rtrim($sqlend, "and ") . ";\n";
         $dout->data = $data;
         return $dout;
@@ -867,7 +919,7 @@ class mysqlConnector
         }
 
         $sqlStart .= "sysversionid,syscreated,syscreatedby,sysviewobject";
-        $sqlend .= date("YmdHis") . "," . time().",'".$data->syscreatedby."',".$data->sysviewobject;
+        $sqlend .= date("YmdHis") . "," . time() . ",'" . $this->escapeSqlValue($data->syscreatedby) . "'," . (int)$data->sysviewobject;
 
         return rtrim($sqlStart, ",") . ")" . rtrim($sqlend, ",") . ");\n";
     }
