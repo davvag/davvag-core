@@ -956,10 +956,16 @@ class mysqlConnector
                 foreach ($tableSchema->fields as $value) {
                     $has = false;
                     $alter = false;
+                    $existingType = "";
                     foreach ($colums as $key => $row) {
                         if (strtolower($row[0]) == strtolower($value->fieldName)) {
                             $has = true;
+                            $existingType = isset($row[1]) ? strtolower(trim(strval($row[1]))) : "";
                         }
+                    }
+                    $decimalPoints = !empty($value->annotations->decimalPoints) ? $value->annotations->decimalPoints : "10,2";
+                    if ($has && $this->decimalColumnNeedsAlter($value->dataType, $existingType, $decimalPoints)) {
+                        $alter = true;
                     }
                     if (!$has) {
                         $sql .= "ADD `" . $value->fieldName . "` " . $this->convertSQLtype(
@@ -974,7 +980,7 @@ class mysqlConnector
                         $sql .= ",\n";
                     }
                     if ($alter) {
-                        $sql .= "Alter `" . $value->fieldName . "` " . $this->convertSQLtype(
+                        $sql .= "MODIFY `" . $value->fieldName . "` " . $this->convertSQLtype(
                             $value->dataType,
                             (!empty($value->annotations->maxLen) ? $value->annotations->maxLen : 0),
                             (!empty($value->annotations->isPrimary) ? false : true),
@@ -1052,6 +1058,7 @@ class mysqlConnector
     private function convertSQLtype($datatype, $datalength, $isNull, $isAutoIncrement, $decimalPoints, $endCoding,$default=null)
     {
         $strValue = "";
+        $decimalPoints = $this->normalizeDecimalPoints($decimalPoints);
 
         switch ($datatype) {
             case "int":
@@ -1064,7 +1071,7 @@ class mysqlConnector
 
                 break;
             case "double":
-                $strValue = "DECIMAL " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
+                $strValue = "DECIMAL(" . $decimalPoints . ") " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "short":
                 $strValue = "BIGINT " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
@@ -1073,10 +1080,7 @@ class mysqlConnector
                 $strValue = "BIGINT " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "decimal":
-                if ($decimalPoints == null)
-                    $strValue = "DECIMAL(10,1)";
-                else
-                    $strValue = "DECIMAL(" . $decimalPoints . ") ";
+                $strValue = "DECIMAL(" . $decimalPoints . ") " . (($isNull) ? "" : "NOT") . " NULL ".(isset($default)?"DEFAULT '$default' ":"");
                 break;
             case "java.lang.String":
                 if ($datalength == 0) {
@@ -1102,6 +1106,28 @@ class mysqlConnector
                 break;
         }
         return $strValue;
+    }
+
+    private function normalizeDecimalPoints($decimalPoints)
+    {
+        $value = trim(strval($decimalPoints));
+        if (!preg_match('/^(\d{1,2})\s*,\s*(\d{1,2})$/', $value, $matches)) {
+            return "10,2";
+        }
+        $precision = intval($matches[1]);
+        $scale = intval($matches[2]);
+        if ($precision < 1 || $precision > 65 || $scale < 0 || $scale > 30 || $scale > $precision) {
+            return "10,2";
+        }
+        return $precision . "," . $scale;
+    }
+
+    private function decimalColumnNeedsAlter($dataType, $existingType, $decimalPoints)
+    {
+        if ($dataType !== "double" && $dataType !== "decimal") {
+            return false;
+        }
+        return strtolower(trim(strval($existingType))) !== "decimal(" . $this->normalizeDecimalPoints($decimalPoints) . ")";
     }
 
     private function getValueToObject($field, $value)
