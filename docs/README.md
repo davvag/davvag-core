@@ -22,6 +22,7 @@ Start here, then read the topic file that matches your task.
 | [12-reusable-app-patterns.md](12-reusable-app-patterns.md) | Reusable patterns for profiles, agent users, profile photos, chat identity, CMS app loading, caching, and validation. |
 | [13-advanced-queries.md](13-advanced-queries.md) | Advanced `SOSSData::Query()` conditions, sorting, pagination, validation, and compatibility aliases. |
 | [14-sossdata-query-firewall.md](14-sossdata-query-firewall.md) | SOSSData injection defenses, validation limits, prepared raw-query parameters, and blocked-response behavior. |
+| [15-task-tracker.md](15-task-tracker.md) | Task Manager routes, task types, persistence, and work-log report contracts. |
 
 ## Existing Reference Docs
 
@@ -67,3 +68,4 @@ Tenant folders hold apps, workflows, schemas, local plugins, templates, and grou
 8. For query security and raw parameters, read [14-sossdata-query-firewall.md](14-sossdata-query-firewall.md).
 9. For profile/user/chat/agent implementation patterns, read [12-reusable-app-patterns.md](12-reusable-app-patterns.md).
 10. Before deployment, read [08-auth-sessions-permissions.md](08-auth-sessions-permissions.md) and [09-deployment.md](09-deployment.md).
+11. For Task Manager work, read [15-task-tracker.md](15-task-tracker.md) and the app-local `AGENTS.md`.

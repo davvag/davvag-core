@@ -114,7 +114,7 @@ This is the summarized companion to `docs/apps_features_list.md`. It keeps every
 | `romashop` | Roma/Raha storefront variant with products, cart, orders, riders, store, inventory, login, and payments. | Shoppers, store admins/sellers, riders, admins |
 | `stelup_shop` | Stelup shop with login, seller/product admin, cart/checkout, orders, messages, proposals, and profile. | Shoppers, sellers, registered users |
 | `stores` | Store list/form management. | Store admins/sellers |
-| `task-tracker` | Task manager with projects, my tasks, time tracker, password vault, email client, and dashboard/reporting. | System administrators, developers, support operators |
+| `task-tracker` | Task manager with projects, typed tasks, my tasks, time tracker, password vault, email client, and task-type-aware work-log reporting. | System administrators, developers, support operators |
 | `tax-master` | Tax master/reference data management. | System administrators |
 | `uicomponents` | Shared UI components, especially tag textbox. | App users, admins |
 | `uom` | Unit-of-measure/reference data management. | System administrators |

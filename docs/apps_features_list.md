@@ -1400,23 +1400,23 @@ This is a source-derived inventory. Features are summarized from `app.json` desc
 ### task-tracker - Task Manager
 
 - Descriptor: `task-tracker/app.json`
-- Version/author: 2.1 / DAVVAG
+- Version/author: 2.8 / DAVVAG
 - Tags: showincms, showindock
 - Intended users: system administrators, developers/automation admins, marketing/support operators, media/content users
-- Main features: Projects, My Tasks, Time Tracker, Tasks and scheduling, Password Vault, Dashboard and reporting, Messaging and campaign tooling
+- Main features: Projects, typed tasks, My Tasks, Time Tracker, Password Vault, task-type-aware work-log summary and detailed reporting, Messaging and campaign tooling
 - Startup component: projects
 - On-load components: task-style, taskapi, passwordvaultapi
-- Component counts: component: 8, service: 3
-- Components: `projects (component)`, `tasks (component)`, `my-tasks (component)`, `time-tracker (component)`, `password-vault (component)`, `task-view (component)`, `task-dashboard (component)`, `task-style (component)`, `taskapi (service)`, `passwordvaultapi (service)`, `TaskEmailClient (service)`
-- Dependencies: apps: davvag-tools; schemas: profile; plugins: auth, phpcache, profile, sossdata; php-extensions: imap
-- Dock subapps: `Projects`, `My Tasks`, `Time Tracker`
-- Routes: `/ -> projects`, `/projects -> projects`, `/tasks -> tasks`, `/my-tasks -> my-tasks`, `/time-tracker -> time-tracker`, `/password-vault -> password-vault`, `/task -> task-view`, `/task-view -> task-view`
+- Component counts: component: 10, service: 3
+- Components: `projects (component)`, `tasks (component)`, `my-tasks (component)`, `time-tracker (component)`, `task-work-log-summery (component)`, `task-work-log-detailed (component)`, `password-vault (component)`, `task-view (component)`, `task-dashboard (component)`, `task-style (component)`, `taskapi (service)`, `passwordvaultapi (service)`, `TaskEmailClient (service)`
+- Dependencies: apps: davvag-tools; schemas: profile, task_manager_work_log_report; plugins: auth, phpcache, profile, sossdata; php-extensions: imap
+- Dock subapps: `Projects`, `My Tasks`, `Time Tracker`, `Work Log Summary`, `Work Log Detailed`
+- Routes: `/ -> projects`, `/projects -> projects`, `/tasks -> tasks`, `/my-tasks -> my-tasks`, `/time-tracker -> time-tracker`, `/task-work-log-summery -> task-work-log-summery`, `/task-work-log-detailed -> task-work-log-detailed`, `/password-vault -> password-vault`, `/task -> task-view`, `/task-view -> task-view`
 - Declared services: `taskapi`, `passwordvaultapi`, `TaskEmailClient`
 - Registered service handlers:
   - passwordvaultapi (`services/passwordvaultapi/component.json`): Task Manager password vault service handlers; class PasswordVaultService; methods: ListVaults [POST], VaultDetails [POST], SaveVault [POST], DeleteVault [POST], CopyPassword [POST]
-  - taskapi (`services/taskapi/component.json`): Task Manager service handlers; class TaskManagerService; methods: ListProjects [POST], ProjectDetails [POST], SaveProject [POST], DeleteProject [POST], ListTasks [POST], SaveTask [POST], DeleteTask [POST], ListMyTasks [POST], TaskDetails [POST], SaveWorkLog [POST], SaveComment [POST], ListProfiles [POST], SearchProfileByEmail [POST], ProjectAssignedProfiles [POST], NotifyTaskAssignees [POST]
+  - taskapi (`services/taskapi/component.json`): Task Manager service handlers; class TaskManagerService; methods: ListProjects [POST], ProjectDetails [POST], SaveProject [POST], DeleteProject [POST], ListTasks [POST], ListTaskTypes [POST], SaveTask [POST], DeleteTask [POST], ListMyTasks [POST], TaskDetails [POST], SaveWorkLog [POST], WorkLogSummary [POST], WorkLogDetailed [POST], SaveComment [POST], ListProfiles [POST], SearchProfileByEmail [POST], ProjectAssignedProfiles [POST], NotifyTaskAssignees [POST]
   - TaskEmailClient (`services/TaskEmailClient/component.json`): Imports project mailbox messages into tasks and task discussion.; class TaskEmailClient; methods: getMail [GET] (projectId, search, limit, markSeen), Mail [GET] (projectId, search, limit, markSeen)
-- PHP service files/methods: `services/passwordvaultapi/service.php: postListVaults, postVaultDetails, postSaveVault, postDeleteVault, postCopyPassword`; `services/taskapi/service.php: postListProfiles, postSearchProfileByEmail, postListProjects, postProjectDetails, postProjectAssignedProfiles, postSaveProject, postDeleteProject, postListTasks, postListMyTasks, postSaveTask, postDeleteTask, postTaskDetails, postSaveWorkLog, postSaveComment, postNotifyTaskAssignees`; `services/TaskEmailClient/service.php: getGetMail, getMail`
+- PHP service files/methods: `services/passwordvaultapi/service.php: postListVaults, postVaultDetails, postSaveVault, postDeleteVault, postCopyPassword`; `services/taskapi/service.php: postListProfiles, postSearchProfileByEmail, postListProjects, postProjectDetails, postProjectAssignedProfiles, postSaveProject, postDeleteProject, postListTasks, postListTaskTypes, postListMyTasks, postSaveTask, postDeleteTask, postTaskDetails, postSaveWorkLog, postWorkLogSummary, postWorkLogDetailed, postSaveComment, postNotifyTaskAssignees`; `services/TaskEmailClient/service.php: getGetMail, getMail`
 
 ### tax-master - Tax Master
 
