@@ -3905,3 +3905,105 @@ both /admin#/app/... and /#/app/... dock rendering
 SQL date filtering before PHP row shaping or aggregation
 raw-query permission exclusion for non-sysadmin profiles
 ```
+
+---
+
+# 75. YOUTUBE GROWTH AGENT PHASE 2/3 BASELINE
+
+As of the 2026-08-25 tenant baseline, YouTube Growth Agent 0.3 at:
+
+```text
+davvag-core/localhost/apps/youtube-growth-agent
+```
+
+extends the read-only Phase 0/1 command centre with Phase 2 content intelligence and Phase 3 packaging, community, and experiment tooling. The app remains an advisor: it does not upload media, publish replies, start a native YouTube test, or change channel metadata.
+
+The Phase 2/3 runtime is registered through:
+
+```text
+component: growth-studio
+service:   growth-workbench
+service:   growth-ai
+routes:    /intelligence, /growth-studio
+```
+
+`growth-workbench` owns deterministic, channel-scoped operations:
+
+```text
+user-provided transcript persistence and provenance
+official per-video retention import from YouTube Analytics
+read-only comment sampling through commentThreads.list
+public competitor metadata through channels, uploads playlists, and videos
+content calendar records
+experiment creation and status/result journaling
+```
+
+Every method must call `requireChannel()` and, for mutations, restrict roles to Owner, Manager, or Editor. Video IDs, competitor IDs, dates, enum values, transcript sizes, timestamps, and experiment variants are validated on the server. Public competitor refresh must use the competitor uploads playlist; it must not substitute `search.list` or scraping.
+
+The new namespaces are:
+
+```text
+ytg_retention_points
+ytg_transcripts
+ytg_short_candidates
+ytg_content_ideas
+ytg_calendar_items
+ytg_competitors
+ytg_competitor_videos
+ytg_comments
+ytg_experiments
+```
+
+All of them are app dependencies and are included in the confirmed local delete-data path. OAuth credentials and provider secrets remain outside these generic schemas.
+
+## YouTube Growth Saved-Agent Contract
+
+`growth-ai` reuses `ai-agent-creator` through `CreatorService::interactWithAgent()`. It must not implement provider HTTP calls, model configuration, agent sessions, or secret storage locally.
+
+The default specialist mapping is:
+
+```text
+transcript / Shorts  transcript-analyzer-agent
+SEO / video brief    seo-suggestion-agent
+packaging            seo-suggestion-agent
+community            YTG_COMMUNITY_AGENT_CODE or YTG_AI_AGENT_CODE
+session path         YTG_STRATEGIST_AGENT_CODE or YTG_AI_AGENT_CODE
+```
+
+Administrators may override specialist codes with protected constants or environment values:
+
+```text
+YTG_TRANSCRIPT_AGENT_CODE
+YTG_SEO_AGENT_CODE
+YTG_PACKAGING_AGENT_CODE
+YTG_COMMUNITY_AGENT_CODE
+YTG_STRATEGIST_AGENT_CODE
+```
+
+Opening Growth Studio never calls a provider. Every saved-agent generation request must include an explicit per-action `confirmAgentDataShare=true` after the UI discloses that selected video metadata, transcript text, retention points, comments, or catalogue context may be sent to the provider configured for the saved agent. The backend authorizes the channel before loading trusted data or calling the agent.
+
+Agent output is untrusted input. Each output type has deterministic validation:
+
+```text
+Shorts       timestamps must fit the video and a stored transcript segment; duration 15-60 seconds
+brief        required structure plus supported evidence source, metric, and date range
+packaging    2-5 titles <= 100 characters, thumbnail briefs, test hypothesis, supported evidence
+community    themes and drafts may cite only supplied comment IDs; replies always require approval
+session path every proposed video ID must belong to the authorized channel catalogue
+all outputs  strict JSON, no guarantee/viral-score language, no disabled product estimates
+```
+
+Rejected, missing, or unavailable saved-agent output falls back to deterministic output derived from trusted app data. Every run records agent type, model, prompt version, payload hash, output, validation status, and token usage in `ytg_agent_runs`. AI never performs authorization, validates ownership, or writes to YouTube.
+
+The OAuth connection intentionally remains least privilege (`youtube.readonly` and `yt-analytics.readonly`). User transcript upload is operational. Direct caption-track listing/download is deferred until the app implements separate incremental `youtube.force-ssl` consent; Phase 2 must not silently expand the base OAuth scopes.
+
+The supporting workflows are:
+
+```text
+youtube-growth-agent/analyze-video.json
+youtube-growth-agent/generate-short-candidates.json
+youtube-growth-agent/refresh-competitors.json
+youtube-growth-agent/review-experiments.json
+```
+
+Verification for future changes must include PHP syntax, JSON parsing, descriptor/resource existence, service descriptor-to-handler matching, class-method reflection, deletion coverage, invalid agent JSON, unsupported evidence, foreign video/comment IDs, invalid transcript timestamps, and the explicit AI data-sharing gate. Browser verification must cover both admin and normal dock routes with at least two users/channels before declaring cross-profile isolation complete.
