@@ -6,7 +6,7 @@
 **System:** DAVVAG Framework Application Development  
 **Primary stack:** PHP 8+, DAVVAG tenant-aware framework, Webdock, Vue.js, JavaScript, MySQL through SOSSData, JSON schemas and JSON workflows  
 **Status:** Architecture Authority  
-**Last repository verification:** 2026-08-05
+**Last repository verification:** 2026-08-25
 **Scope:** tenants, applications, components, services, schemas, workflows, plugins, authentication, permissions, AI agents, cross-app reuse, testing, deployment and maintenance
 
 ---
@@ -253,7 +253,29 @@ For reusable app patterns:
 12-reusable-app-patterns.md
 ```
 
+For Task Manager work:
+
+```text
+15-task-tracker.md
+davvag-core/localhost/apps/task-tracker/AGENTS.md
+```
+
 Do not begin by generating code from assumptions when the framework already documents the pattern.
+
+---
+
+# 5A. APP DEVELOPMENT QUICK SUMMARY
+
+Use this compact sequence for normal app work; the topic documents above remain authoritative for details.
+
+1. Resolve the active tenant from root configuration before choosing an app, schema or workflow path.
+2. Inspect existing apps and shared components first. Reuse platform capabilities instead of copying auth, profile, file, AI, workflow or lookup logic.
+3. Keep `app.json`, component/service descriptors and tenant/group registrations aligned. Declare real runtime dependencies under `apps`, `schemas`, `workflows`, `plugins` and `php-extensions`; use empty arrays, never blank placeholders.
+4. Put presentation and service calls in frontend components. Put validation, authorization, business rules and persistence in PHP services. Match descriptor class/method names exactly and use the framework request/response objects.
+5. Define schema fields before persistence and access them through `SOSSData`. Prefer schema-checked advanced query payloads for filters/sorts/pages; reserve `ExecuteRaw()` for protected, parameter-bound joins or aggregates and explicitly enforce permissions there.
+6. Treat browser input as untrusted. Validate types, ranges and identifiers server-side, derive identity from the authenticated session, preserve view-object filtering, and never expose secrets or raw database errors.
+7. Bump app/component versions when resources change, validate PHP/JavaScript/JSON, test descriptor/file/service routes, and verify both Webdock and admin-dock behavior where supported.
+8. For app-specific work, read its local `AGENTS.md` or README when present and preserve established route names, schema namespaces and intentional legacy spellings.
 
 ---
 
@@ -3715,7 +3737,7 @@ The same rule applies to quiz attempt-limit controls and every other bound HTML 
 
 # 74. TASK TRACKER WORK LOG REPORTING
 
-As of the 2026-08-05 tenant baseline, Task Manager 2.7 at:
+As of the 2026-08-25 tenant baseline, Task Manager 2.8 at:
 
 ```text
 davvag-core/localhost/apps/task-tracker
@@ -3727,6 +3749,8 @@ provides two read-only reporting subapps for the work recorded against tasks:
 task-work-log-summery
 task-work-log-detailed
 ```
+
+Task Manager stores a required `taskType` on new tasks. The backend owns the controlled taxonomy and exposes it through `POST ListTaskTypes`; frontend components must load that list instead of maintaining their own copy. `SaveTask` canonicalizes case-insensitive matches and rejects unknown values. Read paths map missing or blank legacy values to `Uncategorized`, and `TaskEmailClient` assigns imported tasks the `Support` type. When changing this contract, keep `TaskManagerService::taskTypes()` / `canonicalTaskType()`, `task_manager_tasks.json`, `task_manager_work_log_report.json`, the task UIs, report UIs and service descriptor aligned.
 
 The identifier `task-work-log-summery` intentionally preserves the requested spelling and is part of the route/component contract. Its user-facing title should be `Work Log Summary`. Do not silently rename the identifier to `task-work-log-summary` after links or descriptors depend on it; a correction requires an explicit route migration or alias.
 
@@ -3775,6 +3799,7 @@ period preset  Weekly | Monthly | Specific Date Range
 startDate      local calendar date, inclusive
 endDate        local calendar date, inclusive
 projectId      optional; All Projects means all accessible projects
+taskType       optional; value returned by ListTaskTypes
 ```
 
 Preset behavior is deterministic:
@@ -3787,7 +3812,7 @@ Specific Date Range user-selected inclusive start and end dates
 
 The report includes a row when its `logDate` calendar date is within the inclusive range. `logDate`, rather than task creation/update/due date, controls date membership. Normalize boundaries server-side using the tenant/server local timezone, validate real `YYYY-MM-DD` values, reject `startDate > endDate`, and return the effective normalized range with the result. The frontend must not implement an independent inclusion rule.
 
-Changing the period, either boundary, or the project filter reloads the report. Both screens must show the active period, an explicit empty state, loading/error state, and the total duration in both `HH:MM` and decimal hours. Decimal-hour display may be rounded to two places, but returned/stored total minutes remain exact.
+Changing the period, either boundary, the project filter or the task-type filter reloads the report. Both routes must preserve all five filters when navigating between Summary and Detailed. Both screens must show the active period, an explicit empty state, loading/error state, and the total duration in both `HH:MM` and decimal hours. Decimal-hour display may be rounded to two places, but returned/stored total minutes remain exact.
 
 ## Work Log Summary Subapp
 
@@ -3818,6 +3843,7 @@ work date
 project name
 task id
 task subject/title
+task type
 profile/person name
 comments/work description
 start time
@@ -3840,7 +3866,7 @@ POST WorkLogSummary  -> postWorkLogSummary($req, $res)
 POST WorkLogDetailed -> postWorkLogDetailed($req, $res)
 ```
 
-The service request accepts `period`, `startDate`, `endDate`, and optional `projectId`. Responses return the effective filters, exact `totalMinutes`, formatted/presentation-ready totals, and the appropriate grouped or detailed rows. The frontend may format labels but must not recalculate which records are authorized or included.
+The service request accepts `period`, `startDate`, `endDate`, optional `projectId`, and optional canonical `taskType`. The protected raw query must apply the inclusive work-date range, project filter, task-type filter and project-access condition before PHP aggregation. Responses return the effective filters, exact `totalMinutes`, formatted/presentation-ready totals, and grouped or detailed rows containing `taskType`. The frontend may format labels but must not recalculate which records are authorized or included.
 
 Apply the existing Task Manager access rules before returning or aggregating any work log:
 
@@ -3856,7 +3882,7 @@ Do not leak project, task, profile, comment, or duration data through aggregates
 
 Both components are registered in `task-tracker/app.json`, both routes are present in `configuration.webdock.routes.partials`, both entries are exposed in `configuration.dock.subapps`, and the report methods are declared in `services/taskapi/component.json`. The existing `taskapi` service remains in `configuration.webdock.onLoad`, and both screens reuse the shared `task-style` component for dock compatibility.
 
-The raw-query implementation uses Task Manager app version 2.7, `taskapi` version 0.4, and report component version 0.1. Future report changes must bump the affected versions. Verification must cover:
+The current implementation uses Task Manager app version 2.8, `taskapi` version 0.4, and report component version 0.1. Future changes must bump the affected versions. Validate PHP syntax, JavaScript syntax, all changed JSON schemas/descriptors and the raw-query placeholder contract before browser testing. Verification must cover:
 
 ```text
 weekly boundary and inclusive Sunday
@@ -3865,6 +3891,8 @@ single-day specific range
 custom inclusive multi-day range
 invalid and reversed date ranges
 All Projects and one accessible project
+each canonical task type and Uncategorized legacy rows
+task-type filter preservation between both report routes
 rejection/exclusion of an inaccessible project
 multiple logs for one task
 multiple tasks under one project
