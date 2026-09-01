@@ -7,6 +7,7 @@
 **Primary stack:** PHP 8+, DAVVAG tenant-aware framework, Webdock, Vue.js, JavaScript, MySQL through SOSSData, JSON schemas and JSON workflows  
 **Status:** Architecture Authority  
 **Last repository verification:** 2026-08-25
+**Last targeted verification:** 2026-09-01 (`profileapp.v1` dynamic-column profile search)
 **Scope:** tenants, applications, components, services, schemas, workflows, plugins, authentication, permissions, AI agents, cross-app reuse, testing, deployment and maintenance
 
 ---
@@ -1681,6 +1682,32 @@ All SOSSData operations pass through `SOSSDataQueryFirewall`. It validates names
 `ExecuteRaw()` must compile declared `$placeholder` tokens to prepared-statement markers and bind values separately. It must never return to direct `str_replace()` interpolation. Identifiers and SQL fragments cannot be bound and must remain fixed in protected schema files.
 
 Blocked facade requests return `success: false` with code `SOSS_QUERY_FIREWALL_BLOCKED`. Do not leak raw database errors through a public endpoint. The complete security contract is `docs/14-sossdata-query-firewall.md`.
+
+### Dynamic-Column Search Rule
+
+Prepared-statement parameters represent data values, not SQL identifiers. A template such as `WHERE $column LIKE '%$value%'` would compile to `WHERE ? LIKE ?`; the first marker is then a string value rather than a column reference. The firewall must not interpolate, quote, or otherwise accept a request-controlled column name in `ExecuteRaw()`.
+
+Use the schema-aware advanced query contract when an endpoint must choose a searchable field at runtime:
+
+```php
+$query = [
+    "conditions" => [
+        [
+            "column" => $requestedColumn,
+            "operator" => "LIKE",
+            "value" => "%" . $requestedValue . "%"
+        ]
+    ],
+    "pageSize" => 1000,
+    "pageFrom" => 0
+];
+
+$result = SOSSData::Query("profile", $query);
+```
+
+This path validates the identifier against the target schema, escapes the value by field type, retains normal `sysviewobject` filtering, and rejects unknown or malformed fields. Do not fix dynamic-column searches by weakening `SOSSDataQueryFirewall` or `mysqlConnector::ExecuteRaw()`.
+
+As of 2026-09-01, the tenant-wide service audit migrated `profileapp.v1`, legacy `profileapp`, `lbc-study-app`, and `productapp` dynamic-column searches to this rule. The legacy `profiles_search_1` and `product_search_1` raw-query templates must not be used for browser-selected columns.
 
 Rules:
 
