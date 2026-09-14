@@ -6,8 +6,8 @@
 **System:** DAVVAG Framework Application Development  
 **Primary stack:** PHP 8+, DAVVAG tenant-aware framework, Webdock, Vue.js, JavaScript, MySQL through SOSSData, JSON schemas and JSON workflows  
 **Status:** Architecture Authority  
-**Last repository verification:** 2026-08-25
-**Last targeted verification:** 2026-09-01 (`profileapp.v1` dynamic-column profile search)
+**Last repository verification:** 2026-09-10
+**Last targeted verification:** 2026-09-10 (`localhost` tenant descriptor baseline; YouTube Growth Agent 0.6, Lesson Manager 2.2, Travel Destinations 0.7.0, Task Manager 2.8)
 **Scope:** tenants, applications, components, services, schemas, workflows, plugins, authentication, permissions, AI agents, cross-app reuse, testing, deployment and maintenance
 
 ---
@@ -4034,3 +4034,187 @@ youtube-growth-agent/review-experiments.json
 ```
 
 Verification for future changes must include PHP syntax, JSON parsing, descriptor/resource existence, service descriptor-to-handler matching, class-method reflection, deletion coverage, invalid agent JSON, unsupported evidence, foreign video/comment IDs, invalid transcript timestamps, and the explicit AI data-sharing gate. Browser verification must cover both admin and normal dock routes with at least two users/channels before declaring cross-profile isolation complete.
+
+---
+
+# 76. 2026-09-10 LOCALHOST TENANT BASELINE
+
+This repository baseline was statically verified on 2026-09-10 against:
+
+```text
+root:                  C:\xampp\htdocs\davvag-core
+RESOURCE_LOCATION:     C:\xampp\htdocs\davvag-core\davvag-core
+scanned tenant:        davvag-core/localhost
+tenant app folders:    90
+tenant JSON schemas:   305
+tenant workflows:      20
+admin startup app:     dock
+default startup app:   davvag-cms-v7
+```
+
+The active runtime tenant is still determined by `configloader.php`, root `config.json`, `LOCAL_DEV_HOST` when present, and `HTTP_HOST`. This baseline confirms the checked-in `localhost` tenant inventory; future agents must still resolve `TENANT_RESOURCE_LOCATION` before editing tenant files.
+
+The root and tenant config files may contain live provider credentials, API keys, webhook secrets, OAuth client secrets, or app secrets. Do not copy those values into documentation, browser-visible assets, tests, prompts, debug output, or issue summaries. When documenting configuration, name the required constant or variable only.
+
+## Current High-Change App Versions
+
+The currently scanned descriptor versions are:
+
+```text
+youtube-growth-agent     0.6
+lesson-manager           2.2
+task-tracker             2.8
+travel-destinations      0.7.0
+davvag-credit-points     1.4
+davvag-mesh              0.2.3
+davvag-mesh-networks     0.2.3
+davvag-mesh-devices      0.1.3
+davvag-mesh-events       0.1.3
+davvag-mesh-sync         0.1.3
+ai-agent-creator         0.5.0
+chat-agent               0.11
+davvag-viral-content-manager 0.8
+profileapp.v1            0.28
+```
+
+Treat older version references in previous dated sections as historical unless this section says otherwise. New feature work must inspect the app's current `app.json`, service `component.json` files, local README or `AGENTS.md` if present, schemas, and workflows before changing behavior.
+
+## YouTube Growth Agent 0.6 Baseline
+
+As of this baseline, YouTube Growth Agent is a Phase 0-3 read-only advisor at:
+
+```text
+davvag-core/localhost/apps/youtube-growth-agent
+```
+
+The app routes and dock entries are:
+
+```text
+#/app/youtube-growth-agent
+#/app/youtube-growth-agent/channels
+#/app/youtube-growth-agent/dashboard
+#/app/youtube-growth-agent/videos
+#/app/youtube-growth-agent/video
+#/app/youtube-growth-agent/recommendations
+#/app/youtube-growth-agent/intelligence
+#/app/youtube-growth-agent/growth-studio
+#/app/youtube-growth-agent/settings
+```
+
+The descriptor registers these service components:
+
+```text
+api                0.5
+youtube-auth       0.4
+youtube-sync       0.3
+youtube-analytics  0.1
+ai-orchestrator    0.1
+growth-workbench   0.5
+growth-ai          0.5
+```
+
+`youtube-auth` now declares `StartCaptionConnect` in addition to the base OAuth, callback, disconnect, and delete-data operations. Caption-track download requires explicit incremental `youtube.force-ssl` owner consent. Do not silently expand the base YouTube OAuth connection, and do not treat a selected video as permission to call the caption endpoint without that consent.
+
+`youtube-sync` declares:
+
+```text
+RunInitialSync
+RunDailySync
+RunDailyCron
+SyncVideo
+```
+
+The registered YouTube Growth workflows now include:
+
+```text
+youtube-growth-agent/initial-channel-sync.json
+youtube-growth-agent/daily-channel-sync.json
+youtube-growth-agent/generate-weekly-plan.json
+youtube-growth-agent/delete-channel-data.json
+youtube-growth-agent/analyze-video.json
+youtube-growth-agent/generate-short-candidates.json
+youtube-growth-agent/refresh-competitors.json
+youtube-growth-agent/review-experiments.json
+```
+
+All YouTube Growth channel-scoped services must keep ownership and role checks server-side. The app remains read-only toward YouTube: it may read metadata, analytics, comments, retention, caption tracks after explicit consent, and user-provided transcripts; it must not publish replies, upload media, start native YouTube tests, update metadata, or apply recommendations to the channel.
+
+Stored OAuth credentials belong outside the generic JSON schemas. The schema layer stores opaque references such as `credentialRef`; provider credentials and encrypted runtime material remain in protected configuration or media storage paths.
+
+## Lesson Manager 2.2 Baseline
+
+Lesson Manager is currently registered at:
+
+```text
+davvag-core/localhost/apps/lesson-manager
+```
+
+Its app descriptor version is `2.2`, and service `api` is version `1.8`. The active routes are:
+
+```text
+#/app/lesson-manager
+#/app/lesson-manager/dashboard
+#/app/lesson-manager/studio
+#/app/lesson-manager/quiz-studio
+#/app/lesson-manager/learn
+#/app/lesson-manager/submissions
+#/app/lesson-manager/reports
+#/app/lesson-manager/settings
+```
+
+The app depends on:
+
+```text
+apps:       currency-configuration, course-manager, ai-agent-creator, davvag-tools, davvag-credit-points
+workflow:   lesson-manager/generate-quiz
+plugins:    auth, sossdata, profile, davvag-flow
+extensions: curl, openssl
+```
+
+`api` owns the authoritative learner, studio, quiz, provider, assignment, submission, reporting, and demo-seeding operations. Future Lesson Manager changes must keep the `app.json` dependency list, service descriptor, schemas, workflow, component versions, and browser resource versions aligned.
+
+The previous Lesson Manager sections remain binding: preserve the modal-based material editor, mobile learn progression, Vue boolean-attribute coercion, escaped `&&current` interpolation pattern, credit-point lesson-unlock contract, and saved-agent quiz generation through `ai-agent-creator`.
+
+## Travel Destinations 0.7.0 Baseline
+
+Travel Destinations is currently registered at:
+
+```text
+davvag-core/localhost/apps/travel-destinations
+```
+
+Its app descriptor version is `0.7.0`. The app uses `travel-style`, `google-map-runtime`, and `api` on load, and exposes public/search/map/detail/submission/favorites/admin routes:
+
+```text
+#/app/travel-destinations
+#/app/travel-destinations/search
+#/app/travel-destinations/map
+#/app/travel-destinations/place
+#/app/travel-destinations/submit
+#/app/travel-destinations/my-submissions
+#/app/travel-destinations/favorites
+#/app/travel-destinations/admin
+#/app/travel-destinations/admin/moderation
+#/app/travel-destinations/admin/categories
+#/app/travel-destinations/admin/amenities
+#/app/travel-destinations/admin/map-settings
+#/app/travel-destinations/admin/weather-settings
+#/app/travel-destinations/admin/ai-settings
+```
+
+The app depends on `davvag-tools` and `ai-agent-creator`, the `auth`, `phpcache`, `profile`, and `sossdata` plugins, and the `mbstring`, `openssl`, and `curl` PHP extensions. Its schema dependencies include the core `travel_destination` namespace and the category, amenity, media, review, comment, favorite, submission-log, condition, report, map-settings, description-chunk, weather-settings, ai-settings, route, list, visit, guide, availability, notification, translation, collection, trip, and trip-item namespaces. Keep those dependency declarations synchronized whenever adding destination features.
+
+## Task Tracker 2.8 Baseline
+
+Task Tracker remains version `2.8` with `taskapi` version `0.4`. The work-log reporting contract in section 74 is still current for:
+
+```text
+#/app/task-tracker/task-work-log-summery
+#/app/task-tracker/task-work-log-detailed
+```
+
+The descriptor also registers `time-tracker`, `password-vault`, `passwordvaultapi`, and `TaskEmailClient`. The `task-work-log-summery` identifier intentionally preserves the source spelling and must not be renamed without an explicit route migration or alias.
+
+## Verification Limits For This Baseline
+
+This update used static repository inspection: root config, tenant config, `tenant.json`, app descriptors, key service descriptors, app README files, schema inventory, workflow inventory, and git worktree status. It did not perform live browser verification, call external providers, run database migrations, execute OAuth flows, or validate tenant data. Before declaring a feature production-ready, run the app-specific validation and browser checks required by the relevant sections above.
