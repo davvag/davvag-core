@@ -7,7 +7,7 @@
 **Primary stack:** PHP 8+, DAVVAG tenant-aware framework, Webdock, Vue.js, JavaScript, MySQL through SOSSData, JSON schemas and JSON workflows  
 **Status:** Architecture Authority  
 **Last repository verification:** 2026-09-10
-**Last targeted verification:** 2026-09-10 (`localhost` tenant descriptor baseline; YouTube Growth Agent 0.6, Lesson Manager 2.2, Travel Destinations 0.7.0, Task Manager 2.8)
+**Last targeted verification:** 2026-09-14 (CMS dynamic HTML app embeds; CMS 1.2, dock-shell 0.5, legacy partial-app 0.9, davvag-tools 0.9, app downloader 0.4)
 **Scope:** tenants, applications, components, services, schemas, workflows, plugins, authentication, permissions, AI agents, cross-app reuse, testing, deployment and maintenance
 
 ---
@@ -4218,3 +4218,50 @@ The descriptor also registers `time-tracker`, `password-vault`, `passwordvaultap
 ## Verification Limits For This Baseline
 
 This update used static repository inspection: root config, tenant config, `tenant.json`, app descriptors, key service descriptors, app README files, schema inventory, workflow inventory, and git worktree status. It did not perform live browser verification, call external providers, run database migrations, execute OAuth flows, or validate tenant data. Before declaring a feature production-ready, run the app-specific validation and browser checks required by the relevant sections above.
+
+---
+
+# 77. CMS V7 HTML APP EMBEDS (2026-09-14)
+
+CMS v7 `1.2` / `dock-shell` `0.5` supports embedding registered DAVVAG components inside page sections with `type: "html"`. The source app is discovered automatically when `webdock-app` is omitted:
+
+```html
+<div webdock-component="backup-files"></div>
+```
+
+Any registered component name may be used. If multiple accessible apps register the same name, the loader reports ambiguity and requires an explicit source app:
+
+```html
+<div webdock-component="backup-files" webdock-app="davvag-hosting-console"></div>
+```
+
+In `davvag-cms-v7/content/pages/<slug>.json`, add this object to the page's `sections` array:
+
+```json
+{
+  "type": "html",
+  "html": "<div webdock-component=\"backup-files\"></div>"
+}
+```
+
+Use actual HTML in the HTML editor field. Plain text sections and escaped `&lt;div&gt;` markup do not create components. Multiple placeholders may appear within one section or across sections.
+
+The local `cmsApps` Vue directive runs the shared `davvag-tools/davvag-app-downloader` after Vue inserts the section HTML. It skips unchanged HTML updates, invalidates pending mounts on removal, and destroys embedded Vue instances when a section is unbound. Page revisions create fresh section hosts on navigation; stale Page responses cannot overwrite a newer route.
+
+`davvag-tools` `0.9` / downloader `0.4` keeps each `RenderHTML` call's loading queue local, assigns unique embed IDs, reports per-component completion/error callbacks, and checks pending hosts before mounting. It checks the permitted app and registered component, downloads the app's onLoad dependencies, and uses the downloaded descriptor's version for component resources. Existing Webdock component caching remains framework-owned.
+
+CMS calls `components/object/apps?tags=showincms` for its own permitted-app catalog. The endpoint reads `{GROUPID}.json` and filters the group's registered apps by the `showincms` tag. Its response is keyed by app code and contains metadata/configuration, not the component registry. The jQuery `_=...` parameter only prevents stale browser caching. The downloader resolves component-only markup by inspecting accessible app descriptors' `components` registries through Webdock; in-flight descriptor lookups are shared across embeds. It never resolves a source app outside the permitted catalog and does not silently choose between ambiguous matches.
+
+Both `dock-shell` and legacy `partial-app` `0.9` keep a private catalog, rather than reading or overwriting the shared `window.apps` menu cache. Failed catalog responses are not cached as a successful empty list.
+
+CMS provides its permitted-app callback through the optional sixth `RenderHTML` options argument and `CMSV7.getApps(callback)`. Existing hosting-console calls can therefore work inside CMS without a `left-menu` shell component; other docks retain their existing `left-menu` provider. Both apps must be deployed together.
+
+The source app must be installed, tagged `showincms`, and allowed by the visitor's group. Embedding does not grant service permissions. Declare source apps in `dependencies.apps` when a site's authored pages require them; the backup-files documentation example does not make hosting administration a mandatory dependency for every CMS installation.
+
+In the checked local configuration, Hosting Console is registered for `sysadmin`, but not for `anonymous` or `web_user`. The unauthenticated local app-list response contains only Travel Destinations and User App. Component-only lookup does not make `backup-files` available to those visitors.
+
+For this checkout, root `RESOURCE_LOCATION` resolves to `C:\xampp\htdocs\davvag-core\davvag-core`; `localhost` is a symlink to `C:\xampp\htdocs\apps.davvag.com`. Resolve and verify the real tenant path before applying edits. Tenant files may not appear in the framework repository's git status.
+
+Verification: `node --test tests/cms-html-embeds.test.cjs` covers concurrent sections, unique mount IDs, descriptor versions, permission/component errors, cancellation at asynchronous loading stages, CMS/dock provider selection, unchanged HTML updates, and removed-section cleanup. JavaScript syntax and changed JSON descriptors were checked. Local HTTP checks returned 200 for the site, app descriptor and changed script routes, with the new embedding code present in both served scripts. Tests use simulated DOM/Webdock callbacks; live browser rendering and authenticated backup-files behavior were not verified because no browser was connected.
+
+The dynamic-lookup follow-up expanded this suite to ten passing tests, including component-only discovery across different apps, ambiguity handling, exclusion of inaccessible apps, shared descriptor requests, discovery cancellation, private CMS catalog loading despite a stale menu cache, catalog retries, and failed descriptor handling. HTTP checks confirmed CMS `1.2`, tools `0.9`, and the new lookup code in the served scripts.
