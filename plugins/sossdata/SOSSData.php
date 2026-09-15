@@ -6,6 +6,30 @@ require_once ("SOSSDataQueryFirewall.php");
 class SOSSData {
 
     private static  $DavvagData=array();
+    private static $serviceNamespaces = array();
+
+    /** Server-side capability scope for schemas marked serviceOnly. Never expose through generic CRUD. */
+    public static function WithServiceNamespaces($namespaces, $callback) {
+        $previous = self::$serviceNamespaces;
+        try {
+            foreach ($namespaces as $namespace) {
+                $namespace = SOSSDataQueryFirewall::validateNamespace($namespace);
+                self::$serviceNamespaces[$namespace] = true;
+            }
+            return $callback();
+        }
+        finally { self::$serviceNamespaces = $previous; }
+    }
+
+    private static function assertNamespaceAccess($namespace) {
+        if (!defined('SCHEMA_PATH')) return;
+        $path = SCHEMA_PATH . '/' . $namespace . '.json';
+        if (!is_file($path)) return;
+        $schema = json_decode(file_get_contents($path));
+        if ($schema && !empty($schema->serviceOnly) && empty(self::$serviceNamespaces[$namespace])) {
+            throw new RuntimeException('This namespace is available only through its authorized application service.');
+        }
+    }
     
     private static function getDataSource($tenantId){
         if(!empty(self::$DavvagData[$tenantId])){
@@ -34,6 +58,7 @@ class SOSSData {
 
         try {
             $className = SOSSDataQueryFirewall::validateNamespace($className);
+            self::assertNamespaceAccess($className);
             SOSSDataQueryFirewall::validateRawRequest($saveObj);
         } catch (Throwable $e) {
             return SOSSDataQueryFirewall::blockedResult($e);
@@ -48,6 +73,7 @@ class SOSSData {
 
         try {
             $className = SOSSDataQueryFirewall::validateNamespace($className);
+            self::assertNamespaceAccess($className);
         } catch (Throwable $e) {
             return SOSSDataQueryFirewall::blockedResult($e);
         }
@@ -62,6 +88,7 @@ class SOSSData {
 
         try {
             $className = SOSSDataQueryFirewall::validateNamespace($className);
+            self::assertNamespaceAccess($className);
         } catch (Throwable $e) {
             return SOSSDataQueryFirewall::blockedResult($e);
         }
@@ -75,6 +102,7 @@ class SOSSData {
 
         try {
             $className = SOSSDataQueryFirewall::validateNamespace($className);
+            self::assertNamespaceAccess($className);
         } catch (Throwable $e) {
             return SOSSDataQueryFirewall::blockedResult($e);
         }
@@ -88,6 +116,7 @@ class SOSSData {
 
         try {
             $className = SOSSDataQueryFirewall::validateNamespace($className);
+            self::assertNamespaceAccess($className);
             $query = SOSSDataQueryFirewall::validateQuery($query);
             $lastVersionId = SOSSDataQueryFirewall::normalizeLastVersionId($lastVersionId);
             $sorting = SOSSDataQueryFirewall::normalizeDirection($sorting);

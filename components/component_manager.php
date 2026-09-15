@@ -150,6 +150,14 @@
             }
 
             public function HandleService($req,$res){
+                try {
+                    require_once PLUGIN_PATH . '/protected-media/ProtectedMedia.php';
+                    ProtectedMedia::authorize($req);
+                } catch (Throwable $error) {
+                    http_response_code(403);
+                    writeResponse($res, false, array('message'=>'Media access denied.'));
+                    return null;
+                }
                 //echo json_encode($req->Params());
                 $s=checkAccess($res,$req->Params()->appCode,"service",$req->Params()->componentName,$req->Params()->handlerName);
                 if(!$s){
@@ -210,7 +218,13 @@
                                             $methodName = "__handle";
 
                                         if(method_exists($obj, $methodName)){
-                                            $outObj = $obj->$methodName($req, $res);
+                                            // Capabilities come only from the installed server descriptor.
+                                            if (!empty($handler->serviceNamespaces)) {
+                                                require_once PLUGIN_PATH . '/sossdata/SOSSData.php';
+                                                $outObj = SOSSData::WithServiceNamespaces($handler->serviceNamespaces, function() use($obj,$methodName,$req,$res) { return $obj->$methodName($req,$res); });
+                                            } else {
+                                                $outObj = $obj->$methodName($req, $res);
+                                            }
                                             $errorObj = $res->GetError();
                                             if (isset($errorObj)){
                                                 $existingCode = http_response_code();

@@ -5423,5 +5423,6 @@ davvag-core/localhost/sysadmin.json
 davvag-core/localhost/tenant.json
 davvag-core/localhost/web_user.json
 .vscode/launch.json
+/.tmp/
 davvag-core/localhost
 .vscode/launch.json

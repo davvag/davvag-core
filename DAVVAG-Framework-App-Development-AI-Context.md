@@ -4265,3 +4265,99 @@ For this checkout, root `RESOURCE_LOCATION` resolves to `C:\xampp\htdocs\davvag-
 Verification: `node --test tests/cms-html-embeds.test.cjs` covers concurrent sections, unique mount IDs, descriptor versions, permission/component errors, cancellation at asynchronous loading stages, CMS/dock provider selection, unchanged HTML updates, and removed-section cleanup. JavaScript syntax and changed JSON descriptors were checked. Local HTTP checks returned 200 for the site, app descriptor and changed script routes, with the new embedding code present in both served scripts. Tests use simulated DOM/Webdock callbacks; live browser rendering and authenticated backup-files behavior were not verified because no browser was connected.
 
 The dynamic-lookup follow-up expanded this suite to ten passing tests, including component-only discovery across different apps, ambiguity handling, exclusion of inaccessible apps, shared descriptor requests, discovery cancellation, private CMS catalog loading despite a stale menu cache, catalog retries, and failed descriptor handling. HTTP checks confirmed CMS `1.2`, tools `0.9`, and the new lookup code in the served scripts.
+
+
+---
+
+# 78. LESSON MARKET PLACE PLANNING CONTEXT (2026-09-15)
+
+Status: source inspection and requested application design; `lesson-market-place` has not been implemented by this context update. Findings below are from local source files, not live database, payment-provider, or browser tests.
+
+## Source locations and verified baseline
+
+- Framework: `C:\xampp\htdocs\davvag-core\davvag-core`.
+- Inspected tenant alias: `C:\xampp\htdocs\davvag-core\davvag-core\localhost`.
+- The tenant alias is a symbolic link to `C:\xampp\htdocs\apps.davvag.com`, verified with filesystem metadata. Resolve the active tenant and real path again before implementation.
+- Lesson Manager: `localhost/apps/lesson-manager`, descriptor version `2.2`.
+- Credit Points: `localhost/apps/davvag-credit-points`, descriptor version `1.4`.
+- App instructions describe intended features; current PHP services, component scripts, descriptors, and schemas establish what is actually present.
+
+## Lesson Manager integration facts
+
+`services/api/service.php` defines `lesson_manager\ApiService`. Lessons use `lesson_manager_lesson`; every lesson belongs to `course_manager_subject` through `subject_id`, and `course_id` is derived from that subject. Price fields are `is_free` and `required_credit_points`. Paid prices are positive whole credits.
+
+Current learner entry points include `StudentCourses`, `LearningCourse`, `StartLesson`, `CompleteActivity`, quiz actions, and assignment actions. `canAccessCourse()` checks active `course_manager_enrollment` records, deriving a course through `class_grade_id` when necessary. Course enrolment alone is too broad to represent a purchase of selected lessons.
+
+`lessonUnlockedFor()` combines progression and paid-access checks. Progression is evaluated inside each subject using published lesson order, availability and completion requirements. `hasPaidLessonAccess()` checks the shared ledger's permanent lesson unlock. `postStartLesson()` calls `CreditLedgerService::unlockLesson()` when a learner passes the access/progression gates but lacks a paid unlock. Merely linking a package to lessons will therefore neither grant course discovery/access nor prevent individual lesson charges.
+
+Package integration must cover course discovery, lesson listing/content, lesson start, activity updates, quizzes, assignments, and resource access. A learner with only a marketplace entitlement must receive only its included lessons. Existing course assignments, standalone lesson purchases, marks, progress, and teacher access must remain valid. Marketplace enrolment approval is a different event from Lesson Manager's teacher approval of lesson completion.
+
+## Credit Points integration facts and limits
+
+`lib/CreditLedgerService.php` defines `davvag_credit_points\CreditLedgerService`. Available methods include `summary`, `canAfford`, `debit`, `reserve`, `captureReservation`, `releaseReservation`, `hasLessonUnlock`, `unlockLesson`, and `reverse`.
+
+The PHP context contract uses camelCase keys: `programCode`, `sourceApp`, `referenceType`, `referenceId`, `idempotencyKey`, `description`, and optional `metadata`/`actorProfileId`. HTTP bodies use separate snake_case conventions in the service adapters; do not interchange them by assumption.
+
+`debit($profileId, $amount, $context, $sideEffect = null, $reservation = null)` invokes the side-effect callback with its transaction database and transaction record before commit. This is the existing mechanism for atomic debit plus access persistence. Use the same connection for package enrolment/grants; separate SOSSData calls or nested `CreditDatabase::transaction()` calls must not be claimed to share this transaction. The current transaction wrapper has no nested transaction/savepoint handling.
+
+The library's `CreditDatabase` uses the tenant-resolved MySQL database with a narrowly documented transaction exception to normal SOSSData access. Keep the exception inside the existing shared boundary; do not create a second wallet or general-purpose direct-SQL subsystem. Verify schema initialization and migration support for any new tables before transactional use.
+
+The `credit-ledger-api` HTTP debit, reserve, capture and release methods require an administrator. Learner enrolment must call an authenticated, package-specific marketplace service which authorizes the action and invokes the shared PHP library. Do not grant learners generic ledger mutation access.
+
+`unlockLesson()` already charges once per learner/lesson with `lesson-access:{profileId}:{lessonId}`. `hasLessonUnlock()` currently selects by learner and lesson without filtering the schema's `status` field. Do not represent revocable package grants by inserting fake permanent unlock rows or by assuming that changing that status removes access. Use source-aware package entitlements and a shared access resolver, preserving standalone unlocks.
+
+Credit purchases have `#/app/davvag-credit-points/buy` and `/purchase-status` routes. The inspected package-store UI creates an order and displays instructions; it does not initiate a provider checkout. `CreditPaymentApiService::postComplete()` is a timestamped HMAC-signed provider-neutral completion boundary. Section 68 also documents the need for a provider-specific connector. A complete credit-purchase journey must verify/create the provider checkout bridge, validate the actual settled payment against the stored order, and resume the marketplace flow. Live provider readiness was not established in this inspection.
+
+## Product and page reuse
+
+Reuse `productapp` and the `products` catalog where applicable. The product key is `products.itemid`, not `products.id`. Credit Points already maps credit packages with `davvag_credit_package.product_id -> products.itemid`; lesson packages are a separate domain and must not be stored as credit top-up packages.
+
+CMS v7 supports registered app components inside HTML sections, as documented in section 77. Use a dedicated marketplace package/enrolment component with an explicit `webdock-app="lesson-market-place"` source. Verify how that component receives the selected package from its host; arbitrary HTML attributes are not automatically a supported input contract. CMS embedding respects app visibility and does not grant backend permissions.
+
+## Requested new application and proposed defaults
+
+App code: `lesson-market-place`. Intended tenant location: `localhost/apps/lesson-market-place`.
+
+Staff should create a product-backed package of existing lessons, arrange its contents, author a shareable product/enrolment page, publish it, and manage enrolment requests. Learners should see included lessons, enrol for free packages, purchase paid packages with shared credits, and open enrolled lessons in Lesson Manager.
+
+Treat pricing and approval as independent settings, supporting free/automatic, free/approval, paid/automatic, and paid/approval. Proposed initial policy: paid approval requests do not reserve or charge credits; after approval the learner explicitly confirms payment and only then receives access. These are implementation defaults, not claims about existing functionality or separately confirmed business policy.
+
+Charge the package price once and never re-charge included lessons on open. Reuse an existing balance; send learners with insufficient credits to the credit store and return them to the same package. Require a fresh server-side balance and enrolment check on return. Staff approval must not itself imply permission to debit a learner wallet.
+
+Snapshot package version, included lessons, and displayed terms for each request/purchase. Enforce one permanent enrolment per learner/package across retries and versions, preserve audit history, and keep entitlement grants traceable to their source. Product edits must not silently change existing purchases. Do not grant access to unrelated lessons by creating an unrestricted course enrolment.
+
+Keep existing subject progression and availability rules. Validate required prerequisite lessons at publication and checkout so a package cannot silently sell access that depends on excluded prerequisites. Separate package display order from authoritative subject progression.
+
+The detailed implementation prompt is `C:\xampp\htdocs\davvag-core\lesson-market-place-codex-prompt.md`. Recheck source contracts before coding, register descriptors/schemas/group visibility, and verify money/access invariants with isolated integration and concurrency tests. This documentation update did not modify app code or run those tests.
+
+---
+
+# 79. LESSON MARKETPLACE IMPLEMENTED CONTRACT (2026-09-15)
+
+Section 78 records the pre-implementation baseline. The application is now implemented at the resolved tenant `C:\xampp\htdocs\apps.davvag.com\apps\lesson-market-place`; the framework alias remains `davvag-core\localhost`.
+
+## Package and enrolment authority
+
+`lesson-market-place` owns eight `serviceOnly` namespaces: package identity, immutable versions, ordered version lessons, one learner/package enrolment, historical attempts, source-aware grants, request idempotency operations, and audit events. A package links one stable `products.itemid`. Draft JSON is separate from a published version snapshot. Publication revalidates product visibility, lesson ownership, real course/subject relationships, published availability, and required preceding published lessons.
+
+The implemented state sequences are free/automatic to `active`, free/approval to `pending_approval` then `active`, paid/automatic to `awaiting_payment` then `active`, and paid/approval to `pending_approval`, then `awaiting_payment`, then `active`. Paid review never reserves or debits. Learner confirmation owns the debit. The ledger callback writes every grant and activates the attempt/enrolment on the same `CreditDatabase` connection before commit. The deterministic key `lmp:enrolment:<enrolment_id>:purchase`, unique learner/package and operation keys, row locks, and explicit historical reapplication protect retries and races.
+
+## Shared learning access and media
+
+`lesson_manager\LessonAccess` combines active course enrolments, existing permanent standalone unlocks, and active marketplace lesson grants. `StudentCourses`, `LearningCourse`, lesson start/activity, quiz read/start/submit, assignments, progress, and protected resources now use this source-aware decision. Package access covers a paid included lesson without creating `davvag_credit_lesson_unlock` and without permitting unrelated lessons in the course. Publication, future availability, and subject progression still apply.
+
+Schemas containing marketplace, lesson content/progress, course submissions/marks, and credit records use `serviceOnly`. Generic SOSSData CRUD fails closed for those schemas. `SOSSData::WithServiceNamespaces()` supplies a temporary PHP-only capability; it restores the previous scope in `finally`. Component descriptors may declare `serviceNamespaces`, and the component manager grants them only around the installed service invocation.
+
+The global component manager calls `ProtectedMedia` before an uploader service. The tenant policy maps Lesson Manager stores and marketplace covers to `LessonMediaAccess`. Covers are public reads. Other resources require an authenticated profile, an entitled and progression-unlocked lesson, or the appropriate author/reviewer scope. New uploads are tied to the authenticated session and cannot overwrite an existing file. Public third-party URLs remain controlled by their provider.
+
+## Credit checkout and CMS
+
+Credit Points now creates a stored `davvag_credit_checkout` mapping and starts Stripe hosted Checkout from the server-stored order. Return reconciliation retrieves the stored session from Stripe and verifies session identity, payment mode, tenant, profile, order, exact integer amount, currency, `complete` status, and `paid` status before calling the existing atomic credit issuance. Expired/open/cancelled sessions grant no credit; return URLs are narrow internal hashes and never payment evidence. A scheduler may call the administrator-only pending reconciliation action.
+
+CMS placement calls the existing CMS settings service after marketplace ownership and application permission checks. It creates or updates a draft page with an explicit `webdock-app="lesson-market-place"` package card. The DAVVAG Tools downloader parses `webdock-data` and gives every mount a clone, so multiple embedded cards do not share mutable state.
+
+## Verified behavior and remaining prerequisites
+
+Verification used a newly generated isolated database and removed only that database. The marketplace business/provider suite passed 56 checks. The combined database, concurrency, endpoint, checkout, CMS placement, and repeatable migration suite passed 87 checks. Lesson Manager rules, Credit Points rules, Credit Points admin contract, PHP/JavaScript/JSON syntax and descriptor/resource contracts passed. The CMS embed harness passed all 10 tests.
+
+The inspected local tenant has active program `CREDIT`, but existing credit packages use `EXTERNAL` and no `davvag_stripe` row is initialized. A `STRIPE` credit package, credentials, public checkout base URL, and scheduled reconciliation are required for live payments. No live charge was attempted. Browser rendering has not yet been claimed by these automated checks. See `apps/lesson-market-place/README.md` for deployment, configuration, routes, limits, and test commands.
