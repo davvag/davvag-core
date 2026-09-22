@@ -4361,3 +4361,114 @@ CMS placement calls the existing CMS settings service after marketplace ownershi
 Verification used a newly generated isolated database and removed only that database. The marketplace business/provider suite passed 56 checks. The combined database, concurrency, endpoint, checkout, CMS placement, and repeatable migration suite passed 87 checks. Lesson Manager rules, Credit Points rules, Credit Points admin contract, PHP/JavaScript/JSON syntax and descriptor/resource contracts passed. The CMS embed harness passed all 10 tests.
 
 The inspected local tenant has active program `CREDIT`, but existing credit packages use `EXTERNAL` and no `davvag_stripe` row is initialized. A `STRIPE` credit package, credentials, public checkout base URL, and scheduled reconciliation are required for live payments. No live charge was attempted. Browser rendering has not yet been claimed by these automated checks. See `apps/lesson-market-place/README.md` for deployment, configuration, routes, limits, and test commands.
+
+---
+
+# 80. LESSON MANAGER EDITABLE COMPONENT SOURCE BASELINE (2026-09-17)
+
+The active Lesson Manager frontend source is under the tenant alias:
+
+```text
+davvag-core/localhost/apps/lesson-manager/components
+```
+
+For this checkout, `davvag-core/localhost` is a symbolic link to `C:\xampp\htdocs\apps.davvag.com`. The tenant repository was clean at commit `8a19b58` during this inspection. Resolve the link again before editing or reporting repository status; a change through the alias belongs to the tenant repository, not necessarily the framework repository containing this context document.
+
+Lesson Manager currently has app version `2.3`, and its `api` service is version `2.3`. The current browser component versions are:
+
+```text
+dashboard       1.1
+studio          1.7
+quiz-studio     1.3
+learn           2.3
+submissions     1.1
+reports         1.1
+settings        1.1
+lesson-style    1.4
+```
+
+The September 17 component update expanded the previously compressed browser sources into readable, editable HTML, JavaScript, and CSS. It also added `components/README.md` and `components/.prettierrc.json`. This was a source-maintainability change: component identifiers, registered versions, app routes, and the PHP service boundary were not replaced by a new frontend framework or build pipeline.
+
+## Direct-source component contract
+
+WEBDOCK loads these files directly. There is no compilation or bundling step for Lesson Manager components. Each routed page keeps its editable `script.js`, `partial.html`, and `component.json`; shared styling remains in `lesson-style/lesson-manager.css` and is loaded through the `lesson-style` component.
+
+The page scripts use the established registration shape:
+
+```javascript
+WEBDOCK.component().register(function (exports) {
+    exports.vue = {
+        data: data,
+        methods: { /* template methods */ },
+        onReady: init
+    };
+});
+```
+
+`exports.getComponent('api')` supplies the Lesson Manager service, and `exports.getShellComponent('soss-routes')` supplies app navigation where required. Method names exposed through `exports.vue.methods`, Vue bindings in `partial.html`, request field names, and service method names form one contract and must be changed together.
+
+Keep the checked-in sources expanded and readable. The local Prettier policy uses four-space indentation, a 100-column print width, single quotes for JavaScript, and no tabs. Formatting must not alter Vue template semantics or the framework registration wrapper. After a behavior or resource change, update the affected component resource version and any app/service version required by the cache/version rules in this document.
+
+## Current page responsibilities
+
+- `dashboard` presents role-aware entry points: staff see lesson and attempt summaries, while students see their learning courses.
+- `studio` owns course/subject selection, lesson authoring and ordering, material authoring, video records and provider metadata, assignment links, uploads, and soft-delete recovery.
+- `quiz-studio` owns quiz/question editing, preview, saved-agent selection, generation, and soft-delete recovery.
+- `learn` owns the learner course-to-subject-to-lesson progression, responsive/mobile stage navigation, lesson activities, protected materials, video, quiz attempts, assignments, and completion state.
+- `submissions` owns assignment and quiz-attempt review.
+- `reports` owns progress/results filtering and teacher overrides.
+- `settings` owns YouTube/Facebook provider configuration, connection testing, OAuth entry, and disconnect behavior.
+
+The shared CSS defines the `lm-*` shell, navigation, hero, cards, forms, tables, modal, learning steps, status elements, and responsive breakpoints. Prefer those shared classes over page-local visual systems so all routed components retain the same desktop and mobile language.
+
+## Lesson Studio source contract
+
+`components/studio/script.js` is the active editable source for `#/app/lesson-manager/studio`. Its state separates the course and subject filters, selected lesson, child collections, tab, deleted-item visibility, modal visibility, upload state, provider-metadata state, and lesson/content/video/assignment forms.
+
+Course selection filters subjects locally; selecting a subject calls `ListLessons`. Selecting a lesson loads its material, videos, and assignment rules. Lesson ordering is authoritative through `ReorderLessons`, and new lesson order is derived from the active, non-deleted lesson count.
+
+Deletion is recoverable. Lessons, content, videos, quizzes/questions, and assignment links use the matching `Delete*`/`Restore*` service operations and the `include_deleted` listing flag. UI removal must not be rewritten as physical record deletion, and child/submission history must remain recoverable.
+
+Material editing remains modal-based. The rich-text surface synchronizes its `contenteditable` HTML into `contentForm.body`; its toolbar currently uses browser `document.execCommand`. Preserve that synchronization when changing the editor. Upload namespaces are purpose-specific:
+
+```text
+lesson_manager_assets       reusable PDF assets
+lesson_content_resource     material attachments
+lesson_content_image        rich-text images
+lesson_video                locally hosted videos
+lesson_assignment_support   assignment supporting files
+```
+
+PDF material uploads are registered with `RegisterReusableAsset` after upload and then stored as the material's media/embed reference. Other uploaded files return the DAVVAG Tools uploader reference and are not interchangeable with arbitrary filesystem paths.
+
+YouTube and Facebook URLs may call `FetchVideoMetadata` after a short debounce. Automatically returned title, thumbnail, transcript, and duration must not silently replace manually edited title/thumbnail/transcript fields; explicit refresh requires confirmation when those fields are dirty. Local video uploads set provider `local` and use `media_reference` rather than pretending to be provider URLs.
+
+The prior Lesson Manager contracts remain binding: use source-aware access through `LessonAccess`, preserve marketplace grants and permanent standalone unlocks, enforce subject progression and availability, protect lesson media through the registered media policy, and keep the saved-agent quiz workflow and credit-point behavior intact. A frontend refactor does not authorize bypassing these server-side decisions.
+
+## Editing and verification boundary
+
+Use `components/README.md` as the component editing guide. For a change, inspect the page template, script, descriptor, shared CSS, and corresponding `ApiService` operations together. At minimum, check changed JavaScript with `node --check`, parse changed JSON descriptors, lint changed PHP, and exercise the affected save/load/recovery flow in a browser. Responsive changes require desktop and mobile checks, particularly the learner stage transitions and modal behavior.
+
+This context update used repository history and static source inspection. It verified the current descriptors and source layout but did not perform an authenticated browser session, provider OAuth flow, media upload, database mutation, or live learner purchase/progression test.
+
+---
+
+# 81. MARKETPLACE-TO-COHORT ACTIVATION CONTRACT (2026-09-18)
+
+Every new Lesson Marketplace package draft must select one active Course Manager cohort (`course_manager_classgrade`). All selected lessons must belong to that cohort's course. The cohort identifier, name, and course identifier are copied into the immutable published-version snapshot, so an accepted enrolment is never silently redirected to another cohort.
+
+Marketplace enrolment synchronization occurs when the request actually becomes `active`, not merely when a paid request is approved. Consequently, free automatic requests synchronize immediately, free approval-required requests synchronize on approval, and paid requests synchronize only after successful credit confirmation. Paid synchronization shares the credit-ledger transaction, so cohort-capacity or persistence failure rolls back the debit and lesson grants.
+
+Activation creates or reuses an active `course_manager_enrollment` row for the selected cohort and learner. Marketplace-created rows have:
+
+```text
+source_app     lesson-market-place
+source_ref_id  lmp_enrolment.id
+access_scope   package_lessons
+```
+
+This row makes the learner part of the cohort for Course Manager assignments and causes `AttendanceRoster` to include the learner for every matching timetable slot. It does not pre-create an attendance result or mark attendance as confirmed; staff create/update attendance records when saving the roster.
+
+`LessonAccess` must ignore `course_manager_enrollment` rows whose `access_scope` is `package_lessons` when calculating broad course entitlement. The learner continues to receive only the immutable `lmp_grant` lesson set. An existing active manual cohort enrolment is reused and keeps its normal broad-course behavior.
+
+The repeatable Lesson Marketplace migration owns the nullable source/scope additions to `course_manager_enrollment`. On 2026-09-18 it was run successfully for `localhost`. Verification passed PHP lint, JavaScript syntax checking, Course Manager rules, 67 Marketplace business/provider checks, and 87 isolated database/concurrency/endpoint checks.
