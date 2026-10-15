@@ -368,7 +368,7 @@ A JSON-defined orchestration executed by `DavvagFlow`.
 
 ## Plugin
 
-A reusable PHP capability loaded globally or from the active tenant.
+A reusable PHP capability loaded globally or from the active tenant. Also if the app service methods are reusable from other apps then write php libary first in the local Plugin Folder then include the plugin file to the Service. 
 
 ## Group File
 
