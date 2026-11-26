@@ -124,6 +124,6 @@ class FacebookCurl
      */
     public function close()
     {
-        curl_close($this->curl);
+        $this->curl = null;
     }
 }

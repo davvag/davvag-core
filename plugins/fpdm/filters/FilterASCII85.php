@@ -70,10 +70,10 @@ if (!call_user_func_array('class_exists', $__tmp)) {
                     $r = 0;
                     for ($j = 0; $j < 5; ++$j)
                         $r = $r * 85 + $chn[$j];
-                    $out .= chr($r >> 24);
-                    $out .= chr($r >> 16);
-                    $out .= chr($r >> 8);
-                    $out .= chr($r);
+                    $out .= chr(($r >> 24) & 0xff);
+                    $out .= chr(($r >> 16) & 0xff);
+                    $out .= chr(($r >> 8) & 0xff);
+                    $out .= chr($r & 0xff);
                 }
             }
             $r = 0;
@@ -82,18 +82,18 @@ if (!call_user_func_array('class_exists', $__tmp)) {
                 return $this->error('Illegal length in ASCII85Decode.');
             if ($state == 2) {
                 $r = $chn[0] * 85 * 85 * 85 * 85 + ($chn[1]+1) * 85 * 85 * 85;
-                $out .= chr($r >> 24);
+                $out .= chr(($r >> 24) & 0xff);
             }
             else if ($state == 3) {
                 $r = $chn[0] * 85 * 85 * 85 * 85 + $chn[1] * 85 * 85 * 85  + ($chn[2]+1) * 85 * 85;
-                $out .= chr($r >> 24);
-                $out .= chr($r >> 16);
+                $out .= chr(($r >> 24) & 0xff);
+                $out .= chr(($r >> 16) & 0xff);
             }
             else if ($state == 4) {
                 $r = $chn[0] * 85 * 85 * 85 * 85 + $chn[1] * 85 * 85 * 85  + $chn[2] * 85 * 85  + ($chn[3]+1) * 85 ;
-                $out .= chr($r >> 24);
-                $out .= chr($r >> 16);
-                $out .= chr($r >> 8);
+                $out .= chr(($r >> 24) & 0xff);
+                $out .= chr(($r >> 16) & 0xff);
+                $out .= chr(($r >> 8) & 0xff);
             }
     
             return $out;

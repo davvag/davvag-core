@@ -72,8 +72,9 @@ class FacebookStream
      */
     public function fileGetContents($url)
     {
+        http_clear_last_response_headers();
         $rawResponse = file_get_contents($url, false, $this->stream);
-        $this->responseHeaders = $http_response_header ?: [];
+        $this->responseHeaders = http_get_last_response_headers() ?: [];
 
         return $rawResponse;
     }

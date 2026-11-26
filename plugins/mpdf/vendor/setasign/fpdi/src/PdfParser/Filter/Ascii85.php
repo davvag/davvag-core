@@ -69,10 +69,10 @@ class Ascii85 implements FilterInterface
                     $r = (int)($r * 85 + $chn[$j]);
                 }
 
-                $out .= \chr($r >> 24)
-                    . \chr($r >> 16)
-                    . \chr($r >> 8)
-                    . \chr($r);
+                $out .= \chr(($r >> 24) & 0xff)
+                    . \chr(($r >> 16) & 0xff)
+                    . \chr(($r >> 8) & 0xff)
+                    . \chr($r & 0xff);
             }
         }
 
@@ -85,16 +85,16 @@ class Ascii85 implements FilterInterface
 
         if ($state === 2) {
             $r = $chn[0] * 85 * 85 * 85 * 85 + ($chn[1] + 1) * 85 * 85 * 85;
-            $out .= \chr($r >> 24);
+            $out .= \chr(($r >> 24) & 0xff);
         } elseif ($state === 3) {
             $r = $chn[0] * 85 * 85 * 85 * 85 + $chn[1] * 85 * 85 * 85 + ($chn[2] + 1) * 85 * 85;
-            $out .= \chr($r >> 24);
-            $out .= \chr($r >> 16);
+            $out .= \chr(($r >> 24) & 0xff);
+            $out .= \chr(($r >> 16) & 0xff);
         } elseif ($state === 4) {
             $r = $chn[0] * 85 * 85 * 85 * 85 + $chn[1] * 85 * 85 * 85 + $chn[2] * 85 * 85 + ($chn[3] + 1) * 85;
-            $out .= \chr($r >> 24);
-            $out .= \chr($r >> 16);
-            $out .= \chr($r >> 8);
+            $out .= \chr(($r >> 24) & 0xff);
+            $out .= \chr(($r >> 16) & 0xff);
+            $out .= \chr(($r >> 8) & 0xff);
         }
 
         return $out;

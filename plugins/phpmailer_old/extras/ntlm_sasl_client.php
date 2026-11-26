@@ -20,16 +20,10 @@ class ntlm_sasl_client_class
 
     public function initialize(&$client)
     {
-        if (!function_exists($function = "mcrypt_encrypt")
-            || !function_exists($function = "mhash")
-        ) {
-            $extensions = array(
-                "mcrypt_encrypt" => "mcrypt",
-                "mhash" => "mhash"
-            );
-            $client->error = "the extension " . $extensions[$function] .
-                " required by the NTLM SASL client class is not available in this PHP configuration";
-            return (0);
+        if (!function_exists('openssl_encrypt') || !in_array('md4', hash_algos(), true)
+            || !in_array('des-ede3-ecb', openssl_get_cipher_methods(), true)) {
+            $client->error = 'NTLM requires the hash MD4 algorithm and OpenSSL DES-EDE3 cipher';
+            return 0;
         }
         return (1);
     }
@@ -66,10 +60,8 @@ class ntlm_sasl_client_class
     public function NTLMResponse($challenge, $password)
     {
         $unicode = $this->ASCIIToUnicode($password);
-        $md4 = mhash(MHASH_MD4, $unicode);
+        $md4 = hash('md4', $unicode, true);
         $padded = $md4 . str_repeat(chr(0), 21 - strlen($md4));
-        $iv_size = mcrypt_get_iv_size(MCRYPT_DES, MCRYPT_MODE_ECB);
-        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
         for ($response = "", $third = 0; $third < 21; $third += 7) {
             for ($packed = "", $p = $third; $p < $third + 7; $p++) {
                 $packed .= str_pad(decbin(ord(substr($padded, $p, 1))), 8, "0", STR_PAD_LEFT);
@@ -79,10 +71,23 @@ class ntlm_sasl_client_class
                 $b = $s . ((substr_count($s, "1") % 2) ? "0" : "1");
                 $key .= chr(bindec($b));
             }
-            $ciphertext = mcrypt_encrypt(MCRYPT_DES, $key, $challenge, MCRYPT_MODE_ECB, $iv);
+            $ciphertext = $this->encryptNtlmBlock($challenge, $key);
             $response .= $ciphertext;
         }
         return $response;
+    }
+
+    /** DES-EDE3 with three identical keys is DES, as required by NTLMv1. */
+    private function encryptNtlmBlock($challenge, $key)
+    {
+        if (strlen($challenge) !== 8 || strlen($key) !== 8) {
+            throw new InvalidArgumentException('NTLM requires an 8-byte challenge and DES key');
+        }
+        $encrypted = openssl_encrypt($challenge, 'des-ede3-ecb', str_repeat($key, 3), OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING);
+        if ($encrypted === false) {
+            throw new RuntimeException('Unable to encrypt the NTLM challenge with OpenSSL');
+        }
+        return $encrypted;
     }
 
     public function typeMsg3($ntlm_response, $user, $domain, $workstation)

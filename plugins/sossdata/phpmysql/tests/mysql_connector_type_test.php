@@ -13,7 +13,9 @@ function checkSqlType($condition, $message)
 
 $reflection = new ReflectionClass("mysqlConnector");
 $convertSqlType = $reflection->getMethod("convertSQLtype");
-$convertSqlType->setAccessible(true);
+if (PHP_VERSION_ID < 80100) {
+    $convertSqlType->setAccessible(true);
+}
 $connector = $reflection->newInstanceWithoutConstructor();
 
 foreach (array("float", "double", "short", "long", "java.util.Date", "boolean") as $dataType) {
@@ -47,7 +49,9 @@ checkSqlType(strpos($configuredDouble, "DECIMAL(8,2)") === 0, "double honors the
 checkSqlType(strpos($invalidPrecision, "DECIMAL(10,2)") === 0, "invalid decimalPoints safely falls back to DECIMAL(10,2)");
 
 $decimalColumnNeedsAlter = $reflection->getMethod("decimalColumnNeedsAlter");
-$decimalColumnNeedsAlter->setAccessible(true);
+if (PHP_VERSION_ID < 80100) {
+    $decimalColumnNeedsAlter->setAccessible(true);
+}
 checkSqlType($decimalColumnNeedsAlter->invoke($connector, "double", "decimal(10,0)", "8,2") === true, "rounded legacy double columns are marked for precision alteration");
 checkSqlType($decimalColumnNeedsAlter->invoke($connector, "double", "decimal(8,2)", "8,2") === false, "matching decimal columns are not altered repeatedly");
 

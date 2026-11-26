@@ -18,7 +18,7 @@ class Google_AuthHandler_Guzzle6AuthHandler
   protected $cache;
   protected $cacheConfig;
 
-  public function __construct(CacheItemPoolInterface $cache = null, array $cacheConfig = [])
+  public function __construct(?CacheItemPoolInterface $cache = null, array $cacheConfig = [])
   {
     $this->cache = $cache;
     $this->cacheConfig = $cacheConfig;
@@ -27,7 +27,7 @@ class Google_AuthHandler_Guzzle6AuthHandler
   public function attachCredentials(
       ClientInterface $http,
       CredentialsLoader $credentials,
-      callable $tokenCallback = null
+      ?callable $tokenCallback = null
   ) {
     // use the provided cache
     if ($this->cache) {

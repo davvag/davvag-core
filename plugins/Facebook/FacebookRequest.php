@@ -94,7 +94,7 @@ class FacebookRequest
      * @param string|null             $eTag
      * @param string|null             $graphVersion
      */
-    public function __construct(FacebookApp $app = null, $accessToken = null, $method = null, $endpoint = null, array $params = [], $eTag = null, $graphVersion = null)
+    public function __construct(?FacebookApp $app = null, $accessToken = null, $method = null, $endpoint = null, array $params = [], $eTag = null, $graphVersion = null)
     {
         $this->setApp($app);
         $this->setAccessToken($accessToken);
@@ -168,7 +168,7 @@ class FacebookRequest
      *
      * @param FacebookApp|null $app
      */
-    public function setApp(FacebookApp $app = null)
+    public function setApp(?FacebookApp $app = null)
     {
         $this->app = $app;
     }

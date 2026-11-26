@@ -72,7 +72,7 @@ class FacebookRedirectLoginHelper
      * @param UrlDetectionInterface|null                $urlHandler            The URL detection handler.
      * @param PseudoRandomStringGeneratorInterface|null $prsg                  The cryptographically secure pseudo-random string generator.
      */
-    public function __construct(OAuth2Client $oAuth2Client, PersistentDataInterface $persistentDataHandler = null, UrlDetectionInterface $urlHandler = null, PseudoRandomStringGeneratorInterface $prsg = null)
+    public function __construct(OAuth2Client $oAuth2Client, ?PersistentDataInterface $persistentDataHandler = null, ?UrlDetectionInterface $urlHandler = null, ?PseudoRandomStringGeneratorInterface $prsg = null)
     {
         $this->oAuth2Client = $oAuth2Client;
         $this->persistentDataHandler = $persistentDataHandler ?: new FacebookSessionPersistentDataHandler();

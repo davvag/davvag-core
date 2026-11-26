@@ -70,6 +70,7 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 		var $pointer;   	  //integer, Current line position in the pdf file during the parsing
 
 		var $shifts;    	  //array, Shifts of objects in the order positions they appear in the pdf, starting at 0.
+		var $n = 0;
 		var $shift;     	  //integer, Global shift file size due to object values size changes
 
 		var $streams;         //Holds streams configuration found during parsing
@@ -103,16 +104,15 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 		 *@param string $fdf_source Source-Filename
 		 *@param boolean $verbose , optional false per default
          */
-    	function FPDM() {
+		function __construct() {
 		//==============
-			$FPDM_FILTERS = array();
 			//Major stream filters come from FPDI's stuff but I've added some :)
-			require_once("filters/FilterASCIIHex.php");
-			require_once("filters/FilterASCII85.php");
-			require_once("filters/FilterFlate.php");
-			require_once("filters/FilterLZW.php");
-			require_once("filters/FilterStandard.php");
-			$this->FPDM_FILTERS = $FPDM_FILTERS;
+			require_once(__DIR__ . "/filters/FilterASCIIHex.php");
+			require_once(__DIR__ . "/filters/FilterASCII85.php");
+			require_once(__DIR__ . "/filters/FilterFlate.php");
+			require_once(__DIR__ . "/filters/FilterLZW.php");
+			require_once(__DIR__ . "/filters/FilterStandard.php");
+			$this->FPDM_FILTERS = array('ASCIIHexDecode', 'ASCII85Decode', 'FlateDecode', 'LZWDecode', 'Standard');
 
 			$args=func_get_args();
 			$num_args=func_num_args();
@@ -784,16 +784,15 @@ if (!call_user_func_array('class_exists', $__tmp)) {
 
 			$OldLen=strlen($CurLine);
 
-			//My PHP4/5 static call hack, only to make the callback $this->replace_value($matches,"$value") possible!
-			$callback_code='$THIS=new FPDM("[_STATIC_]");return $THIS->replace_value($matches,"'.$value.'");';
-
 			$field_regexp='/^\/(\w+)\s?(\<|\()([^\)\>]*)(\)|\>)/';
 
 			if(preg_match($field_regexp,$CurLine)) {
 				//modify it according to the new value $value
 				$CurLine = preg_replace_callback(
 					$field_regexp,
-					create_function('$matches',$callback_code),
+					function ($matches) use ($value) {
+						return $this->replace_value($matches, $value);
+					},
 					$CurLine
 				);
 			}else {

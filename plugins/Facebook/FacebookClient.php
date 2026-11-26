@@ -91,7 +91,7 @@ class FacebookClient
      * @param FacebookHttpClientInterface|null $httpClientHandler
      * @param boolean                          $enableBeta
      */
-    public function __construct(FacebookHttpClientInterface $httpClientHandler = null, $enableBeta = false)
+    public function __construct(?FacebookHttpClientInterface $httpClientHandler = null, $enableBeta = false)
     {
         $this->httpClientHandler = $httpClientHandler ?: $this->detectHttpClientHandler();
         $this->enableBetaMode = $enableBeta;

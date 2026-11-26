@@ -51,6 +51,38 @@ At runtime:
 
 Note: the source method is spelled `SOSSPlatform::intialize()`.
 
+## PHP 8.5 compatibility
+
+The compatibility audit and offline regression checks run with PHP 8.5 and Python 3:
+
+```powershell
+python tests/php85-audit.py --php C:\xampp\php\php.exe --include-tenant --smoke
+```
+
+Omit `--include-tenant` to check only the core checkout. The option explicitly includes
+`davvag-core/localhost`, which can link to a separate tenant directory. The audit checks
+PHP syntax, compile-time deprecations, and a targeted list of removed/deprecated function
+calls using PHP tokens. It excludes caches, temporary directories, and node modules.
+
+The PHP 8.5 migration replaces obsolete mail autoloading and magic-quotes calls, PDF
+`create_function()` callbacks and curly offsets, non-canonical casts, and deprecated
+resource cleanup. Legacy Facebook `mcrypt` configuration uses `random_bytes()`; the
+legacy mail NTLM helper uses native hashing and OpenSSL with a reference-vector test.
+Bundled SDKs have explicit nullable parameters and compatibility attributes for their
+existing collection signatures. PDF ASCII85 decoding now supplies valid bytes to `chr()`.
+Spreadsheet initialization avoids null array keys, and bundled HTMLPurifier uses the
+supported `SplObjectStorage` methods. These follow the
+[PHP 8.5 migration guide](https://www.php.net/manual/en/migration85.deprecated.php).
+
+Some bundled dependency sources under `vendor` carry local compatibility patches;
+reinstalling them with Composer can overwrite these patches. Rerun the audit after
+dependency changes. Smoke checks cover mail attachment encoding, random generation,
+collections, PDF field replacement/decoding, and spreadsheet calculation. They do not
+exercise external services, live database connections, or every application workflow.
+Full image processing and PDF rendering require the GD extension, which was absent
+from the CLI used for this migration. The Google SDK's separate Composer dependencies
+must also be installed before making live Google API requests.
+
 ## Core Runtime Files
 
 | Path | Purpose |
